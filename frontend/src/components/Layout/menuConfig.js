@@ -11,6 +11,7 @@ export const menuConfig = {
         { title: "Results", icon: <FaClipboardList />, path: "/results" },
         { title: "Reports", icon: <FaClipboardList />, path: "/reports" },
         { title: "Announcements", icon: <FaClipboardList />, path: "/announcements" },
+        { title: "Billing", icon: <FaClipboardList />, path: "/billing" },
       ]
     },
     { category: "Finance", items: [ { title: "Fees", icon: <FaMoneyBill />, path: "/fees" } ] }
