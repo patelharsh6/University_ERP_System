@@ -16,6 +16,12 @@ import FacultyDashboard from './pages/faculty/FacultyDashboard';
 import CourseManagement from './pages/faculty/CourseManagement';
 import StudentsList from './pages/student/StudentsList';
 import RegistrationForm from './pages/student/RegistrationForm';
+import Assignments from './pages/student/Assignments';
+import StudyMaterials from './pages/student/StudyMaterials';
+import LeaveRequests from './pages/student/LeaveRequests';
+import Notifications from './pages/student/Notifications';
+import Settings from './pages/student/Settings';
+import Subjects from './pages/student/Subjects';
 
 function App() {
   const [userRole, setUserRole] = useState('admin'); // Default to 'admin' to show premium SaaS metrics
@@ -39,6 +45,12 @@ function App() {
             <Route path="/registration" element={<RegistrationForm />} />
             <Route path="/faculty-dashboard" element={<FacultyDashboard />} />
             <Route path="/course-management" element={<CourseManagement />} />
+            <Route path="/assignments" element={<Assignments />} />
+            <Route path="/materials" element={<StudyMaterials />} />
+            <Route path="/leaves" element={<LeaveRequests />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/subjects" element={<Subjects />} />
           </Routes>
         </Layout>
       </BrowserRouter>

@@ -1,63 +1,67 @@
 // src/components/Layout/menuConfig.js
 import React from 'react';
 import { 
-  FaHome, 
-  FaBook, 
-  FaChalkboardTeacher, 
-  FaCalendarAlt, 
-  FaUserGraduate, 
-  FaClipboardList, 
-  FaGraduationCap, 
-  FaMoneyBill, 
-  FaCreditCard, 
-  FaBullhorn, 
-  FaCommentAlt, 
-  FaCog,
-  FaUserPlus
-} from 'react-icons/fa';
+  FiHome, 
+  FiUser, 
+  FiBookOpen, 
+  FiLayers, 
+  FiCheckCircle, 
+  FiCalendar, 
+  FiAward, 
+  FiEdit3, 
+  FiCreditCard, 
+  FiRadio, 
+  FiFileText, 
+  FiSend, 
+  FiMessageSquare, 
+  FiBell,
+  FiSettings
+} from 'react-icons/fi';
 
 export const menuConfig = [
   {
     category: "",
     items: [
-      { title: "Dashboard", icon: <FaHome />, path: "/" }
+      { title: "Dashboard", icon: <FiHome />, path: "/" },
+      { title: "Profile", icon: <FiUser />, path: "/profile" }
     ]
   },
   {
     category: "ACADEMICS",
     items: [
-      { title: "Courses", icon: <FaBook />, path: "/courses" },
-      { title: "Subjects", icon: <FaChalkboardTeacher />, path: "/course-management" },
-      { title: "Timetable", icon: <FaCalendarAlt />, path: "/timetable" }
-    ]
-  },
-  {
-    category: "STUDENTS",
-    items: [
-      { title: "Students", icon: <FaUserGraduate />, path: "/students" },
-      { title: "Registration", icon: <FaUserPlus />, path: "/registration" },
-      { title: "Attendance", icon: <FaClipboardList />, path: "/attendance", badge: "82%", badgeType: "attend" },
-      { title: "Results", icon: <FaGraduationCap />, path: "/results" }
+      { title: "Courses", icon: <FiBookOpen />, path: "/courses" },
+      { title: "Subjects", icon: <FiLayers />, path: "/subjects" },
+      { title: "Attendance", icon: <FiCheckCircle />, path: "/attendance", badge: "92%", badgeType: "attend" },
+      { title: "Timetable", icon: <FiCalendar />, path: "/timetable" },
+      { title: "Results", icon: <FiAward />, path: "/results" },
+      { title: "Assignments", icon: <FiEdit3 />, path: "/assignments", badge: "3", badgeType: "due" }
     ]
   },
   {
     category: "FINANCE",
     items: [
-      { title: "Fees", icon: <FaMoneyBill />, path: "/billing" },
-      { title: "Payments", icon: <FaCreditCard />, path: "/billing", badge: "Due", badgeType: "due" }
+      { title: "Fees", icon: <FiCreditCard />, path: "/billing" }
     ]
   },
   {
     category: "COMMUNICATION",
     items: [
-      { title: "Announcements", icon: <FaBullhorn />, path: "/announcements", badge: "3", badgeType: "announcement" },
-      { title: "Feedback", icon: <FaCommentAlt />, path: "/feedback" }
+      { title: "Announcements", icon: <FiRadio />, path: "/announcements" },
+      { title: "Notifications", icon: <FiBell />, path: "/notifications", badge: "2", badgeType: "announcement" }
+    ]
+  },
+  {
+    category: "RESOURCES",
+    items: [
+      { title: "Study Materials", icon: <FiFileText />, path: "/materials" },
+      { title: "Leave Requests", icon: <FiSend />, path: "/leaves" }
     ]
   },
   {
     category: "",
     items: [
-      { title: "Settings", icon: <FaCog />, path: "/profile" }
+      { title: "Feedback", icon: <FiMessageSquare />, path: "/feedback" },
+      { title: "Settings", icon: <FiSettings />, path: "/settings" }
     ]
   }
 ];
