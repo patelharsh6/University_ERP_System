@@ -1,32 +1,33 @@
-// src/pages/Timetable.jsx
+// src/pages/student/Timetable.jsx
 import React, { useState } from 'react';
 import './Timetable.css';
-import { FaChevronLeft, FaChevronRight, FaQrcode, FaCheckCircle, FaClock } from 'react-icons/fa';
+import { FiChevronLeft, FiChevronRight, FiMaximize, FiCheckCircle, FiClock, FiUser, FiMapPin } from 'react-icons/fi';
 
 const Timetable = () => {
   // Mock Date State
-  const [currentDate, setCurrentDate] = useState("12 Feb 2026");
+  const [currentDate, setCurrentDate] = useState("08 Jun 2026");
 
   // --- MOCK SCHEDULE DATA ---
-  // Matches the fields seen in your reference image
   const scheduleData = [
     {
       id: 1,
-      subject: "Cloud Computing",
-      code: "ECSDI24304",
+      subject: "Database Management Systems",
+      code: "CE601",
       type: "Lecture",
-      faculty: "Aarti Dadheech",
+      faculty: "Dr. Rajesh Sharma",
+      room: "Room 304",
       time: "09:10 AM - 10:00 AM",
       duration: "50 min",
-      status: "completed", // Past class
+      status: "completed", 
       attendance: "Present"
     },
     {
       id: 2,
-      subject: "Agile Software Development and DevOps",
-      code: "ECSCI24304",
+      subject: "Artificial Intelligence",
+      code: "CE602",
       type: "Lecture",
-      faculty: "Vaishali Chourey",
+      faculty: "Prof. Anita Verma",
+      room: "Room 204",
       time: "10:00 AM - 10:50 AM",
       duration: "50 min",
       status: "completed",
@@ -34,10 +35,11 @@ const Timetable = () => {
     },
     {
       id: 3,
-      subject: "Agile Software Development (Tutorial)",
-      code: "ECSCI24304",
+      subject: "Computer Networks (Lab)",
+      code: "CE603",
       type: "Practical",
-      faculty: "Himani Dharmesh Prajapati",
+      faculty: "Dr. Sanjay Gupta",
+      room: "Network Lab 2",
       time: "11:00 AM - 12:40 PM",
       duration: "100 min",
       status: "active", // 🟢 THIS IS HAPPENING NOW (Show QR)
@@ -45,10 +47,11 @@ const Timetable = () => {
     },
     {
       id: 4,
-      subject: "Data Visualization",
-      code: "ECSEI24302",
+      subject: "Software Engineering",
+      code: "CE604",
       type: "Lecture",
-      faculty: "Indu Chandran",
+      faculty: "Prof. Meera Desai",
+      room: "Room 101",
       time: "01:30 PM - 02:20 PM",
       duration: "50 min",
       status: "upcoming", // Future class
@@ -59,20 +62,20 @@ const Timetable = () => {
   return (
     <div className="timetable-container">
       
-      {/* 1. HEADER (Matches Reference Image) */}
+      {/* 1. HEADER */}
       <div className="timetable-header">
         <div className="header-text">
           <h2>Timetable</h2>
           <div className="semester-badge">SEMESTER-VI | 2025-26</div>
         </div>
-        <button className="weekly-btn">Weekly schedule</button>
+        <button className="weekly-btn">Weekly Schedule</button>
       </div>
 
       {/* 2. DATE NAVIGATOR */}
       <div className="date-navigator">
-        <button className="nav-arrow"><FaChevronLeft /></button>
+        <button className="nav-arrow"><FiChevronLeft /></button>
         <span className="current-date-display">{currentDate}</span>
-        <button className="nav-arrow"><FaChevronRight /></button>
+        <button className="nav-arrow"><FiChevronRight /></button>
       </div>
 
       {/* 3. CLASS LIST */}
@@ -88,11 +91,16 @@ const Timetable = () => {
                 </div>
                 
                 <div className="time-row">
-                  {cls.time} <span className="duration-span">({cls.duration})</span>
+                  <FiClock className="detail-icon" /> {cls.time} <span className="duration-span">({cls.duration})</span>
                 </div>
 
                 <div className="faculty-row">
-                  {cls.faculty}
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px', marginRight: '16px' }}>
+                    <FiUser /> {cls.faculty}
+                  </span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <FiMapPin /> {cls.room}
+                  </span>
                 </div>
 
                 <div className="type-badge">{cls.type}</div>
@@ -104,21 +112,21 @@ const Timetable = () => {
                 {/* 🔵 CASE 1: ACTIVE CLASS (Show QR Button) */}
                 {cls.status === 'active' && (
                   <button className="btn-qr" onClick={() => alert("Opening Camera Scanner...")}>
-                    <FaQrcode /> Scan QR
+                    <FiMaximize size={18} /> Scan ID
                   </button>
                 )}
 
                 {/* 🟢 CASE 2: PAST CLASS (Attendance Recorded) */}
                 {cls.status === 'completed' && (
                   <div className="status-text recorded">
-                    <FaCheckCircle /> Attendance recorded
+                    <FiCheckCircle size={18} /> Recorded
                   </div>
                 )}
 
                 {/* ⚪ CASE 3: FUTURE CLASS */}
                 {cls.status === 'upcoming' && (
                   <div className="status-text upcoming">
-                    <FaClock /> Scheduled
+                    <FiClock size={18} /> Scheduled
                   </div>
                 )}
 

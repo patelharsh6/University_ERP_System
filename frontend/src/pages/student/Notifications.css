@@ -1,0 +1,168 @@
+/* src/pages/student/Notifications.css */
+
+:root {
+  --notif-bg:             #f8fafc;
+  --notif-card-bg:        #ffffff;
+  --notif-card-border:    #e2e8f0;
+  
+  --notif-text-primary:   #1e293b;
+  --notif-text-secondary: #334155;
+  --notif-text-muted:     #94a3b8;
+  
+  --notif-accent:         #0d9488;
+  --notif-unread-bg:      #f0fdfa; /* Light teal for unread */
+  
+  --notif-academic:       #3b82f6; /* Blue */
+  --notif-system:         #dc2626; /* Red */
+  --notif-general:        #f59e0b; /* Orange */
+}
+
+.notifications-container {
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--notif-text-secondary);
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* --- HEADER --- */
+.notifications-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.notifications-header h1 {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--notif-text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-mark-read {
+  background: transparent;
+  color: var(--notif-accent);
+  border: 1px solid var(--notif-accent);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.btn-mark-read:hover {
+  background: var(--notif-accent);
+  color: white;
+}
+
+/* --- LIST --- */
+.notif-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.notif-card {
+  background: var(--notif-card-bg);
+  border: 1px solid var(--notif-card-border);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.notif-card.unread {
+  background: var(--notif-unread-bg);
+  border-color: rgba(13, 148, 136, 0.2);
+}
+
+.notif-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+/* Unread Indicator Dot */
+.notif-card.unread::after {
+  content: '';
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--notif-accent);
+}
+
+/* Icon Wrapper */
+.notif-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.notif-icon.academic { background: rgba(59, 130, 246, 0.1); color: var(--notif-academic); }
+.notif-icon.system { background: rgba(220, 38, 38, 0.1); color: var(--notif-system); }
+.notif-icon.general { background: rgba(245, 158, 11, 0.1); color: var(--notif-general); }
+
+/* Info Section */
+.notif-info {
+  flex-grow: 1;
+}
+
+.notif-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--notif-text-primary);
+  margin: 0 0 4px 0;
+  padding-right: 24px; /* Space for dot */
+}
+
+.notif-desc {
+  font-size: 14px;
+  color: var(--notif-text-secondary);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.notif-meta {
+  font-size: 12px;
+  color: var(--notif-text-muted);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* --- DARK THEME OVERRIDES --- */
+.app-container.dark-theme .notifications-container {
+  --notif-card-bg: #1e293b;
+  --notif-card-border: #334155;
+  --notif-bg: #0f172a;
+  --notif-text-primary: #f8fafc;
+  --notif-text-secondary: #cbd5e1;
+  --notif-text-muted: #94a3b8;
+  --notif-unread-bg: rgba(13, 148, 136, 0.08);
+}
+
+@media (max-width: 600px) {
+  .notifications-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+}

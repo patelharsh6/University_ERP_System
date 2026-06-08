@@ -1,0 +1,222 @@
+/* src/pages/student/Settings.css */
+
+:root {
+  --set-bg:             #f8fafc;
+  --set-card-bg:        #ffffff;
+  --set-card-border:    #e2e8f0;
+  
+  --set-text-primary:   #1e293b;
+  --set-text-secondary: #334155;
+  --set-text-muted:     #94a3b8;
+  
+  --set-accent:         #0d9488;
+  --set-accent-hover:   #0f766e;
+  --set-accent-light:   #f0fdfa;
+}
+
+.settings-container {
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--set-text-secondary);
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* --- HEADER --- */
+.settings-header {
+  margin-bottom: 24px;
+}
+
+.settings-header h1 {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--set-text-primary);
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.settings-header p {
+  color: var(--set-text-muted);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* --- GRID LAYOUT --- */
+.settings-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* SIDE MENU */
+.settings-menu {
+  background: var(--set-card-bg);
+  border: 1px solid var(--set-card-border);
+  border-radius: 12px;
+  padding: 12px 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.menu-item {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 12px 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--set-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.menu-item:hover {
+  background: var(--set-bg);
+  color: var(--set-text-primary);
+}
+
+.menu-item.active {
+  background: var(--set-accent-light);
+  color: var(--set-accent);
+  border-left-color: var(--set-accent);
+}
+
+/* CONTENT AREA */
+.settings-content {
+  background: var(--set-card-bg);
+  border: 1px solid var(--set-card-border);
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  min-height: 400px;
+}
+
+.settings-content h2 {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--set-text-primary);
+  margin: 0 0 24px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--set-card-border);
+}
+
+/* FORM ELEMENTS */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--set-text-primary);
+  margin-bottom: 8px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--set-card-border);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--set-text-primary);
+  background: var(--set-bg);
+  outline: none;
+  transition: all 0.2s;
+}
+
+.form-input:focus {
+  border-color: var(--set-accent);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+}
+
+.form-actions {
+  margin-top: 32px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-save {
+  background: var(--set-accent);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-save:hover {
+  background: var(--set-accent-hover);
+}
+
+/* TOGGLE SWITCHES */
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--set-card-border);
+}
+
+.toggle-row:last-child {
+  border-bottom: none;
+}
+
+.toggle-info h4 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  color: var(--set-text-primary);
+}
+
+.toggle-info p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--set-text-muted);
+}
+
+/* --- DARK THEME OVERRIDES --- */
+.app-container.dark-theme .settings-container {
+  --set-card-bg: #1e293b;
+  --set-card-border: #334155;
+  --set-bg: #0f172a;
+  --set-text-primary: #f8fafc;
+  --set-text-secondary: #cbd5e1;
+  --set-text-muted: #94a3b8;
+  --set-accent-light: rgba(13, 148, 136, 0.1);
+}
+
+@media (max-width: 768px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+  .settings-menu {
+    display: flex;
+    overflow-x: auto;
+    padding: 0;
+  }
+  .menu-item {
+    border-left: none;
+    border-bottom: 3px solid transparent;
+    padding: 12px 16px;
+    white-space: nowrap;
+  }
+  .menu-item.active {
+    border-left-color: transparent;
+    border-bottom-color: var(--set-accent);
+  }
+}

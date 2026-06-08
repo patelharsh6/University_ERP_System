@@ -11,7 +11,7 @@ import Feedback from './pages/student/Feedback';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Results from './pages/student/Results';
 import Dashboard from './pages/student/Dashboard';
-import Courses from './components/course_c/CoursesPage';
+import Courses from './pages/student/Courses';
 import FacultyDashboard from './pages/faculty/FacultyDashboard';
 import CourseManagement from './pages/faculty/CourseManagement';
 import StudentsList from './pages/student/StudentsList';

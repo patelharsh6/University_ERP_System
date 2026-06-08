@@ -1,7 +1,7 @@
-// src/pages/Feedback.jsx
+// src/pages/student/Feedback.jsx
 import React, { useState } from 'react';
 import './Feedback.css';
-import { FaStar, FaChalkboardTeacher, FaCheckCircle, FaUserSecret } from 'react-icons/fa';
+import { FiStar, FiUser, FiCheckCircle, FiShield, FiMessageSquare, FiBookOpen } from 'react-icons/fi';
 
 const Feedback = () => {
   const [view, setView] = useState('list'); // 'list' or 'form'
@@ -10,12 +10,12 @@ const Feedback = () => {
 
   // --- MOCK DATA ---
   const pendingFeedback = [
-    { id: 1, subject: "Data Structures", code: "CS101", faculty: "Prof. Sharma", type: "Mid-Sem Review", status: "pending" },
-    { id: 2, subject: "Database Mgmt", code: "CS102", faculty: "Prof. Verma", type: "Mid-Sem Review", status: "pending" },
+    { id: 1, subject: "Database Management Systems", code: "CE601", faculty: "Dr. Rajesh Sharma", type: "Mid-Sem Review", status: "pending" },
+    { id: 2, subject: "Artificial Intelligence", code: "CE602", faculty: "Prof. Anita Verma", type: "Mid-Sem Review", status: "pending" },
   ];
 
   const completedFeedback = [
-    { id: 3, subject: "Operating Systems", code: "CS201", faculty: "Prof. Gupta", type: "Final Review", status: "submitted" },
+    { id: 3, subject: "Software Engineering", code: "CE604", faculty: "Prof. Meera Desai", type: "Course Feedback", status: "submitted" },
   ];
 
   // --- FORM STATE ---
@@ -49,8 +49,8 @@ const Feedback = () => {
       {view === 'list' && (
         <>
           <div className="feedback-header">
-            <h2>Faculty Feedback</h2>
-            <p style={{ color: '#64748B' }}>Share your honest feedback to help us improve.</p>
+            <h1><FiMessageSquare style={{ color: 'var(--fb-accent)' }} /> Faculty Feedback</h1>
+            <p>Share your honest feedback to help us improve teaching standards.</p>
           </div>
 
           <div className="feedback-tabs">
@@ -80,7 +80,7 @@ const Feedback = () => {
                   </div>
                   
                   <div className="faculty-name">
-                    <FaChalkboardTeacher /> {item.faculty}
+                    <FiUser /> {item.faculty}
                   </div>
                   <div className="review-badge">{item.type}</div>
                 </div>
@@ -92,7 +92,7 @@ const Feedback = () => {
                     </button>
                   ) : (
                     <button className="btn-view-feedback">
-                      View Submission
+                      <FiCheckCircle /> View Submission
                     </button>
                   )}
                 </div>
@@ -112,15 +112,15 @@ const Feedback = () => {
               {selectedSubject.faculty.charAt(0)}
             </div>
             <div>
-              <h3 style={{ margin: 0, color: '#0F172A' }}>{selectedSubject.subject}</h3>
-              <p style={{ color: '#64748B', margin: '4px 0' }}>{selectedSubject.faculty}</p>
-              <div style={{ fontSize: '0.85rem', color: '#94A3B8' }}>{selectedSubject.type}</div>
+              <h3 style={{ margin: 0, fontFamily: 'Sora', color: 'var(--fb-text-primary)' }}>{selectedSubject.subject}</h3>
+              <p style={{ color: 'var(--fb-text-secondary)', margin: '4px 0', fontWeight: '600' }}>{selectedSubject.faculty}</p>
+              <div style={{ fontSize: '13px', color: 'var(--fb-text-muted)' }}>{selectedSubject.type}</div>
             </div>
           </div>
 
           {/* GROUP 1: TEACHING QUALITY */}
           <div className="rating-group">
-            <div className="group-title">📘 Teaching Quality</div>
+            <div className="group-title"><FiBookOpen /> Teaching Quality</div>
             
             <RatingQuestion 
               id="q1" 
@@ -130,7 +130,7 @@ const Feedback = () => {
             />
             <RatingQuestion 
               id="q2" 
-              text="Is the faculty punctual and regular?" 
+              text="Is the faculty punctual and regular in conducting classes?" 
               value={ratings.q2} 
               onRate={handleRate} 
             />
@@ -138,17 +138,17 @@ const Feedback = () => {
 
           {/* GROUP 2: SUPPORT */}
           <div className="rating-group">
-            <div className="group-title">🤝 Support & Guidance</div>
+            <div className="group-title"><FiMessageSquare /> Support & Guidance</div>
             
             <RatingQuestion 
               id="q3" 
-              text="Is the faculty available for clearing doubts?" 
+              text="Is the faculty available for clearing doubts outside class?" 
               value={ratings.q3} 
               onRate={handleRate} 
             />
              <RatingQuestion 
               id="q4" 
-              text="Does the faculty encourage questions?" 
+              text="Does the faculty encourage questions and interactive learning?" 
               value={ratings.q4} 
               onRate={handleRate} 
             />
@@ -156,7 +156,7 @@ const Feedback = () => {
 
           {/* COMMENTS */}
           <div className="comment-section">
-            <h4 style={{ margin: 0, color: '#334155' }}>Additional Comments (Optional)</h4>
+            <h4 style={{ margin: 0, fontFamily: 'Sora', color: 'var(--fb-text-primary)' }}>Additional Comments (Optional)</h4>
             <textarea 
               className="comment-input" 
               placeholder="Share your experience..." 
@@ -175,7 +175,7 @@ const Feedback = () => {
                 checked={isAnonymous} 
                 onChange={() => setIsAnonymous(!isAnonymous)} 
               />
-              <FaUserSecret /> Submit Anonymously
+              <FiShield /> Submit Anonymously
             </label>
 
             <div>
@@ -203,7 +203,7 @@ const RatingQuestion = ({ id, text, value = 0, onRate }) => {
             className={`star-btn ${star <= value ? 'active' : ''}`}
             onClick={() => onRate(id, star)}
           >
-            <FaStar />
+            <FiStar style={{ fill: star <= value ? 'currentColor' : 'none' }} />
           </button>
         ))}
       </div>

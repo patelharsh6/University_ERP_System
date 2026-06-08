@@ -1,51 +1,72 @@
-/* src/pages/Timetable.css */
+/* src/pages/student/Timetable.css */
+
+:root {
+  --time-bg:             #f8fafc;
+  --time-card-bg:        #ffffff;
+  --time-card-border:    #e2e8f0;
+  
+  --time-text-primary:   #1e293b;
+  --time-text-secondary: #334155;
+  --time-text-muted:     #94a3b8;
+  
+  --time-accent:         #0d9488;
+  --time-accent-light:   rgba(13, 148, 136, 0.1);
+  --time-active:         #0ea5e9; /* Sky blue for active class */
+  --time-completed:      #059669; /* Emerald for completed */
+}
 
 .timetable-container {
   max-width: 1000px;
   margin: 0 auto;
-  font-family: 'Inter', sans-serif;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--time-text-secondary);
+  animation: fadeIn 0.4s ease-out;
 }
 
 /* --- HEADER SECTION --- */
 .timetable-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end; /* Aligns "Weekly schedule" button to bottom */
+  align-items: flex-end;
   margin-bottom: 24px;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--time-card-border);
   padding-bottom: 16px;
 }
 
 .header-text h2 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 8px;
+  font-family: 'Sora', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--time-text-primary);
+  margin: 0 0 8px 0;
 }
 
 .semester-badge {
   font-size: 0.85rem;
-  color: #64748B; /* Slate 500 */
-  font-weight: 600;
+  color: var(--time-text-muted);
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.05em;
 }
 
 .weekly-btn {
-  padding: 8px 16px;
-  background: #F1F5F9;
-  color: #475569;
-  border: 1px solid var(--border-light);
-  border-radius: 20px;
-  font-size: 0.85rem;
+  padding: 10px 16px;
+  background: var(--time-card-bg);
+  color: var(--time-text-secondary);
+  border: 1px solid var(--time-card-border);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
 }
 
 .weekly-btn:hover {
-  background: #E2E8F0;
-  color: var(--text-primary);
+  background: var(--time-bg);
+  border-color: var(--time-accent);
+  color: var(--time-accent);
 }
 
 /* --- DATE NAVIGATOR (< 12 Feb >) --- */
@@ -55,39 +76,41 @@
   justify-content: center;
   gap: 24px;
   margin-bottom: 32px;
-  background: white;
-  padding: 12px;
+  background: var(--time-card-bg);
+  padding: 12px 24px;
   border-radius: 12px;
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--time-card-border);
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
 }
 
 .nav-arrow {
   background: none;
   border: none;
   font-size: 1.2rem;
-  color: #64748B;
+  color: var(--time-text-muted);
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 50%;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
 }
 
 .nav-arrow:hover {
-  background: #F1F5F9;
-  color: var(--accent-primary);
+  color: var(--time-accent);
+  background: var(--time-accent-light);
 }
 
 .current-date-display {
-  font-size: 1.1rem;
+  font-family: 'Sora', sans-serif;
+  font-size: 1.2rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--time-text-primary);
   min-width: 140px;
   text-align: center;
-  border-bottom: 2px solid var(--accent-primary); /* Blue underline like image */
-  padding-bottom: 4px;
 }
 
 /* --- CLASS LIST (The Cards) --- */
@@ -98,24 +121,24 @@
 }
 
 .schedule-card {
-  background: white;
-  border: 1px solid var(--border-light);
-  border-radius: 8px; /* Slightly sharper corners like reference */
+  background: var(--time-card-bg);
+  border: 1px solid var(--time-card-border);
+  border-radius: 12px;
   padding: 24px;
   position: relative;
   transition: all 0.2s ease;
-  border-left: 4px solid transparent; /* Status Indicator Strip */
+  border-left: 4px solid transparent;
 }
 
 .schedule-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  transform: translateY(-2px);
 }
 
 /* Status Colors for Left Border */
-.schedule-card.active { border-left-color: var(--accent-primary); background: #F0F9FF; }
-.schedule-card.completed { border-left-color: #10B981; }
-.schedule-card.upcoming { border-left-color: #94A3B8; }
+.schedule-card.active { border-left-color: var(--time-active); background: rgba(14, 165, 233, 0.03); }
+.schedule-card.completed { border-left-color: var(--time-completed); }
+.schedule-card.upcoming { border-left-color: var(--time-text-muted); }
 
 /* Content Layout */
 .card-content {
@@ -125,45 +148,56 @@
 }
 
 .subject-title {
-  font-size: 1.05rem;
+  font-family: 'Sora', sans-serif;
+  font-size: 1.1rem;
   font-weight: 700;
-  color: var(--text-primary); /* Dark Blue/Black */
-  margin-bottom: 6px;
+  color: var(--time-text-primary);
+  margin-bottom: 8px;
 }
 
 .subject-code {
-  color: #64748B;
-  font-weight: 500;
+  color: var(--time-text-muted);
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
 }
 
 .time-row {
-  font-size: 0.9rem;
-  color: #475569;
-  margin-bottom: 4px;
-  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--time-text-secondary);
+  margin-bottom: 6px;
+  font-weight: 600;
 }
 
 .duration-span {
-  color: #94A3B8;
-  font-size: 0.85rem;
-  margin-left: 6px;
+  color: var(--time-text-muted);
+  font-size: 12px;
+  font-weight: 500;
 }
 
 .faculty-row {
-  font-size: 0.9rem;
-  color: #64748B;
-  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--time-text-secondary);
+  margin-bottom: 16px;
 }
 
 .type-badge {
   display: inline-block;
-  font-size: 0.75rem;
-  padding: 4px 10px;
-  border-radius: 4px;
-  background: #F1F5F9;
-  color: #475569;
-  font-weight: 600;
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  background: var(--time-bg);
+  color: var(--time-text-secondary);
+  font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid var(--time-card-border);
 }
 
 /* --- QR & ACTION BUTTONS --- */
@@ -172,45 +206,59 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 8px;
+  gap: 12px;
 }
 
 .btn-qr {
-  background: var(--accent-primary);
+  background: var(--time-active);
   color: white;
   border: none;
   padding: 10px 20px;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 14px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3);
+  box-shadow: 0 4px 10px rgba(14, 165, 233, 0.25);
   animation: pulse-blue 2s infinite;
+  transition: all 0.2s;
 }
 
 .btn-qr:hover {
-  background: #0284C7;
+  background: #0284c7;
 }
 
 .status-text {
-  font-size: 0.9rem;
+  font-size: 14px;
   font-weight: 600;
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.status-text.recorded { color: #10B981; }
-.status-text.upcoming { color: #94A3B8; }
+.status-text.recorded { color: var(--time-completed); }
+.status-text.upcoming { color: var(--time-text-muted); }
 
 @keyframes pulse-blue {
   0% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4); }
   70% { box-shadow: 0 0 0 10px rgba(14, 165, 233, 0); }
   100% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); }
 }
+
+/* --- DARK THEME OVERRIDES --- */
+.app-container.dark-theme .timetable-container {
+  --time-card-bg: #1e293b;
+  --time-card-border: #334155;
+  --time-bg: #0f172a;
+  --time-text-primary: #f8fafc;
+  --time-text-secondary: #cbd5e1;
+  --time-text-muted: #94a3b8;
+}
+
+.app-container.dark-theme .schedule-card.active { background: rgba(14, 165, 233, 0.1); }
 
 /* Mobile */
 @media (max-width: 768px) {

@@ -1,28 +1,40 @@
-// src/pages/Profile.jsx
+// src/pages/student/Profile.jsx
 import React, { useState } from 'react';
 import './Profile.css';
-import { FaPen, FaSave, FaTimes } from 'react-icons/fa';
+import { FiEdit3, FiSave, FiUser, FiBookOpen, FiShield, FiFileText, FiDownload } from 'react-icons/fi';
 
 const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
 
-  // Mock User Data
+  // MOCK USER DATA (Aligned with requested structure)
   const [userData, setUserData] = useState({
-    firstName: "Aditya",
-    lastName: "Sharma",
-    dob: "2002-08-15",
+    // Personal
+    firstName: "Harsh",
+    lastName: "Patel",
+    enrollmentNo: "22CE001",
+    dob: "2003-05-12",
     gender: "Male",
-    email: "aditya.sharma@adani.edu.in",
+    email: "harsh.patel@university.edu",
     phone: "+91 98765 43210",
-    address: "B-402, Titanium City Centre",
-    city: "Ahmedabad",
-    state: "Gujarat",
-    zip: "380015",
-    rollNo: "AU210045",
-    course: "B.Tech (CSE)",
-    semester: "6th",
-    cgpa: "8.9"
+    address: "B-402, Titanium City Centre, Ahmedabad, Gujarat",
+    // Academic
+    course: "B.Tech Computer Engineering",
+    department: "Computer Science",
+    semester: "6",
+    batch: "2022-2026",
+    section: "A",
+    // Guardian
+    fatherName: "Rajesh Patel",
+    motherName: "Smita Patel",
+    emergencyContact: "+91 99887 77665",
   });
+
+  const documents = [
+    { id: 'doc1', name: 'Aadhar Card', type: 'PDF' },
+    { id: 'doc2', name: '12th Marksheet', type: 'PDF' },
+    { id: 'doc3', name: 'Bonafide Certificate', type: 'PDF' },
+    { id: 'doc4', name: 'University ID Card', type: 'Image' },
+  ];
 
   // Handle Input Change
   const handleChange = (e) => {
@@ -30,18 +42,28 @@ const Profile = () => {
     setUserData({ ...userData, [name]: value });
   };
 
-  // Helper Component for Fields to reduce repetition
-  const InfoField = ({ label, name, value, type = "text" }) => (
-    <div className="info-group">
+  // Helper Component for Fields
+  const InfoField = ({ label, name, value, type = "text", fullWidth = false }) => (
+    <div className="info-group" style={fullWidth ? { gridColumn: '1 / -1' } : {}}>
       <span className="label">{label}</span>
       {isEditing ? (
-        <input 
-          type={type} 
-          name={name} 
-          value={value} 
-          onChange={handleChange} 
-          className="form-input"
-        />
+        type === "textarea" ? (
+          <textarea 
+            name={name} 
+            value={value} 
+            onChange={handleChange} 
+            className="form-input" 
+            rows="2"
+          />
+        ) : (
+          <input 
+            type={type} 
+            name={name} 
+            value={value} 
+            onChange={handleChange} 
+            className="form-input"
+          />
+        )
       ) : (
         <span className="value">{value}</span>
       )}
@@ -51,12 +73,14 @@ const Profile = () => {
   return (
     <div className="profile-container">
       
-      {/* 🟦 1. PROFILE HEADER CARD */}
+      {/* 1. PROFILE HEADER CARD */}
       <div className="profile-header-card">
-        <div className="profile-avatar-large">AS</div>
+        <div className="profile-avatar-large">
+          {userData.firstName[0]}{userData.lastName[0]}
+        </div>
         <div className="header-info">
           <h2>{userData.firstName} {userData.lastName}</h2>
-          <div className="id-text">Student ID: {userData.rollNo}</div>
+          <div className="id-text">Enrollment No. {userData.enrollmentNo}</div>
           <div className="status-badge">Active Student</div>
         </div>
         
@@ -64,7 +88,7 @@ const Profile = () => {
           className={`edit-toggle-btn ${isEditing ? 'active' : ''}`} 
           onClick={() => setIsEditing(!isEditing)}
         >
-          {isEditing ? <><FaSave /> Save Profile</> : <><FaPen /> Edit Profile</>}
+          {isEditing ? <><FiSave /> Save Profile</> : <><FiEdit3 /> Edit Profile</>}
         </button>
       </div>
 
@@ -73,84 +97,78 @@ const Profile = () => {
         {/* LEFT COLUMN */}
         <div className="left-column">
           
-          {/* 🟩 2. PERSONAL INFORMATION */}
+          {/* PERSONAL INFORMATION */}
           <div className="section-card">
-            <h3 className="section-title">Personal Information</h3>
+            <h3 className="section-title"><FiUser /> Personal Information</h3>
             <div className="info-grid">
               <InfoField label="First Name" name="firstName" value={userData.firstName} />
               <InfoField label="Last Name" name="lastName" value={userData.lastName} />
               <InfoField label="Date of Birth" name="dob" value={userData.dob} type="date" />
               <InfoField label="Gender" name="gender" value={userData.gender} />
+              <InfoField label="Email Address" name="email" value={userData.email} />
+              <InfoField label="Phone Number" name="phone" value={userData.phone} />
+              <InfoField label="Residential Address" name="address" value={userData.address} type="textarea" fullWidth={true} />
             </div>
           </div>
 
-          {/* 🟨 3. CONTACT INFORMATION */}
+          {/* GUARDIAN DETAILS */}
           <div className="section-card">
-            <h3 className="section-title">Contact Details</h3>
+            <h3 className="section-title"><FiShield /> Guardian Details</h3>
             <div className="info-grid">
-              <InfoField label="Email Address" name="email" value={userData.email} />
-              <InfoField label="Phone Number" name="phone" value={userData.phone} />
-              <div className="info-group" style={{ gridColumn: 'span 2' }}>
-                <span className="label">Address</span>
-                {isEditing ? (
-                  <textarea 
-                    name="address" 
-                    value={userData.address} 
-                    onChange={handleChange} 
-                    className="form-input" 
-                    rows="2"
-                  />
-                ) : (
-                  <span className="value">{userData.address}</span>
-                )}
-              </div>
-              <InfoField label="City" name="city" value={userData.city} />
-              <InfoField label="State" name="state" value={userData.state} />
+              <InfoField label="Father's Name" name="fatherName" value={userData.fatherName} />
+              <InfoField label="Mother's Name" name="motherName" value={userData.motherName} />
+              <InfoField label="Emergency Contact" name="emergencyContact" value={userData.emergencyContact} />
             </div>
           </div>
+
         </div>
 
         {/* RIGHT COLUMN */}
         <div className="right-column">
           
-          {/* 🟦 4. ACADEMIC INFORMATION (Read Only usually) */}
+          {/* ACADEMIC INFORMATION */}
           <div className="section-card">
-            <h3 className="section-title">Academic Information</h3>
+            <h3 className="section-title"><FiBookOpen /> Academic Info</h3>
             <div className="info-group" style={{ marginBottom: '16px' }}>
               <span className="label">Course</span>
               <span className="value">{userData.course}</span>
             </div>
             <div className="info-group" style={{ marginBottom: '16px' }}>
-              <span className="label">Current Semester</span>
-              <span className="value">{userData.semester} Semester</span>
+              <span className="label">Department</span>
+              <span className="value">{userData.department}</span>
             </div>
             <div className="info-group" style={{ marginBottom: '16px' }}>
-              <span className="label">CGPA</span>
-              <span className="value" style={{ color: '#0EA5E9', fontSize: '1.2rem' }}>{userData.cgpa}</span>
+              <span className="label">Batch</span>
+              <span className="value">{userData.batch}</span>
             </div>
-            <div className="info-group">
-              <span className="label">Admission Year</span>
-              <span className="value">2021</span>
+            <div className="info-grid" style={{ gap: '16px' }}>
+              <div className="info-group">
+                <span className="label">Semester</span>
+                <span className="value" style={{ color: 'var(--prof-accent-teal)', fontSize: '1.2rem' }}>{userData.semester}</span>
+              </div>
+              <div className="info-group">
+                <span className="label">Section</span>
+                <span className="value">{userData.section}</span>
+              </div>
             </div>
           </div>
 
-          {/* 🔐 5. SECURITY SETTINGS */}
+          {/* DOCUMENTS */}
           <div className="section-card">
-            <h3 className="section-title">Security</h3>
-            <button style={{ 
-              width: '100%', padding: '10px', background: '#F1F5F9', 
-              border: 'none', borderRadius: '6px', color: '#475569', 
-              fontWeight: '600', cursor: 'pointer', marginBottom: '10px' 
-            }}>
-              Change Password
-            </button>
-            <button style={{ 
-              width: '100%', padding: '10px', background: '#F1F5F9', 
-              border: 'none', borderRadius: '6px', color: '#475569', 
-              fontWeight: '600', cursor: 'pointer' 
-            }}>
-              Login Activity
-            </button>
+            <h3 className="section-title"><FiFileText /> Documents</h3>
+            <div className="documents-grid">
+              {documents.map(doc => (
+                <div key={doc.id} className="document-item">
+                  <div className="doc-info">
+                    <FiFileText className="doc-icon" />
+                    <span>{doc.name}</span>
+                  </div>
+                  <button className="btn-download-doc" onClick={() => alert(`Downloading ${doc.name}...`)}>
+                    <FiDownload /> Download
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
 
         </div>

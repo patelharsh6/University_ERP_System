@@ -1,476 +1,166 @@
 // src/pages/student/Attendance.jsx
 import React, { useState } from 'react';
 import './Attendance.css';
-import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  PieChart, Pie, Cell 
-} from 'recharts';
-import { FaInfoCircle, FaCalendarAlt, FaCheck, FaTimes, FaUserCheck, FaUserTimes, FaExchangeAlt } from 'react-icons/fa';
-
-const initialRoster = [
-  { id: 1, roll: "AU210001", name: "Harsh Patel", prevPct: 92, status: "Present" },
-  { id: 2, roll: "AU210002", name: "Aditya Sharma", prevPct: 82, status: "Present" },
-  { id: 3, roll: "AU210003", name: "Pooja Mehta", prevPct: 71, status: "Present" },
-  { id: 4, roll: "AU210004", name: "Rahul Verma", prevPct: 58, status: "Absent" },
-  { id: 5, roll: "AU210005", name: "Sneha Reddy", prevPct: 96, status: "Present" },
-  { id: 6, roll: "AU210006", name: "Amit Gupta", prevPct: 88, status: "Present" },
-  { id: 7, roll: "AU210007", name: "Vikram Rathore", prevPct: 76, status: "Present" },
-  { id: 8, roll: "AU210008", name: "Neha Joshi", prevPct: 91, status: "Present" },
-  { id: 9, roll: "AU210009", name: "Karan Johar", prevPct: 45, status: "Absent" },
-  { id: 10, roll: "AU210010", name: "Deepika Padukone", prevPct: 94, status: "Present" },
-];
-
-// Mock Heatmap values representing 30 days
-const mockHeatmapData = Array.from({ length: 30 }, (_, i) => {
-  const day = i + 1;
-  // Random attendance percentages for each day
-  let rate = 95;
-  if (day % 7 === 0) rate = 55; // Red
-  else if (day % 5 === 0) rate = 72; // Orange
-  else if (day % 3 === 0) rate = 88; // Light Green
-  return { day, rate };
-});
+import { FiFilter } from 'react-icons/fi';
 
 const Attendance = () => {
-  // Mode toggle: 'student' or 'faculty'
-  const [viewMode, setViewMode] = useState('student');
-  const [activeTab, setActiveTab] = useState('subject-wise');
+  const [semester, setSemester] = useState("6");
+  const [month, setMonth] = useState("March");
 
-  // Faculty View states
-  const [selectedDate, setSelectedDate] = useState("2026-06-08");
-  const [selectedSubject, setSelectedSubject] = useState("CS601 - Advanced Web Tech");
-  const [roster, setRoster] = useState(initialRoster);
-  const [selectedStudents, setSelectedStudents] = useState([]);
+  // Mock data matching the specific user requirements
+  const overallStats = {
+    present: 45,
+    absent: 5,
+    leave: 2,
+    percentage: 90
+  };
 
-  // Calculate live summary counters for faculty view
-  const facultyPresentCount = roster.filter(s => s.status === 'Present').length;
-  const facultyAbsentCount = roster.filter(s => s.status === 'Absent').length;
-  const facultyTotalCount = roster.length;
-
-  // --- STUDENT MOCK DATA ---
-  const studentSummary = { overall: 82, totalClasses: 120, present: 98, absent: 22 };
-  
-  const subjectData = [
-    { subject: 'Data Structures', attended: 28, total: 30, pct: 93, status: 'Good' },
-    { subject: 'DBMS', attended: 24, total: 30, pct: 80, status: 'Good' },
-    { subject: 'Operating Sys', attended: 18, total: 30, pct: 60, status: 'Warning' },
-    { subject: 'Mathematics', attended: 12, total: 30, pct: 40, status: 'Critical' },
+  const subjectWise = [
+    { id: 1, name: 'Database Management Systems (DBMS)', pct: 95 },
+    { id: 2, name: 'Operating Systems (OS)', pct: 85 },
+    { id: 3, name: 'Artificial Intelligence (AI)', pct: 92 },
+    { id: 4, name: 'Computer Networks (CN)', pct: 88 },
   ];
-  
-  const pieData = [
-    { name: 'Present', value: 98, color: '#10B981' }, 
-    { name: 'Absent', value: 22, color: '#EF4444' }, 
+
+  // Mock Calendar Heatmap for a month (e.g., 31 days)
+  // 0: empty (offset), 1: present, 2: absent, 3: leave, 4: future/no class
+  const calendarData = [
+    { day: '', status: 0 }, { day: '', status: 0 }, { day: '', status: 0 }, // Offset
+    { day: 1, status: 1 }, { day: 2, status: 1 }, { day: 3, status: 2 }, { day: 4, status: 4 },
+    { day: 5, status: 1 }, { day: 6, status: 1 }, { day: 7, status: 1 }, { day: 8, status: 1 }, { day: 9, status: 1 }, { day: 10, status: 4 }, { day: 11, status: 4 },
+    { day: 12, status: 1 }, { day: 13, status: 1 }, { day: 14, status: 3 }, { day: 15, status: 3 }, { day: 16, status: 1 }, { day: 17, status: 4 }, { day: 18, status: 4 },
+    { day: 19, status: 1 }, { day: 20, status: 1 }, { day: 21, status: 1 }, { day: 22, status: 2 }, { day: 23, status: 1 }, { day: 24, status: 4 }, { day: 25, status: 4 },
+    { day: 26, status: 1 }, { day: 27, status: 1 }, { day: 28, status: 1 }, { day: 29, status: 1 }, { day: 30, status: 1 }, { day: 31, status: 4 }
   ];
 
   const getStatusClass = (status) => {
-    if (status === 'Good') return 'status-good';
-    if (status === 'Warning') return 'status-warning';
-    return 'status-critical';
-  };
-
-  // --- FACULTY MARK HANDLERS ---
-  const handleToggleStatus = (id, nextStatus) => {
-    setRoster(prev => prev.map(s => s.id === id ? { ...s, status: nextStatus } : s));
-  };
-
-  const handleBulkMark = (status) => {
-    if (selectedStudents.length === 0) {
-      // Mark everyone if none selected
-      setRoster(prev => prev.map(s => ({ ...s, status })));
-    } else {
-      // Mark selected students
-      setRoster(prev => prev.map(s => selectedStudents.includes(s.id) ? { ...s, status } : s));
-      setSelectedStudents([]);
+    switch(status) {
+      case 1: return 'present';
+      case 2: return 'absent';
+      case 3: return 'leave';
+      case 0: return 'empty';
+      default: return 'none';
     }
   };
 
-  const handleSelectRow = (id) => {
-    setSelectedStudents(prev => 
-      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
-    );
-  };
-
-  const handleSelectAll = (e) => {
-    if (e.target.checked) {
-      setSelectedStudents(roster.map(s => s.id));
-    } else {
-      setSelectedStudents([]);
-    }
+  const getProgressFill = (pct) => {
+    if (pct >= 90) return 'fill-good';
+    if (pct >= 75) return 'fill-warn';
+    return 'fill-bad';
   };
 
   return (
     <div className="attendance-container">
       
-      {/* HEADER WITH VIEW MODE TOGGLER */}
-      <div className="attendance-header-panel">
-        <div>
-          <h2>Attendance Module 📅</h2>
-          <p>
-            {viewMode === 'student' 
-              ? "Track your semester attendance averages and logs" 
-              : "Manage student roster attendance and inspect metrics"}
-          </p>
+      {/* HEADER & FILTERS */}
+      <div className="attendance-header">
+        <h1>Attendance Tracker</h1>
+        <div className="attendance-filters">
+          <select 
+            className="att-select"
+            value={semester}
+            onChange={(e) => setSemester(e.target.value)}
+          >
+            <option value="5">Semester 5</option>
+            <option value="6">Semester 6</option>
+          </select>
+          <select 
+            className="att-select"
+            value={month}
+            onChange={(e) => setMonth(e.target.value)}
+          >
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+          </select>
         </div>
-        
-        <button className="view-mode-toggle-btn" onClick={() => setViewMode(viewMode === 'student' ? 'faculty' : 'student')}>
-          <FaExchangeAlt /> Switch to {viewMode === 'student' ? "Faculty Panel" : "Student Panel"}
-        </button>
       </div>
 
-      {/* ======================================================== */}
-      {/* 👨‍🏫 FACULTY VIEW: ATTENDANCE MARKER PANEL */}
-      {/* ======================================================== */}
-      {viewMode === 'faculty' && (
-        <div className="faculty-attendance-view animate-fade">
-          
-          {/* CONTROL BAR */}
-          <div className="faculty-filters-bar">
-            <div className="faculty-filter-group">
-              <label>Date:</label>
-              <input 
-                type="date" 
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="fac-date-input"
-              />
-            </div>
-            
-            <div className="faculty-filter-group">
-              <label>Subject:</label>
-              <select value={selectedSubject} onChange={(e) => setSelectedSubject(e.target.value)} className="fac-subject-select">
-                <option value="CS601 - Advanced Web Tech">CS601 - Advanced Web Tech</option>
-                <option value="CS602 - Cloud Computing">CS602 - Cloud Computing</option>
-                <option value="CS603 - Data Analytics">CS603 - Data Analytics</option>
-              </select>
-            </div>
-          </div>
-
-          {/* CLASS SUMMARY COUNTERS */}
-          <div className="faculty-stats-summary">
-            <div className="summary-card stat-total">
-              <span className="summary-title">Total Roster</span>
-              <div className="summary-value color-blue">{facultyTotalCount}</div>
-            </div>
-            
-            <div className="summary-card stat-present">
-              <span className="summary-title">Present Count</span>
-              <div className="summary-value color-green">{facultyPresentCount}</div>
-              <span className="summary-sub">Avg Rate: {Math.round((facultyPresentCount / facultyTotalCount) * 100)}%</span>
-            </div>
-
-            <div className="summary-card stat-absent">
-              <span className="summary-title">Absent Count</span>
-              <div className="summary-value color-red">{facultyAbsentCount}</div>
-              <span className="summary-sub">Absent Rate: {Math.round((facultyAbsentCount / facultyTotalCount) * 100)}%</span>
-            </div>
-          </div>
-
-          {/* ATTENDANCE HEATMAP (Last 30 Days) */}
-          <div className="dashboard-card heatmap-card-section">
-            <div className="heatmap-info-header">
-              <h3>Class Attendance Heatmap</h3>
-              <p>Visual map of daily attendance rates over the last 30 calendar days</p>
-            </div>
-            
-            <div className="heatmap-grid-layout">
-              {mockHeatmapData.map((data) => {
-                let colorClass = "rate-high";
-                if (data.rate < 60) colorClass = "rate-critical";
-                else if (data.rate < 75) colorClass = "rate-warning";
-                else if (data.rate < 90) colorClass = "rate-mid";
-                return (
-                  <div 
-                    key={data.day} 
-                    className={`heatmap-cell-node ${colorClass}`}
-                    title={`Day ${data.day}: Attendance ${data.rate}%`}
-                  >
-                    <span className="cell-number">{data.day}</span>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="heatmap-legend-line">
-              <span className="legend-text">Less</span>
-              <div className="legend-cell rate-critical" title="<60% Attendance" />
-              <div className="legend-cell rate-warning" title="60%-74% Attendance" />
-              <div className="legend-cell rate-mid" title="75%-89% Attendance" />
-              <div className="legend-cell rate-high" title="90%+ Attendance" />
-              <span className="legend-text">More</span>
-              <span className="legend-average-label">Average Score: <strong>92%</strong></span>
-            </div>
-          </div>
-
-          {/* STUDENT ROSTER LISTING */}
-          <div className="dashboard-card roster-management-card">
-            <div className="roster-header-bar">
-              <h3>Student Attendance Roster</h3>
-              
-              <div className="bulk-mark-btn-group">
-                <button type="button" className="bulk-btn present" onClick={() => handleBulkMark("Present")}>
-                  <FaUserCheck /> Mark Present
-                </button>
-                <button type="button" className="bulk-btn absent" onClick={() => handleBulkMark("Absent")}>
-                  <FaUserTimes /> Mark Absent
-                </button>
-              </div>
-            </div>
-
-            <div className="roster-table-wrapper">
-              <table className="roster-data-table">
-                <thead>
-                  <tr>
-                    <th style={{ width: '40px', textAlign: 'center' }}>
-                      <input 
-                        type="checkbox" 
-                        onChange={handleSelectAll} 
-                        checked={selectedStudents.length === roster.length && roster.length > 0}
-                      />
-                    </th>
-                    <th>Roll ID</th>
-                    <th>Full Name</th>
-                    <th style={{ textAlign: 'center' }}>Prior Rate</th>
-                    <th style={{ textAlign: 'center' }}>Mark Attendance</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {roster.map((student) => (
-                    <tr key={student.id} className={student.status === 'Absent' ? 'roster-row-absent' : ''}>
-                      <td style={{ textAlign: 'center' }}>
-                        <input 
-                          type="checkbox" 
-                          checked={selectedStudents.includes(student.id)} 
-                          onChange={() => handleSelectRow(student.id)}
-                        />
-                      </td>
-                      <td style={{ fontWeight: '600', color: 'var(--text-muted)' }}>{student.roll}</td>
-                      <td style={{ fontWeight: '600' }}>{student.name}</td>
-                      <td style={{ textAlign: 'center', fontWeight: '700' }}>
-                        <span style={{ color: student.prevPct < 75 ? 'var(--danger)' : 'var(--success)' }}>
-                          {student.prevPct}%
-                        </span>
-                      </td>
-                      <td style={{ textAlign: 'center' }}>
-                        <div className="toggle-badge-group">
-                          <button 
-                            type="button" 
-                            className={`toggle-state-btn present ${student.status === 'Present' ? 'active' : ''}`}
-                            onClick={() => handleToggleStatus(student.id, "Present")}
-                          >
-                            <FaCheck size={10} /> Present
-                          </button>
-                          
-                          <button 
-                            type="button" 
-                            className={`toggle-state-btn absent ${student.status === 'Absent' ? 'active' : ''}`}
-                            onClick={() => handleToggleStatus(student.id, "Absent")}
-                          >
-                            <FaTimes size={10} /> Absent
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
+      {/* OVERALL STATS */}
+      <div className="att-stats-grid">
+        <div className="att-stat-card stat-total">
+          <span className="att-stat-title">Overall Percentage</span>
+          <span className="att-stat-value">{overallStats.percentage}%</span>
         </div>
-      )}
+        <div className="att-stat-card stat-present">
+          <span className="att-stat-title">Present Days</span>
+          <span className="att-stat-value">{overallStats.present}</span>
+        </div>
+        <div className="att-stat-card stat-absent">
+          <span className="att-stat-title">Absent Days</span>
+          <span className="att-stat-value">{overallStats.absent}</span>
+        </div>
+        <div className="att-stat-card stat-leave">
+          <span className="att-stat-title">Leave Days</span>
+          <span className="att-stat-value">{overallStats.leave}</span>
+        </div>
+      </div>
 
-      {/* ======================================================== */}
-      {/* 🎓 STUDENT VIEW: ANALYTICS & LOGS PANEL */}
-      {/* ======================================================== */}
-      {viewMode === 'student' && (
-        <div className="student-attendance-view animate-fade">
-          
-          {/* SUMMARY CARDS */}
-          <div className="attendance-summary">
-            <div className="summary-card">
-              <div className="summary-title">Overall Attendance</div>
-              <div>
-                <div className={`summary-value ${studentSummary.overall < 75 ? 'color-red' : 'color-green'}`}>
-                  {studentSummary.overall}%
-                </div>
-                <div className="progress-track">
-                  <div 
-                    className={`progress-fill ${studentSummary.overall < 75 ? 'bg-red' : 'bg-green'}`} 
-                    style={{ width: `${studentSummary.overall}%` }}
-                  ></div>
-                </div>
-              </div>
-            </div>
-            <div className="summary-card">
-              <div className="summary-title">Total Classes</div>
-              <div className="summary-value color-blue">{studentSummary.totalClasses}</div>
-            </div>
-            <div className="summary-card">
-              <div className="summary-title">Present</div>
-              <div className="summary-value color-green">{studentSummary.present}</div>
-            </div>
-            <div className="summary-card">
-              <div className="summary-title">Absent</div>
-              <div className="summary-value color-red">{studentSummary.absent}</div>
-            </div>
-          </div>
-
-          {/* CHARTS GRID */}
-          <div className="charts-grid">
-            <div className="chart-card">
-              <div className="chart-header">
-                <h3>Subject-wise Attendance</h3>
-                <p style={{color:'var(--text-muted)', fontSize:'0.9rem'}}>Performance across all courses</p>
-              </div>
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={subjectData}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-light)" />
-                  <XAxis dataKey="subject" axisLine={false} tickLine={false} tick={{fill:'var(--text-muted)', fontSize:12}} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{fill:'var(--text-muted)'}} />
-                  <Tooltip cursor={{fill: 'var(--border-light)'}} contentStyle={{ background: 'var(--card-bg)', border: '1px solid var(--border-light)', borderRadius: '8px', color: 'var(--text-primary)' }} />
-                  <Bar dataKey="pct" fill="#2563EB" radius={[4, 4, 0, 0]} barSize={40} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="chart-card">
-              <div className="chart-header">
-                <h3>Overall Split</h3>
-                <p style={{color:'var(--text-muted)', fontSize:'0.9rem'}}>Present vs Absent Ratio</p>
-              </div>
-              <div style={{ position: 'relative', height: '250px' }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie data={pieData} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                      {pieData.map((entry, index) => (<Cell key={`cell-${index}`} fill={entry.color} />))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
-                  <div style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--text-primary)' }}>{studentSummary.overall}%</div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Average</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* TABS SELECTOR */}
-          <div style={{ paddingBottom: '40px' }}>
-            <div className="attendance-filter-tabs">
-              {['subject-wise', 'log', 'monthly', 'overall'].map(tab => (
-                <button 
-                  key={tab}
-                  className={`filter-tab-btn ${activeTab === tab ? 'active' : ''}`}
-                  onClick={() => setActiveTab(tab)}
-                  style={{ textTransform: 'capitalize' }}
-                >
-                  {tab.replace('-', ' ')}
-                </button>
-              ))}
-            </div>
-
-            {/* CONTENT AREA */}
-            <div className="table-card" style={{ borderTop: 'none', borderRadius: '0 0 16px 16px', backgroundColor: 'var(--card-bg)' }}>
-              
-              {/* SUBJECT-WISE TABLE */}
-              {activeTab === 'subject-wise' && (
-                <table className="styled-table">
-                  <thead>
-                    <tr>
-                      <th>Subject</th>
-                      <th>Total Classes</th>
-                      <th>Attended</th>
-                      <th>Percentage</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {subjectData.map((row, index) => (
-                      <tr key={index}>
-                        <td style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{row.subject}</td>
-                        <td>{row.total}</td>
-                        <td>{row.attended}</td>
-                        <td>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <span style={{ fontWeight: '700', width: '30px', color: 'var(--text-primary)' }}>{row.pct}%</span>
-                            <div className="progress-track" style={{ width: '80px', marginTop: 0, height: '6px', backgroundColor: 'var(--border-light)' }}>
-                              <div 
-                                className="progress-fill" 
-                                style={{ 
-                                  width: `${row.pct}%`, 
-                                  background: row.pct < 60 ? 'var(--danger)' : (row.pct < 75 ? 'var(--warning)' : 'var(--success)') 
-                                }}
-                              ></div>
-                            </div>
-                          </div>
-                        </td>
-                        <td>
-                          <span className={`status-badge ${getStatusClass(row.status)}`}>
-                            {row.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-
-              {/* LOG VIEW */}
-              {activeTab === 'log' && (
-                <div className="tab-content-placeholder">
-                  <div className="filter-controls-container">
-                    <div className="radio-group">
-                      <span className="radio-title">Show :</span>
-                      <label className="radio-label">
-                        <input type="radio" name="showFilter" defaultChecked /> Absent
-                      </label>
-                      <label className="radio-label">
-                        <input type="radio" name="showFilter" /> Present
-                      </label>
-                      <label className="radio-label">
-                        <input type="radio" name="showFilter" /> Both
-                      </label>
+      {/* MAIN CONTENT */}
+      <div className="att-main-grid">
+        
+        {/* Subject Wise List */}
+        <div className="att-card">
+          <h2 className="att-card-title">Subject Wise Attendance</h2>
+          <table className="att-subject-table">
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th style={{ width: '80px', textAlign: 'right' }}>%</th>
+              </tr>
+            </thead>
+            <tbody>
+              {subjectWise.map(subject => (
+                <tr key={subject.id}>
+                  <td>
+                    <div className="subject-name-cell">{subject.name}</div>
+                    <div className="att-progress-bar">
+                      <div 
+                        className={`att-progress-fill ${getProgressFill(subject.pct)}`}
+                        style={{ width: `${subject.pct}%` }}
+                      ></div>
                     </div>
+                  </td>
+                  <td style={{ textAlign: 'right', fontWeight: '800' }}>
+                    {subject.pct}%
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-                    <select className="subject-select" style={{ backgroundColor: 'var(--card-bg)', color: 'var(--text-primary)', borderColor: 'var(--border-light)' }}>
-                      <option>CS601 - Advanced Web Tech</option>
-                      <option>CS101 - Data Structures</option>
-                      <option>CS102 - DBMS</option>
-                    </select>
-                  </div>
+        {/* Calendar Heatmap */}
+        <div className="att-card">
+          <h2 className="att-card-title">Calendar View ({month})</h2>
+          
+          <div className="calendar-grid">
+            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
+              <div key={day} className="calendar-day-header">{day}</div>
+            ))}
+            
+            {calendarData.map((d, i) => (
+              <div key={i} className={`calendar-cell ${getStatusClass(d.status)}`}>
+                {d.day}
+              </div>
+            ))}
+          </div>
 
-                  <div className="info-box-blue" style={{ backgroundColor: 'rgba(37, 99, 235, 0.05)', color: 'var(--primary)', borderColor: 'rgba(37, 99, 235, 0.15)' }}>
-                    <FaInfoCircle size={20} />
-                    <span>No log found!</span>
-                  </div>
-                </div>
-              )}
-
-              {/* MONTHLY VIEW */}
-              {activeTab === 'monthly' && (
-                <div className="tab-content-placeholder">
-                   <div className="info-box-blue" style={{ backgroundColor: 'rgba(37, 99, 235, 0.05)', color: 'var(--primary)', borderColor: 'rgba(37, 99, 235, 0.15)' }}>
-                    <FaInfoCircle size={20} />
-                    <span>Select a month to view the summary.</span>
-                  </div>
-                </div>
-              )}
-
-              {/* OVERALL VIEW */}
-              {activeTab === 'overall' && (
-                <div className="tab-content-placeholder">
-                   <div className="info-box-blue" style={{ backgroundColor: 'rgba(37, 99, 235, 0.05)', color: 'var(--primary)', borderColor: 'rgba(37, 99, 235, 0.15)' }}>
-                    <FaInfoCircle size={20} />
-                    <span>Detailed overall report generation.</span>
-                  </div>
-                </div>
-              )}
-
+          <div className="calendar-legend">
+            <div className="legend-item">
+              <div className="legend-dot present"></div> Present
+            </div>
+            <div className="legend-item">
+              <div className="legend-dot absent"></div> Absent
+            </div>
+            <div className="legend-item">
+              <div className="legend-dot leave"></div> Leave
             </div>
           </div>
 
         </div>
-      )}
+
+      </div>
 
     </div>
   );

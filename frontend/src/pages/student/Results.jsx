@@ -5,12 +5,12 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar, Cell
 } from 'recharts';
-import { FaFilePdf, FaPrint, FaTrophy, FaChartLine, FaGraduationCap } from 'react-icons/fa';
+import { FiFileText, FiPrinter, FiAward, FiTrendingUp, FiBookOpen } from 'react-icons/fi';
 
 const Results = () => {
   const [selectedSem, setSelectedSem] = useState(6);
 
-  // --- MOCK DATA: SGPA TREND (For Line Graph) ---
+  // --- MOCK DATA ---
   const sgpaTrend = [
     { semester: 'Sem 1', sgpa: 7.8 },
     { semester: 'Sem 2', sgpa: 8.1 },
@@ -20,20 +20,19 @@ const Results = () => {
     { semester: 'Sem 6', sgpa: 8.8 },
   ];
 
-  // --- MOCK DATA: SUBJECT RESULTS (For Table) ---
   const resultsData = [
-    { code: "CS601", subject: "Advanced Web Tech", score: 86, internal: 28, external: 58, total: 86, grade: "A", credits: 4, result: "PASS", color: "#2563EB" },
-    { code: "CS602", subject: "Cloud Computing", score: 75, internal: 25, external: 50, total: 75, grade: "B", credits: 4, result: "PASS", color: "#06B6D4" },
-    { code: "CS603", subject: "Data Analytics", score: 94, internal: 29, external: 65, total: 94, grade: "A+", credits: 4, result: "PASS", color: "#10B981" },
-    { code: "CS604", subject: "Software Engineering", score: 32, internal: 12, external: 20, total: 32, grade: "F", credits: 3, result: "FAIL", color: "#EF4444" },
-    { code: "CS605", subject: "Project Phase I", score: 93, internal: 48, external: 45, total: 93, grade: "A+", credits: 6, result: "PASS", color: "#F59E0B" },
+    { code: "CE601", subject: "Database Management Systems", internal: 42, external: 43, total: 85, grade: "A", result: "PASS", color: "#3b82f6" },
+    { code: "CE602", subject: "Artificial Intelligence", internal: 38, external: 44, total: 82, grade: "A", result: "PASS", color: "#0d9488" },
+    { code: "CE603", subject: "Computer Networks", internal: 45, external: 45, total: 90, grade: "A+", result: "PASS", color: "#059669" },
+    { code: "CE604", subject: "Software Engineering", internal: 12, external: 20, total: 32, grade: "F", result: "FAIL", color: "#dc2626" },
+    { code: "CE605", subject: "Web Technologies Lab", internal: 48, external: 45, total: 93, grade: "A+", result: "PASS", color: "#d97706" },
   ];
 
   const currentSummary = {
     sgpa: 8.72,
     cgpa: 8.6,
     totalCredits: 21,
-    status: "FAIL" // FAIL because CS604 has F
+    status: "FAIL" // FAIL because CE604 has F
   };
 
   const getGradeClass = (grade) => {
@@ -46,9 +45,9 @@ const Results = () => {
   return (
     <div className="results-container">
       
-      {/* HEADER & SEMESTER SELECT */}
+      {/* HEADER & SELECT */}
       <div className="results-header">
-        <h2><FaTrophy style={{ color: '#F59E0B' }} /> Examination Results</h2>
+        <h1><FiAward style={{ color: 'var(--res-warning)' }} /> Examination Results</h1>
         <select 
           className="semester-select" 
           value={selectedSem} 
@@ -60,11 +59,11 @@ const Results = () => {
         </select>
       </div>
 
-      {/* RATING SUMMARY ROW */}
+      {/* METRICS PANEL */}
       <div className="results-metrics-panel">
         
-        {/* GPA/CGPA CIRCULAR SCORE CARD */}
-        <div className="dashboard-card cgpa-circular-score-card">
+        {/* CGPA CIRCULAR CARD */}
+        <div className="res-dashboard-card cgpa-circular-score-card">
           <div className="circular-progress-wrapper">
             <div className="progress-ring-circle">
               <div className="circle-inner-value">
@@ -79,50 +78,43 @@ const Results = () => {
           </div>
         </div>
 
-        {/* DETAILS INFO MINI CARDS */}
+        {/* MINI METRICS */}
         <div className="mini-cards-column">
-          <div className="dashboard-card mini-metric-card">
+          <div className="res-dashboard-card mini-metric-card">
             <div className="mini-label">Current Sem SGPA</div>
-            <div className="mini-value" style={{ color: 'var(--primary)' }}>{currentSummary.sgpa}</div>
+            <div className="mini-value" style={{ color: 'var(--res-accent)' }}>{currentSummary.sgpa}</div>
           </div>
-          <div className="dashboard-card mini-metric-card">
+          <div className="res-dashboard-card mini-metric-card">
             <div className="mini-label">Total Semester Credits</div>
-            <div className="mini-value" style={{ color: 'var(--text-primary)' }}>{currentSummary.totalCredits}</div>
+            <div className="mini-value">{currentSummary.totalCredits}</div>
           </div>
-          <div className="dashboard-card mini-metric-card">
+          <div className="res-dashboard-card mini-metric-card">
             <div className="mini-label">Overall Evaluation</div>
-            <span className={`badge-pill ${currentSummary.status === 'PASS' ? 'success' : 'danger'}`} style={{ width: 'fit-content', fontSize: '0.85rem' }}>
+            <span className={`badge-pill ${currentSummary.status === 'PASS' ? 'success' : 'danger'}`}>
               {currentSummary.status}
             </span>
           </div>
         </div>
-
       </div>
 
-      {/* CHARTS ROW (Horizontal Bar + Line Chart) */}
+      {/* CHARTS */}
       <div className="results-charts-row">
         
-        {/* Chart 1: Subject Performance Horizontal Bar */}
-        <div className="dashboard-card chart-card-box">
+        <div className="res-dashboard-card chart-card-box">
           <div className="chart-info-header">
-            <h3><FaGraduationCap /> Subject Performance</h3>
-            <p>Evaluation scores out of 100 for current semester</p>
+            <h3><FiBookOpen /> Subject Performance</h3>
+            <p>Evaluation scores out of 100</p>
           </div>
-          
           <div style={{ height: '220px', width: '100%', marginTop: '16px' }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                layout="vertical"
-                data={resultsData}
-                margin={{ left: 10, right: 30, top: 10, bottom: 10 }}
-              >
+              <BarChart layout="vertical" data={resultsData} margin={{ left: -20, right: 10, top: 0, bottom: 0 }}>
                 <XAxis type="number" domain={[0, 100]} hide />
-                <YAxis dataKey="code" type="category" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-primary)', fontWeight: 'bold', fontSize: 12 }} />
+                <YAxis dataKey="code" type="category" axisLine={false} tickLine={false} tick={{ fill: 'var(--res-text-secondary)', fontWeight: '600', fontSize: 12 }} />
                 <Tooltip 
                   formatter={(value, name, props) => [value + "/100", props.payload.subject]}
-                  contentStyle={{ background: 'var(--card-bg)', border: '1px solid var(--border-light)', borderRadius: '8px', color: 'var(--text-primary)' }}
+                  contentStyle={{ background: 'var(--res-card-bg)', border: '1px solid var(--res-card-border)', borderRadius: '8px', color: 'var(--res-text-primary)' }}
                 />
-                <Bar dataKey="score" radius={[0, 4, 4, 0]} barSize={14}>
+                <Bar dataKey="total" radius={[0, 4, 4, 0]} barSize={14}>
                   {resultsData.map((entry, idx) => (
                     <Cell key={`cell-${idx}`} fill={entry.color} />
                   ))}
@@ -132,21 +124,19 @@ const Results = () => {
           </div>
         </div>
 
-        {/* Chart 2: Academic Trend Line */}
-        <div className="dashboard-card chart-card-box">
+        <div className="res-dashboard-card chart-card-box">
           <div className="chart-info-header">
-            <h3><FaChartLine /> Academic Trend</h3>
+            <h3><FiTrendingUp /> Academic Trend</h3>
             <p>Semester-wise SGPA trajectory</p>
           </div>
-          
           <div style={{ height: '220px', width: '100%', marginTop: '16px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={sgpaTrend}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-light)" />
-                <XAxis dataKey="semester" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 11 }} dy={10} />
-                <YAxis domain={[0, 10]} axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
-                <Tooltip contentStyle={{ background: 'var(--card-bg)', border: '1px solid var(--border-light)', borderRadius: '8px', color: 'var(--text-primary)' }} />
-                <Line type="monotone" dataKey="sgpa" stroke="var(--primary)" strokeWidth={3} dot={{ r: 5, fill: 'var(--primary)' }} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--res-card-border)" />
+                <XAxis dataKey="semester" axisLine={false} tickLine={false} tick={{ fill: 'var(--res-text-muted)', fontSize: 11 }} dy={10} />
+                <YAxis domain={[0, 10]} axisLine={false} tickLine={false} tick={{ fill: 'var(--res-text-muted)', fontSize: 11 }} />
+                <Tooltip contentStyle={{ background: 'var(--res-card-bg)', border: '1px solid var(--res-card-border)', borderRadius: '8px', color: 'var(--res-text-primary)' }} />
+                <Line type="monotone" dataKey="sgpa" stroke="var(--res-accent)" strokeWidth={3} dot={{ r: 5, fill: 'var(--res-accent)' }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -154,18 +144,18 @@ const Results = () => {
 
       </div>
 
-      {/* SUBJECT MARKS TABLE */}
-      <div className="dashboard-card marks-table-card">
+      {/* MARKS TABLE */}
+      <div className="res-dashboard-card marks-table-card">
         <h3>Detailed Grade Ledger</h3>
-        <div className="marks-table-wrapper" style={{ marginTop: '16px' }}>
+        <div style={{ overflowX: 'auto' }}>
           <table className="styled-marks-table">
             <thead>
               <tr>
                 <th>Subject Code</th>
                 <th>Subject Name</th>
                 <th className="num-col">Internal (50)</th>
-                <th className="num-col">External (100)</th>
-                <th className="num-col">Total (150)</th>
+                <th className="num-col">External (50)</th>
+                <th className="num-col">Total (100)</th>
                 <th style={{ textAlign: 'center' }}>Grade</th>
                 <th style={{ textAlign: 'center' }}>Status</th>
               </tr>
@@ -173,7 +163,7 @@ const Results = () => {
             <tbody>
               {resultsData.map((row, index) => (
                 <tr key={index} className={row.result === 'FAIL' ? 'row-fail' : ''}>
-                  <td style={{ fontWeight: '600', color: 'var(--text-muted)' }}>{row.code}</td>
+                  <td style={{ fontWeight: '600', color: 'var(--res-text-muted)' }}>{row.code}</td>
                   <td style={{ fontWeight: '600' }}>{row.subject}</td>
                   <td className="num-col">{row.internal}</td>
                   <td className="num-col">{row.external}</td>
@@ -181,7 +171,7 @@ const Results = () => {
                   <td style={{ textAlign: 'center' }}>
                     <span className={`grade-badge ${getGradeClass(row.grade)}`}>{row.grade}</span>
                   </td>
-                  <td style={{ textAlign: 'center', fontWeight: '700', color: row.result === 'PASS' ? 'var(--success)' : 'var(--danger)' }}>
+                  <td style={{ textAlign: 'center', fontWeight: '700', color: row.result === 'PASS' ? 'var(--res-success)' : 'var(--res-danger)' }}>
                     {row.result}
                   </td>
                 </tr>
@@ -193,11 +183,11 @@ const Results = () => {
 
       {/* DOWNLOAD ACTIONS */}
       <div className="result-actions">
-        <button className="btn-print" onClick={() => window.print()}>
-          <FaPrint /> Print Result
+        <button className="btn-action btn-print" onClick={() => window.print()}>
+          <FiPrinter /> Print Result
         </button>
-        <button className="btn-download-pdf">
-          <FaFilePdf /> Download Marksheet (PDF)
+        <button className="btn-action btn-download-pdf">
+          <FiFileText /> Download Marksheet
         </button>
       </div>
 
