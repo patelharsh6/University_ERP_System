@@ -1,153 +1,237 @@
 /* src/pages/student/Billing.css */
 
+:root {
+  /* Billing Page Color System — Slate & Teal */
+  --bill-bg:             #f8fafc;
+  --bill-card-bg:        #ffffff;
+  --bill-card-border:    #e2e8f0;
+  
+  --bill-text-primary:   #1e293b;
+  --bill-text-secondary: #334155;
+  --bill-text-muted:     #94a3b8;
+  
+  --bill-accent-teal:    #0d9488;
+  --bill-accent-indigo:  #6366f1;
+  --bill-accent-amber:   #f59e0b;
+  --bill-accent-rose:    #f43f5e;
+  
+  --bill-teal-hover:     #0f766e;
+  --bill-rose-hover:     #e11d48;
+  
+  /* Status Badges */
+  --badge-pending-bg:    #fffbeb;
+  --badge-pending-text:  #92400e;
+  --badge-pending-border:#fde68a;
+  
+  --badge-paid-bg:       #f0fdfa;
+  --badge-paid-text:     #065f46;
+  --badge-paid-border:   #99f6e4;
+  
+  --badge-overdue-bg:    #fff1f2;
+  --badge-overdue-text:  #9f1239;
+  --badge-overdue-border:#fecdd3;
+}
+
 .fees-container {
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 20px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--bill-text-secondary);
 }
 
 /* 1. HEADER PANEL */
+.fees-header-panel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-icon-wrapper {
+  background-color: var(--bill-accent-teal);
+  color: #ffffff;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
+}
+
 .fees-header-panel h2 {
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: var(--text-primary);
-  margin-bottom: 4px;
+  font-family: 'Sora', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--bill-text-primary);
+  margin-bottom: 2px;
+  letter-spacing: -0.3px;
 }
 
 .fees-header-panel p {
-  color: var(--text-muted);
-  font-size: 0.95rem;
+  color: var(--bill-text-muted);
+  font-size: 13px;
+  margin: 0;
 }
 
-/* 2. SUMMARY ANALYTICS PANEL */
+/* 2. SUMMARY ANALYTICS PANEL (KPI CARDS) */
 .fees-summary-analytics {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 24px;
+  gap: 20px;
 }
 
 .fee-analytic-card {
-  padding: 24px !important;
+  background: var(--bill-card-bg);
+  border: 1px solid var(--bill-card-border);
+  border-radius: 10px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 150px;
+  height: 140px;
+  position: relative;
+  transition: all 150ms ease;
+  overflow: hidden;
 }
+
+/* Top Border System */
+.fee-analytic-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+
+.fee-analytic-card.invoiced::before { background: var(--bill-accent-teal); }
+.fee-analytic-card.collected::before { background: var(--bill-accent-indigo); }
+.fee-analytic-card.outstanding::before { background: var(--bill-accent-amber); }
+.fee-analytic-card.defaulters::before { background: var(--bill-accent-rose); }
+
+.fee-analytic-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+}
+
+.fee-analytic-card.invoiced:hover { border-color: var(--bill-accent-teal); }
+.fee-analytic-card.collected:hover { border-color: var(--bill-accent-indigo); }
+.fee-analytic-card.outstanding:hover { border-color: var(--bill-accent-amber); }
+.fee-analytic-card.defaulters:hover { border-color: var(--bill-accent-rose); }
 
 .card-top {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 8px;
 }
 
 .analytic-label {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--bill-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .analytic-icon {
-  font-size: 1.1rem;
-  padding: 8px;
-  border-radius: 8px;
+  font-size: 1.2rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .analytic-value {
-  font-size: 1.8rem;
-  font-weight: 800;
+  font-size: 22px;
+  font-weight: 700;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .analytic-sub {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  margin-top: 6px;
-  font-weight: 500;
+  font-size: 11px;
+  color: var(--bill-text-muted);
+  margin-top: 8px;
 }
 
-/* Color Classes (Analytic Icon & Values) */
-.text-blue { color: var(--primary); }
-.text-green { color: var(--success); }
-.text-red { color: var(--danger); }
-.text-purple { color: #8B5CF6; }
+/* KPI Value Colors */
+.fee-analytic-card.invoiced .analytic-value, .fee-analytic-card.invoiced .analytic-icon { color: var(--bill-accent-teal); }
+.fee-analytic-card.collected .analytic-value, .fee-analytic-card.collected .analytic-icon { color: var(--bill-accent-indigo); }
+.fee-analytic-card.outstanding .analytic-value, .fee-analytic-card.outstanding .analytic-icon { color: var(--bill-accent-amber); }
+.fee-analytic-card.defaulters .analytic-value, .fee-analytic-card.defaulters .analytic-icon { color: var(--bill-accent-rose); }
 
-.stat-blue { color: var(--primary); background: rgba(37, 99, 235, 0.08); }
-.stat-green { color: var(--success); background: rgba(16, 185, 129, 0.08); }
-.stat-red { color: var(--danger); background: rgba(239, 68, 68, 0.08); }
-.stat-purple { color: #8B5CF6; background: rgba(139, 92, 246, 0.08); }
-
-/* 3. CONTROL & TAB BAR */
+/* 3. FILTER & ACTIONS BAR */
 .fees-controls-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-  background-color: var(--card-bg);
-  padding: 12px 20px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-light);
-  box-shadow: var(--shadow-sm);
+  background-color: var(--bill-card-bg);
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--bill-card-border);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
 }
 
 .fee-tabs-group {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 .fee-tab-btn {
-  background: none;
+  background: transparent;
   border: none;
   padding: 8px 16px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bill-text-muted);
   border-radius: 20px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  outline: none;
+  transition: all 150ms ease;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .fee-tab-btn:hover {
-  color: var(--text-primary);
+  background-color: #f1f5f9;
+  color: var(--bill-text-primary);
 }
 
 .fee-tab-btn.active {
-  background-color: var(--primary);
-  color: white;
-  box-shadow: 0 4px 8px rgba(37, 99, 235, 0.15);
+  background-color: var(--bill-accent-teal);
+  color: #ffffff;
 }
 
 .btn-pay-all {
-  padding: 10px 20px;
-  border-radius: 30px;
-  background-color: var(--danger);
-  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background-color: var(--bill-accent-rose);
+  color: #ffffff;
   border: none;
-  font-weight: 700;
-  font-size: 0.85rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
-  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(244, 63, 94, 0.2);
+  transition: all 150ms ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .btn-pay-all:hover {
-  background-color: #DC2626;
+  background-color: var(--bill-rose-hover);
+  box-shadow: 0 4px 8px rgba(244, 63, 94, 0.3);
   transform: translateY(-1px);
 }
 
-/* 4. TABLE WRAPPER */
+/* 4. TABLE STYLES */
 .fees-table-card-wrapper {
-  padding: 0;
+  background: var(--bill-card-bg);
+  border: 1px solid var(--bill-card-border);
+  border-radius: 10px;
   overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
 }
 
 .table-overflow-box {
@@ -162,29 +246,30 @@
 }
 
 .fees-styled-table th {
-  background-color: var(--main-bg);
-  color: var(--text-muted);
-  font-size: 0.75rem;
+  background-color: #f8fafc;
+  color: var(--bill-text-muted);
+  font-size: 11px;
   text-transform: uppercase;
-  font-weight: 700;
-  padding: 16px 24px;
-  border-bottom: 2px solid var(--border-light);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--bill-card-border);
 }
 
 .fees-styled-table td {
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--border-light);
-  color: var(--text-primary);
-  font-size: 0.925rem;
+  padding: 14px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  color: var(--bill-text-primary);
+  font-size: 13.5px;
   vertical-align: middle;
 }
 
 .fees-styled-table tbody tr {
-  transition: background-color 0.15s ease;
+  transition: background-color 100ms ease;
 }
 
 .fees-styled-table tbody tr:hover {
-  background-color: rgba(37, 99, 235, 0.01);
+  background-color: #f8fafc;
 }
 
 .fees-styled-table tbody tr:last-child td {
@@ -198,35 +283,68 @@
 
 .title-bold {
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--bill-text-primary);
 }
 
 .semester-small {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin-top: 1px;
+  font-size: 12px;
+  color: var(--bill-text-muted);
+  margin-top: 2px;
 }
 
 .amount-col {
   text-align: right;
-  font-family: 'Inter', monospace;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
 }
 
+/* Status Badges */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.status-pill.pending {
+  background-color: var(--badge-pending-bg);
+  color: var(--badge-pending-text);
+  border: 1px solid var(--badge-pending-border);
+}
+
+.status-pill.paid {
+  background-color: var(--badge-paid-bg);
+  color: var(--badge-paid-text);
+  border: 1px solid var(--badge-paid-border);
+}
+
+.status-pill.overdue {
+  background-color: var(--badge-overdue-bg);
+  color: var(--badge-overdue-text);
+  border: 1px solid var(--badge-overdue-border);
+}
+
+/* Action Buttons */
 .btn-table-pay {
   padding: 6px 14px;
-  border-radius: 20px;
-  background-color: var(--primary);
-  color: white;
+  border-radius: 7px;
+  background-color: var(--bill-accent-teal);
+  color: #ffffff;
   border: none;
-  font-weight: 700;
-  font-size: 0.8rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 150ms ease;
+  box-shadow: 0 1px 2px rgba(13, 148, 136, 0.2);
 }
 
 .btn-table-pay:hover {
-  background-color: var(--primary-hover);
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+  background-color: var(--bill-teal-hover);
+  box-shadow: 0 2px 4px rgba(13, 148, 136, 0.3);
 }
 
 .btn-table-receipt {
@@ -234,42 +352,44 @@
   align-items: center;
   gap: 6px;
   padding: 6px 14px;
-  border-radius: 20px;
-  background-color: var(--main-bg);
-  border: 1px solid var(--border-light);
-  color: var(--text-primary);
+  border-radius: 7px;
+  background-color: var(--bill-card-bg);
+  border: 1px solid var(--bill-card-border);
+  color: var(--bill-text-secondary);
+  font-family: 'DM Sans', sans-serif;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 150ms ease;
 }
 
 .btn-table-receipt:hover {
-  border-color: var(--primary);
-  color: var(--primary);
+  border-color: var(--bill-accent-teal);
+  color: var(--bill-accent-teal);
+  background-color: #f0fdfa;
 }
 
-/* 5. CHECKOUT/INVOICE MODAL GLASSMORPHISM OVERLAYS */
+/* 5. MODALS */
 .billing-modal-overlay {
   position: fixed;
-  top: 0; left: 0;
-  width: 100vw;
-  height: 100vh;
+  top: 0; left: 0; right: 0; bottom: 0;
   background-color: rgba(15, 23, 42, 0.5);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 200;
+  padding: 20px;
 }
 
 .billing-modal-card {
-  background-color: var(--card-bg);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-light);
-  box-shadow: var(--shadow-lg);
+  background-color: var(--bill-card-bg);
+  border-radius: 12px;
+  border: 1px solid var(--bill-card-border);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
   padding: 28px;
-  width: 440px;
+  width: 100%;
+  max-width: 440px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -282,51 +402,53 @@
 }
 
 .modal-header h3 {
+  font-family: 'Sora', sans-serif;
   font-size: 1.25rem;
-  font-weight: 800;
-  color: var(--text-primary);
+  font-weight: 700;
+  color: var(--bill-text-primary);
+  margin: 0;
 }
 
 .modal-close-icon {
   background: none;
   border: none;
-  font-size: 1.1rem;
-  color: var(--text-muted);
+  font-size: 1.2rem;
+  color: var(--bill-text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s;
-  outline: none;
+  transition: color 150ms ease;
+  padding: 4px;
 }
 
 .modal-close-icon:hover {
-  color: var(--danger);
+  color: var(--bill-accent-rose);
 }
 
 .checkout-fee-info-row {
   display: flex;
   justify-content: space-between;
-  font-size: 0.85rem;
-  color: var(--text-primary);
-  background-color: var(--main-bg);
-  padding: 10px 14px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-light);
+  font-size: 13px;
+  color: var(--bill-text-primary);
+  background-color: #f8fafc;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #f1f5f9;
 }
 
 /* CREDIT CARD LAYOUT */
 .stylized-credit-card-preview {
   width: 100%;
   height: 190px;
-  background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 60%, var(--accent) 100%);
+  background: linear-gradient(135deg, #1e293b 0%, #0d9488 100%);
   border-radius: 12px;
   padding: 24px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   color: white;
-  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.25);
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.15);
   font-family: 'Courier New', monospace;
   position: relative;
   overflow: hidden;
@@ -346,16 +468,16 @@
 .card-chip {
   width: 38px;
   height: 28px;
-  background-color: #E2E8F0;
+  background-color: rgba(255, 255, 255, 0.8);
   border-radius: 4px;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
 }
 
 .card-preview-number {
   font-size: 1.25rem;
   letter-spacing: 2px;
   font-weight: bold;
-  text-shadow: 1px 1px 2px rgba(15, 23, 42, 0.4);
+  text-shadow: 1px 1px 2px rgba(15, 23, 42, 0.3);
 }
 
 .card-preview-footer {
@@ -364,16 +486,17 @@
 }
 
 .card-small-label {
-  font-size: 0.55rem;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.7);
   display: block;
-  font-family: 'Inter', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-weight: 600;
   margin-bottom: 2px;
+  text-transform: uppercase;
 }
 
 .card-small-value {
-  font-size: 0.85rem;
+  font-size: 14px;
   font-weight: bold;
   letter-spacing: 0.5px;
 }
@@ -390,23 +513,37 @@
   gap: 16px;
 }
 
+.checkout-payment-form input {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--bill-card-border);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 150ms ease;
+}
+
+.checkout-payment-form input:focus {
+  border-color: var(--bill-accent-teal);
+}
+
 .btn-submit-payment {
   width: 100%;
-  background-color: var(--primary);
+  background-color: var(--bill-accent-teal);
   color: white;
   border: none;
   padding: 12px;
-  border-radius: 30px;
+  border-radius: 8px;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  transition: all 150ms ease;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .btn-submit-payment:hover:not(:disabled) {
-  background-color: var(--primary-hover);
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+  background-color: var(--bill-teal-hover);
+  transform: translateY(-1px);
 }
 
 .btn-submit-payment:disabled {
@@ -419,25 +556,25 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 12px;
+  padding: 16px;
   background-color: white;
-  color: #0F172A;
+  color: #0f172a;
   border-radius: 8px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid var(--bill-card-border);
 }
 
 .invoice-brand-row {
   display: flex;
   align-items: center;
   gap: 16px;
-  border-bottom: 2px solid #E2E8F0;
+  border-bottom: 1px solid var(--bill-card-border);
   padding-bottom: 16px;
 }
 
 .invoice-logo {
   width: 44px;
   height: 44px;
-  background: linear-gradient(135deg, #2563EB, #06B6D4);
+  background: var(--bill-accent-teal);
   color: white;
   border-radius: 8px;
   display: flex;
@@ -445,65 +582,64 @@
   justify-content: center;
   font-weight: 800;
   font-size: 1.4rem;
+  font-family: 'Sora', sans-serif;
 }
 
 .invoice-header-meta h4 {
   font-size: 1rem;
-  font-weight: 800;
+  font-weight: 700;
   margin: 0;
 }
 
 .invoice-header-meta p {
-  font-size: 0.75rem;
-  color: #64748B;
-  margin: 1px 0 0 0;
+  font-size: 12px;
+  color: var(--bill-text-muted);
+  margin: 2px 0 0 0;
 }
 
 .invoice-user-meta-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  font-size: 0.85rem;
+  font-size: 13px;
   line-height: 1.5;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid var(--bill-card-border);
   padding-bottom: 16px;
 }
 
 .invoice-user-meta-grid p {
   margin: 2px 0 0 0;
-  color: #334155;
-}
-
-.invoice-table-charges {
-  margin-top: 10px;
+  color: var(--bill-text-secondary);
 }
 
 .charges-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.85rem;
+  font-size: 13px;
 }
 
 .charges-table th {
-  background-color: #F8FAFC;
-  padding: 8px 12px;
-  color: #64748B;
-  border-bottom: 1px solid #E2E8F0;
+  background-color: #f8fafc;
+  padding: 10px 12px;
+  color: var(--bill-text-muted);
+  border-bottom: 1px solid var(--bill-card-border);
+  text-align: left;
 }
 
 .charges-table td {
   padding: 12px;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .invoice-total-row td {
   border-bottom: none;
   padding-top: 16px;
+  font-weight: 600;
 }
 
 .invoice-footer-notes {
   margin-top: 16px;
-  font-size: 0.7rem;
-  color: #94A3B8;
+  font-size: 11px;
+  color: var(--bill-text-muted);
   text-align: center;
   line-height: 1.4;
 }
@@ -515,57 +651,70 @@
 .btn-print-invoice {
   width: 100%;
   padding: 12px;
-  border-radius: 30px;
-  background-color: var(--primary);
+  border-radius: 8px;
+  background-color: var(--bill-accent-teal);
   color: white;
   border: none;
-  font-weight: 700;
-  font-size: 0.9rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: all 0.2s ease;
+  transition: all 150ms ease;
 }
 
 .btn-print-invoice:hover {
-  background-color: var(--primary-hover);
+  background-color: var(--bill-teal-hover);
 }
 
 /* Dark theme overrides */
-.app-container.dark-theme .fee-analytic-card,
-.app-container.dark-theme .fees-table-card-wrapper,
-.app-container.dark-theme .fees-controls-bar {
-  background-color: var(--card-bg);
-  border-color: var(--border-light);
+.app-container.dark-theme .fees-container {
+  --bill-card-bg: #1e293b;
+  --bill-card-border: #334155;
+  --bill-text-primary: #f8fafc;
+  --bill-text-secondary: #cbd5e1;
+  --bill-text-muted: #94a3b8;
+  --badge-pending-bg: rgba(245, 158, 11, 0.1);
+  --badge-pending-text: #fcd34d;
+  --badge-pending-border: rgba(245, 158, 11, 0.2);
+  --badge-paid-bg: rgba(13, 148, 136, 0.1);
+  --badge-paid-text: #5eead4;
+  --badge-paid-border: rgba(13, 148, 136, 0.2);
+  --badge-overdue-bg: rgba(244, 63, 94, 0.1);
+  --badge-overdue-text: #fda4af;
+  --badge-overdue-border: rgba(244, 63, 94, 0.2);
 }
 
 .app-container.dark-theme .fees-styled-table th {
-  background-color: var(--main-bg);
+  background-color: rgba(0,0,0,0.15);
+}
+
+.app-container.dark-theme .fees-styled-table td {
+  border-bottom-color: #334155;
+}
+
+.app-container.dark-theme .fees-styled-table tbody tr:hover {
+  background-color: rgba(255,255,255,0.02);
+}
+
+.app-container.dark-theme .checkout-fee-info-row,
+.app-container.dark-theme .invoice-print-frame,
+.app-container.dark-theme .charges-table th {
+  background-color: rgba(0,0,0,0.15);
+  color: var(--bill-text-primary);
+}
+
+.app-container.dark-theme .charges-table td {
+  border-bottom-color: #334155;
+}
+
+.app-container.dark-theme .fee-tab-btn:hover {
+  background-color: rgba(255,255,255,0.05);
 }
 
 .app-container.dark-theme .btn-table-receipt {
-  background-color: var(--card-bg);
-  border-color: var(--border-light);
-  color: var(--text-primary);
-}
-
-.app-container.dark-theme .btn-table-receipt:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-}
-
-.app-container.dark-theme .billing-modal-card {
-  background-color: var(--card-bg);
-  border-color: var(--border-light);
-}
-
-.app-container.dark-theme .checkout-fee-info-row {
-  background-color: var(--main-bg);
-  border-color: var(--border-light);
-}
-
-.app-container.dark-theme .circle-inner-value {
-  background-color: var(--card-bg);
+  background-color: transparent;
 }

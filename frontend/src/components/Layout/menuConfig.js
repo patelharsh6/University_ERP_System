@@ -36,7 +36,7 @@ export const menuConfig = [
     items: [
       { title: "Students", icon: <FaUserGraduate />, path: "/students" },
       { title: "Registration", icon: <FaUserPlus />, path: "/registration" },
-      { title: "Attendance", icon: <FaClipboardList />, path: "/attendance", badge: "82%", badgeType: "success" },
+      { title: "Attendance", icon: <FaClipboardList />, path: "/attendance", badge: "82%", badgeType: "attend" },
       { title: "Results", icon: <FaGraduationCap />, path: "/results" }
     ]
   },
@@ -44,13 +44,13 @@ export const menuConfig = [
     category: "FINANCE",
     items: [
       { title: "Fees", icon: <FaMoneyBill />, path: "/billing" },
-      { title: "Payments", icon: <FaCreditCard />, path: "/billing", badge: "Due", badgeType: "danger" }
+      { title: "Payments", icon: <FaCreditCard />, path: "/billing", badge: "Due", badgeType: "due" }
     ]
   },
   {
     category: "COMMUNICATION",
     items: [
-      { title: "Announcements", icon: <FaBullhorn />, path: "/announcements", badge: "3", badgeType: "danger" },
+      { title: "Announcements", icon: <FaBullhorn />, path: "/announcements", badge: "3", badgeType: "announcement" },
       { title: "Feedback", icon: <FaCommentAlt />, path: "/feedback" }
     ]
   },
