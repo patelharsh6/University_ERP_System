@@ -102,6 +102,7 @@ body {
   justify-content: space-between;
   padding: 0 20px;
   border-bottom: 1px solid var(--sidebar-border);
+  background-color: var(--card-bg);
   position: relative;
 }
 
@@ -130,8 +131,8 @@ body {
 .sidebar-brand-text {
   font-family: 'Sora', sans-serif;
   font-size: 1.1rem;
-  font-weight: 700;
-  color: #ffffff;
+  font-weight: 800;
+  color: var(--text-primary);
   letter-spacing: -0.3px;
   transition: opacity 0.2s ease, width 0.2s ease;
   white-space: nowrap;
