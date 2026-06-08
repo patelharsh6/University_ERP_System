@@ -1,7 +1,7 @@
 // src/pages/student/Billing.jsx
 import React, { useState } from 'react';
 import './Billing.css';
-import { FaDownload, FaCreditCard, FaHistory, FaCheckCircle, FaTimes, FaCoins, FaExclamationTriangle, FaPrint } from 'react-icons/fa';
+import { FiDownload, FiCreditCard, FiFileText, FiPieChart, FiAlertTriangle, FiCheck, FiX, FiInfo } from 'react-icons/fi';
 
 const initialFees = [
   {
@@ -100,12 +100,14 @@ const Billing = () => {
       
       // Update fee payment status dynamically in state
       setFees(prev => prev.map(item => {
-        if (item.id === activeCheckoutFee.id) {
-          return {
-            ...item,
-            status: "Paid",
-            paid: item.amount
-          };
+        if (item.id === activeCheckoutFee.id || activeCheckoutFee.id === "ALL-DUE") {
+          if (item.status === "Pending") {
+            return {
+              ...item,
+              status: "Paid",
+              paid: item.amount
+            };
+          }
         }
         return item;
       }));
@@ -125,9 +127,12 @@ const Billing = () => {
       
       {/* HEADER */}
       <div className="fees-header-panel">
+        <div className="header-icon-wrapper">
+          <FiCreditCard />
+        </div>
         <div>
-          <h2>Billing & Fee Collections 💳</h2>
-          <p>Inspect collections metrics, generate receipts, and settle dues online</p>
+          <h2>Billing & Fee Collections</h2>
+          <p>Inspect collections, generate receipts, settle dues</p>
         </div>
       </div>
 
@@ -135,42 +140,42 @@ const Billing = () => {
       <div className="fees-summary-analytics">
         
         {/* Card 1: Total Invoiced */}
-        <div className="dashboard-card fee-analytic-card">
+        <div className="fee-analytic-card invoiced">
           <div className="card-top">
             <span className="analytic-label">Total Invoiced</span>
-            <div className="analytic-icon stat-blue"><FaHistory /></div>
+            <div className="analytic-icon"><FiFileText /></div>
           </div>
-          <div className="analytic-value text-blue">{formatCurrency(totalAmount)}</div>
-          <span className="analytic-sub">Across 4 charges</span>
+          <div className="analytic-value">{formatCurrency(totalAmount)}</div>
+          <span className="analytic-sub">Across {fees.length} charges</span>
         </div>
 
         {/* Card 2: Paid Collection */}
-        <div className="dashboard-card fee-analytic-card">
+        <div className="fee-analytic-card collected">
           <div className="card-top">
-            <span className="analytic-label">Total Collection</span>
-            <div className="analytic-icon stat-green"><FaCoins /></div>
+            <span className="analytic-label">Total Collected</span>
+            <div className="analytic-icon"><FiPieChart /></div>
           </div>
-          <div className="analytic-value text-green">{formatCurrency(paidAmount)}</div>
+          <div className="analytic-value">{formatCurrency(paidAmount)}</div>
           <span className="analytic-sub">Collection rate: {Math.round((paidAmount / totalAmount) * 100)}%</span>
         </div>
 
         {/* Card 3: Outstanding Due */}
-        <div className="dashboard-card fee-analytic-card">
+        <div className="fee-analytic-card outstanding">
           <div className="card-top">
             <span className="analytic-label">Outstanding Due</span>
-            <div className="analytic-icon stat-red"><FaCreditCard /></div>
+            <div className="analytic-icon"><FiCreditCard /></div>
           </div>
-          <div className="analytic-value text-red">{formatCurrency(dueAmount)}</div>
-          <span className="analytic-sub">Next date: 15 Mar 2026</span>
+          <div className="analytic-value">{formatCurrency(dueAmount)}</div>
+          <span className="analytic-sub">Next: 15 Mar 2026</span>
         </div>
 
         {/* Card 4: Defaulters */}
-        <div className="dashboard-card fee-analytic-card">
+        <div className="fee-analytic-card defaulters">
           <div className="card-top">
             <span className="analytic-label">Defaulters</span>
-            <div className="analytic-icon stat-purple"><FaExclamationTriangle /></div>
+            <div className="analytic-icon"><FiAlertTriangle /></div>
           </div>
-          <div className="analytic-value text-purple">{defaultersCount} Accounts</div>
+          <div className="analytic-value">{defaultersCount} Accounts</div>
           <span className="analytic-sub">Dues exceeded deadline</span>
         </div>
       </div>
@@ -191,58 +196,57 @@ const Billing = () => {
         
         {dueAmount > 0 && (
           <button className="btn-pay-all" onClick={() => openCheckout({ id: "ALL-DUE", title: "All Outstanding Dues", amount: dueAmount })}>
-            Settle All Dues ({formatCurrency(dueAmount)})
+            <FiAlertTriangle size={16} /> Settle All ({formatCurrency(dueAmount)})
           </button>
         )}
       </div>
 
       {/* INVOICES LIST TABLE */}
-      <div className="dashboard-card fees-table-card-wrapper">
+      <div className="fees-table-card-wrapper">
         <div className="table-overflow-box">
           <table className="fees-styled-table">
             <thead>
               <tr>
-                <th>Invoice No</th>
-                <th>Fee Description</th>
-                <th>Due Date</th>
-                <th className="amount-col">Amount</th>
-                <th style={{ textAlign: 'center' }}>Status</th>
-                <th style={{ textAlign: 'center' }}>Action</th>
+                <th>Invoice details</th>
+                <th>Due date</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {filteredFees.map((fee) => (
                 <tr key={fee.id}>
-                  <td style={{ fontWeight: '600', color: 'var(--text-muted)' }}>{fee.id}</td>
                   <td>
-                    <div className="fee-title-cell" onClick={() => openInvoice(fee)} style={{ cursor: 'pointer' }}>
+                    <div className="fee-title-cell">
                       <span className="title-bold">{fee.title}</span>
-                      <span className="semester-small">{fee.semester}</span>
+                      <span className="semester-small">{fee.id} • {fee.semester}</span>
                     </div>
                   </td>
-                  <td>{fee.dueDate}</td>
-                  <td className="amount-col" style={{ fontWeight: '700' }}>{formatCurrency(fee.amount)}</td>
-                  <td style={{ textAlign: 'center' }}>
-                    <span className={`badge-pill ${fee.status === 'Paid' ? 'success' : 'warning'}`}>
+                  <td style={{ color: "var(--bill-text-muted)" }}>{fee.dueDate}</td>
+                  <td className="amount-col">{formatCurrency(fee.amount)}</td>
+                  <td>
+                    <span className={`status-pill ${fee.status.toLowerCase()}`}>
                       {fee.status}
                     </span>
                   </td>
-                  <td style={{ textAlign: 'center' }}>
+                  <td>
                     {fee.status === 'Pending' ? (
-                      <button className="btn-table-pay" onClick={() => openCheckout(fee)}>Pay Now</button>
+                      <button className="btn-table-pay" onClick={() => openCheckout(fee)}>
+                        Pay Now
+                      </button>
                     ) : (
                       <button className="btn-table-receipt" onClick={() => openInvoice(fee)}>
-                        <FaDownload size={11} /> Receipt
+                        <FiDownload size={12} /> Receipt
                       </button>
                     )}
                   </td>
                 </tr>
               ))}
-
               {filteredFees.length === 0 && (
                 <tr>
-                  <td colSpan="6" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)', fontWeight: '500' }}>
-                    No {activeTab.toLowerCase()} invoices found.
+                  <td colSpan="5" style={{ textAlign: 'center', color: 'var(--bill-text-muted)', padding: '24px' }}>
+                    No {activeTab.toLowerCase()} bills found.
                   </td>
                 </tr>
               )}
@@ -251,137 +255,133 @@ const Billing = () => {
         </div>
       </div>
 
-      {/* ======================================================== */}
-      {/* ONLINE CHECKOUT CREDIT CARD PAYMENT MODAL */}
-      {/* ======================================================== */}
-      {showCheckoutModal && (
+      {/* =========================================
+          MODALS SECTION (CHECKOUT & INVOICE) 
+          ========================================= */}
+
+      {/* CHECKOUT PAYMENT MODAL */}
+      {showCheckoutModal && activeCheckoutFee && (
         <div className="billing-modal-overlay">
-          <div className="billing-modal-card animate-zoom">
-            <div className="modal-header">
-              <h3>Secure Online Checkout</h3>
-              <button className="modal-close-icon" onClick={() => setShowCheckoutModal(false)}><FaTimes /></button>
-            </div>
+          <div className="billing-modal-card">
             
-            <div className="checkout-fee-info-row">
-              <span>Settling: <strong>{activeCheckoutFee.title}</strong></span>
-              <span>Amount: <strong>{formatCurrency(activeCheckoutFee.amount)}</strong></span>
+            <div className="modal-header">
+              <h3>Secure Checkout</h3>
+              <button className="modal-close-icon" onClick={() => setShowCheckoutModal(false)}>
+                <FiX />
+              </button>
             </div>
 
-            {/* STYLIZED CREDIT CARD GRAPHIC */}
+            <div className="checkout-fee-info-row">
+              <span style={{ fontWeight: 600 }}>{activeCheckoutFee.title}</span>
+              <span style={{ fontWeight: 700, color: "var(--bill-accent-teal)" }}>
+                {formatCurrency(activeCheckoutFee.amount)}
+              </span>
+            </div>
+
+            {/* STYLIZED CREDIT CARD PREVIEW */}
             <div className="stylized-credit-card-preview">
-              <div className="card-chip" />
+              <div className="card-chip"></div>
               <div className="card-preview-number">
-                {cardNumber || "•••• •••• •••• ••••"}
+                {cardNumber ? cardNumber.replace(/(\d{4})/g, '$1 ').trim() : "•••• •••• •••• ••••"}
               </div>
               <div className="card-preview-footer">
-                <div className="card-holder-col">
-                  <span className="card-small-label">CARD HOLDER</span>
-                  <span className="card-small-value">{cardHolder.toUpperCase() || "NAME SURNAME"}</span>
+                <div>
+                  <span className="card-small-label">Card Holder</span>
+                  <span className="card-small-value">{cardHolder || "NAME ON CARD"}</span>
                 </div>
-                <div className="card-expiry-col">
-                  <span className="card-small-label">EXPIRES</span>
+                <div>
+                  <span className="card-small-label">Valid Thru</span>
                   <span className="card-small-value">{cardExpiry || "MM/YY"}</span>
                 </div>
               </div>
             </div>
 
-            {/* PAYMENT FORM CREDENTIALS */}
-            <form onSubmit={handlePaymentSubmit} className="checkout-payment-form">
-              <div className="form-input-group">
-                <label>Cardholder Name</label>
-                <input 
-                  type="text" 
-                  value={cardHolder}
-                  onChange={(e) => setCardHolder(e.target.value)}
-                  placeholder="Enter name on card"
-                  required
-                />
-              </div>
-
-              <div className="form-input-group">
-                <label>Card Number</label>
-                <input 
-                  type="text" 
-                  maxLength="19"
-                  value={cardNumber}
-                  onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim())}
-                  placeholder="0000 0000 0000 0000"
-                  required
-                />
-              </div>
-
+            {/* PAYMENT FORM */}
+            <form className="checkout-payment-form" onSubmit={handlePaymentSubmit}>
+              <input 
+                type="text" 
+                placeholder="Card Holder Name" 
+                value={cardHolder} 
+                onChange={e => setCardHolder(e.target.value)} 
+                required 
+              />
+              <input 
+                type="text" 
+                placeholder="Card Number (16 digits)" 
+                maxLength="16"
+                value={cardNumber} 
+                onChange={e => setCardNumber(e.target.value.replace(/\D/g, ''))} 
+                required 
+              />
               <div className="checkout-form-split">
-                <div className="form-input-group">
-                  <label>Expiry Date</label>
-                  <input 
-                    type="text" 
-                    maxLength="5"
-                    value={cardExpiry}
-                    onChange={(e) => {
-                      let val = e.target.value.replace(/\D/g, '');
-                      if (val.length > 2) val = val.substring(0, 2) + '/' + val.substring(2, 4);
-                      setCardExpiry(val);
-                    }}
-                    placeholder="MM/YY"
-                    required
-                  />
-                </div>
-                
-                <div className="form-input-group">
-                  <label>CVV Code</label>
-                  <input 
-                    type="password" 
-                    maxLength="3"
-                    value={cardCvv}
-                    onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, ''))}
-                    placeholder="•••"
-                    required
-                  />
-                </div>
+                <input 
+                  type="text" 
+                  placeholder="MM/YY" 
+                  maxLength="5"
+                  value={cardExpiry} 
+                  onChange={e => setCardExpiry(e.target.value)} 
+                  required 
+                />
+                <input 
+                  type="password" 
+                  placeholder="CVV" 
+                  maxLength="3"
+                  value={cardCvv} 
+                  onChange={e => setCardCvv(e.target.value.replace(/\D/g, ''))} 
+                  required 
+                />
               </div>
-
-              <button type="submit" className="btn-submit-payment" disabled={isPaying}>
-                {isPaying ? "Processing Authorization..." : `Settle Payment - ${formatCurrency(activeCheckoutFee.amount)}`}
+              
+              <button 
+                type="submit" 
+                className="btn-submit-payment"
+                disabled={isPaying}
+              >
+                {isPaying ? "Processing..." : `Pay ${formatCurrency(activeCheckoutFee.amount)}`}
               </button>
             </form>
 
+            <div style={{ textAlign: 'center', fontSize: '11px', color: 'var(--bill-text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+              <FiCheck /> Secured by AES-256 Encryption
+            </div>
           </div>
         </div>
       )}
 
-      {/* ======================================================== */}
-      {/* ERP INVOICE DETAILS MODAL */}
-      {/* ======================================================== */}
-      {showInvoiceModal && (
-        <div className="billing-modal-overlay">
-          <div className="billing-modal-card invoice-details animate-zoom" style={{ width: '550px' }}>
+      {/* VIEW INVOICE / RECEIPT MODAL */}
+      {showInvoiceModal && activeInvoice && (
+        <div className="billing-modal-overlay" onClick={() => setShowInvoiceModal(false)}>
+          <div className="billing-modal-card" onClick={e => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+            
             <div className="modal-header">
-              <h3>University Fee Invoice</h3>
-              <button className="modal-close-icon" onClick={() => setShowInvoiceModal(false)}><FaTimes /></button>
+              <h3>Receipt</h3>
+              <button className="modal-close-icon" onClick={() => setShowInvoiceModal(false)}>
+                <FiX />
+              </button>
             </div>
 
+            {/* PRINTABLE INVOICE FRAME */}
             <div className="invoice-print-frame">
               <div className="invoice-brand-row">
                 <div className="invoice-logo">U</div>
                 <div className="invoice-header-meta">
-                  <h4>ADANI UNIVERSITY ERP</h4>
-                  <p>Admissions & Billing Sector</p>
-                  <p>Ahmedabad, Gujarat, IN</p>
+                  <h4>University ERP</h4>
+                  <p>Tax Invoice / Receipt</p>
                 </div>
               </div>
-
+              
               <div className="invoice-user-meta-grid">
                 <div>
-                  <strong>BILL TO:</strong>
-                  <p>Harsh Patel</p>
-                  <p>Roll No: AU210045</p>
-                  <p>Course: B.Tech (CSE)</p>
+                  <p style={{ color: "var(--bill-text-muted)" }}>Billed To</p>
+                  <p><strong>Harsh Patel</strong></p>
+                  <p>Student ID: 2023CSB1045</p>
+                  <p>B.Tech Computer Science</p>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <strong>INVOICE DETAILS:</strong>
-                  <p>Invoice ID: {activeInvoice.id}</p>
-                  <p>Due Date: {activeInvoice.dueDate}</p>
-                  <p>Status: <strong style={{ color: activeInvoice.status === 'Paid' ? 'var(--success)' : 'var(--warning)' }}>{activeInvoice.status.toUpperCase()}</strong></p>
+                  <p style={{ color: "var(--bill-text-muted)" }}>Invoice Details</p>
+                  <p><strong>No: {activeInvoice.id}</strong></p>
+                  <p>Date: {new Date().toLocaleDateString('en-GB')}</p>
+                  <p style={{ color: "var(--badge-paid-text)", fontWeight: 600, marginTop: '4px' }}>Status: PAID</p>
                 </div>
               </div>
 
@@ -389,35 +389,34 @@ const Billing = () => {
                 <table className="charges-table">
                   <thead>
                     <tr>
-                      <th>Charge Description</th>
-                      <th>Term</th>
+                      <th>Description</th>
                       <th style={{ textAlign: 'right' }}>Amount</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td style={{ fontWeight: '600' }}>{activeInvoice.title}</td>
-                      <td>{activeInvoice.semester}</td>
-                      <td style={{ textAlign: 'right', fontWeight: '700' }}>{formatCurrency(activeInvoice.amount)}</td>
+                      <td>{activeInvoice.title}</td>
+                      <td style={{ textAlign: 'right' }}>{formatCurrency(activeInvoice.amount)}</td>
                     </tr>
                     <tr className="invoice-total-row">
-                      <td colSpan="2" style={{ textAlign: 'right', fontWeight: '700' }}>TOTAL CHARGED:</td>
-                      <td style={{ textAlign: 'right', fontWeight: '800' }}>{formatCurrency(activeInvoice.amount)}</td>
+                      <td style={{ textAlign: 'right' }}>Total Paid:</td>
+                      <td style={{ textAlign: 'right', fontSize: '1.1rem', color: "var(--bill-text-primary)" }}>
+                        {formatCurrency(activeInvoice.amount)}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
 
               <div className="invoice-footer-notes">
-                <p>This is a computer generated transaction bill. No physical signature required.</p>
-                <p>For inquiries, contact: <strong>billing@adani.edu.in</strong></p>
+                <p>This is a computer generated receipt and does not require a signature.</p>
+                <p>For any queries, please contact accounts@university.edu</p>
               </div>
             </div>
 
-            <button type="button" className="btn-print-invoice" onClick={() => window.print()}>
-              <FaPrint /> Print / Save PDF Invoice
+            <button className="btn-print-invoice" onClick={() => window.print()}>
+              <FiDownload size={16} /> Download PDF
             </button>
-
           </div>
         </div>
       )}
