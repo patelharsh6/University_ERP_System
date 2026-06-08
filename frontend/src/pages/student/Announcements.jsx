@@ -80,7 +80,7 @@ const Announcements = () => {
       {/* 1. HEADER */}
       <div className="page-header">
         <h2>
-          <FaBullhorn style={{ color: '#0EA5E9' }} /> Announcements
+          <FaBullhorn style={{ color: 'var(--accent)' }} /> Announcements
         </h2>
         
         {/* Only Visible to Admin/Faculty (Simulated) */}
@@ -135,7 +135,7 @@ const Announcements = () => {
               onClick={() => setSelectedAnnouncement(item)} 
             />
           ))}
-          {normalItems.length === 0 && <p style={{color:'#94A3B8'}}>No announcements found.</p>}
+          {normalItems.length === 0 && <p style={{ color: '#94a3b8', fontSize: '0.88rem' }}>No announcements found.</p>}
         </div>
       </div>
 
@@ -151,7 +151,7 @@ const Announcements = () => {
               <span className={`status-pill status-${selectedAnnouncement.category.toLowerCase()}`}>
                 {selectedAnnouncement.category}
               </span>
-              <h2 style={{ marginTop: '12px', fontSize: '1.5rem', color: '#0F172A' }}>
+              <h2 style={{ marginTop: '10px', fontSize: '1.3rem', color: 'var(--text-primary, #0f172a)', fontFamily: 'Sora, sans-serif', fontWeight: 700, letterSpacing: '-0.3px' }}>
                 {selectedAnnouncement.title}
               </h2>
             </div>
@@ -161,14 +161,14 @@ const Announcements = () => {
             </div>
 
             {selectedAnnouncement.hasAttachment && (
-              <button className="btn-create" style={{ marginTop: '20px', width: '100%', justifyContent: 'center' }}>
+              <button className="btn-create" style={{ marginTop: '18px', width: '100%', justifyContent: 'center' }}>
                 <FaDownload /> Download Attachment
               </button>
             )}
 
             <div className="modal-meta">
               <span>Posted by <strong>{selectedAnnouncement.author}</strong></span>
-              <span>•</span>
+              <span style={{ color: 'var(--card-border, #e2e8f0)' }}>•</span>
               <span>{selectedAnnouncement.date}</span>
             </div>
           </div>
@@ -186,7 +186,7 @@ const AnnouncementCard = ({ data, onClick }) => {
       
       <div className="card-header">
         <div className="card-title">
-          {data.isPinned && <FaThumbtack size={12} color="#0EA5E9" />}
+          {data.isPinned && <FaThumbtack size={11} />}
           {data.title}
           {data.isNew && <span className="new-badge">NEW</span>}
         </div>
@@ -200,7 +200,7 @@ const AnnouncementCard = ({ data, onClick }) => {
       <div className="card-footer">
         <div className="footer-left">
           <span className="author-tag">{data.author}</span>
-          <span style={{color: '#CBD5E1'}}>|</span>
+          <span style={{ color: 'var(--card-border, #e2e8f0)' }}>|</span>
           <span>{data.category}</span>
         </div>
 

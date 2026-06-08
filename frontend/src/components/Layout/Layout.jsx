@@ -4,19 +4,47 @@ import Sidebar from './Sidebar';
 import TopNavbar from './TopNavbar';
 import './Layout.css';
 
-const Layout = ({ children }) => {
+const Layout = ({ children, userRole, setUserRole }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [userRole, setUserRole] = useState('student'); // 'student', 'admin', 'faculty'
+  
+  // Persist collapsed state to localStorage
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    return localStorage.getItem('sidebar-collapsed') === 'true';
+  });
 
-  // Toggle Function
+  // Persist dark mode to localStorage
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem('dark-theme') === 'true';
+  });
+
+  // Toggle Function for mobile drawer
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
+  // Toggle Function for desktop sidebar collapse
+  const toggleCollapse = () => {
+    setIsSidebarCollapsed(prev => {
+      const next = !prev;
+      localStorage.setItem('sidebar-collapsed', String(next));
+      return next;
+    });
+  };
+
+  // Toggle Function for dark mode
+  const toggleDarkMode = () => {
+    setIsDarkMode(prev => {
+      const next = !prev;
+      localStorage.setItem('dark-theme', String(next));
+      return next;
+    });
+  };
+
   return (
-    <div className="app-container">
-      {/* Sidebar with Mobile Logic */}
+    <div className={`app-container ${isSidebarCollapsed ? 'sidebar-collapsed' : ''} ${isDarkMode ? 'dark-theme' : ''}`}>
+      {/* Sidebar with Mobile and Collapse Logic */}
       <Sidebar 
         isOpen={isSidebarOpen} 
-        userRole={userRole} 
+        isCollapsed={isSidebarCollapsed}
+        toggleCollapse={toggleCollapse}
         toggleSidebar={() => setIsSidebarOpen(false)} // Close when item clicked
       />
 
@@ -30,6 +58,9 @@ const Layout = ({ children }) => {
         <TopNavbar 
           toggleSidebar={toggleSidebar} 
           userRole={userRole}
+          setUserRole={setUserRole}
+          isDarkMode={isDarkMode}
+          toggleDarkMode={toggleDarkMode}
         />
 
         {/* Dynamic Content */}
@@ -41,4 +72,4 @@ const Layout = ({ children }) => {
   );
 };
 
-export default Layout;
+export default Layout;

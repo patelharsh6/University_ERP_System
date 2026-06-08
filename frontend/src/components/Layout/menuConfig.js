@@ -1,40 +1,63 @@
 // src/components/Layout/menuConfig.js
-import { FaHome, FaBook, FaMoneyBill, FaChalkboardTeacher, FaUsers, FaCog, FaClipboardList } from 'react-icons/fa';
+import React from 'react';
+import { 
+  FaHome, 
+  FaBook, 
+  FaChalkboardTeacher, 
+  FaCalendarAlt, 
+  FaUserGraduate, 
+  FaClipboardList, 
+  FaGraduationCap, 
+  FaMoneyBill, 
+  FaCreditCard, 
+  FaBullhorn, 
+  FaCommentAlt, 
+  FaCog,
+  FaUserPlus
+} from 'react-icons/fa';
 
-export const menuConfig = {
-  student: [
-    { category: "Main", items: [ { title: "Dashboard", icon: <FaHome />, path: "/" } ] },
-    { category: "Academics", items: [
-        { title: "My Courses", icon: <FaBook />, path: "/courses" },
-        { title: "Attendance", icon: <FaClipboardList />, path: "/attendance" },
-        { title: "Timetable", icon: <FaClipboardList />, path: "/timetable" },
-        { title: "Results", icon: <FaClipboardList />, path: "/results" },
-        { title: "Reports", icon: <FaClipboardList />, path: "/reports" },
-        { title: "Announcements", icon: <FaClipboardList />, path: "/announcements" },
-        { title: "Feedback", icon: <FaClipboardList />, path: "/feedback" },
-        { title: "Billing", icon: <FaClipboardList />, path: "/billing" },
-      ]
-    },
-    // { category: "Finance", items: [ { title: "Fees", icon: <FaMoneyBill />, path: "/fees" } ] }
-  ],
-
-  faculty: [
-    { category: "Main", items: [ { title: "Dashboard", icon: <FaHome />, path: "/dashboard" } ] },
-    { category: "Teaching", items: [
-        { title: "My Subjects", icon: <FaBook />, path: "/subjects" },
-        { title: "Enter Marks", icon: <FaClipboardList />, path: "/marks" }
-      ]
-    },
-    { category: "Students", items: [ { title: "Student List", icon: <FaUsers />, path: "/student-list" } ] }
-  ],
-
-  admin: [
-    { category: "Main", items: [ { title: "Dashboard", icon: <FaHome />, path: "/dashboard" } ] },
-    { category: "Management", items: [
-        { title: "Students", icon: <FaUsers />, path: "/manage-students" },
-        { title: "Faculty", icon: <FaChalkboardTeacher />, path: "/manage-faculty" }
-      ]
-    },
-    { category: "System", items: [ { title: "Settings", icon: <FaCog />, path: "/settings" } ] }
-  ]
-};
+export const menuConfig = [
+  {
+    category: "",
+    items: [
+      { title: "Dashboard", icon: <FaHome />, path: "/" }
+    ]
+  },
+  {
+    category: "ACADEMICS",
+    items: [
+      { title: "Courses", icon: <FaBook />, path: "/courses" },
+      { title: "Subjects", icon: <FaChalkboardTeacher />, path: "/course-management" },
+      { title: "Timetable", icon: <FaCalendarAlt />, path: "/timetable" }
+    ]
+  },
+  {
+    category: "STUDENTS",
+    items: [
+      { title: "Students", icon: <FaUserGraduate />, path: "/students" },
+      { title: "Registration", icon: <FaUserPlus />, path: "/registration" },
+      { title: "Attendance", icon: <FaClipboardList />, path: "/attendance", badge: "82%", badgeType: "success" },
+      { title: "Results", icon: <FaGraduationCap />, path: "/results" }
+    ]
+  },
+  {
+    category: "FINANCE",
+    items: [
+      { title: "Fees", icon: <FaMoneyBill />, path: "/billing" },
+      { title: "Payments", icon: <FaCreditCard />, path: "/billing", badge: "Due", badgeType: "danger" }
+    ]
+  },
+  {
+    category: "COMMUNICATION",
+    items: [
+      { title: "Announcements", icon: <FaBullhorn />, path: "/announcements", badge: "3", badgeType: "danger" },
+      { title: "Feedback", icon: <FaCommentAlt />, path: "/feedback" }
+    ]
+  },
+  {
+    category: "",
+    items: [
+      { title: "Settings", icon: <FaCog />, path: "/profile" }
+    ]
+  }
+];
