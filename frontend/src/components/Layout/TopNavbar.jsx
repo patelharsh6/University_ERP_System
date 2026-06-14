@@ -46,7 +46,7 @@ const TopNavbar = ({ toggleSidebar, userRole, setUserRole, isDarkMode, toggleDar
         {/* Profile Dropdown */}
         <div className="profile-box">
           <div className="profile-img">
-            {userRole === 'admin' ? 'AD' : userRole === 'faculty' ? 'FA' : 'ST'}
+            {/* Using CSS background image for avatar */}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span className="profile-name-text" style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--text-primary)' }}>

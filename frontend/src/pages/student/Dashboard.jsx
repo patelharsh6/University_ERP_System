@@ -289,7 +289,7 @@ const Dashboard = ({ userRole }) => {
       {/* 2. QUICK STATS CARDS */}
       <div className="stats-grid">
         {studentStats.map((stat, index) => (
-          <div key={index} className={`stat-card border-top-${stat.color}`}>
+          <div key={index} className={`stat-card`}>
             <div className="stat-header">
               <span className="stat-label">{stat.title}</span>
               <div className={`stat-icon ${stat.color}`}>{stat.icon}</div>
@@ -312,7 +312,7 @@ const Dashboard = ({ userRole }) => {
               <div className="progress-ring-wrapper">
                 <svg className="progress-ring" width="120" height="120">
                   <circle className="progress-ring-bg" stroke="var(--card-border)" strokeWidth="8" fill="transparent" r="52" cx="60" cy="60"/>
-                  <circle className="progress-ring-path" stroke="#0d9488" strokeWidth="8" strokeDasharray="326" strokeDashoffset="26" strokeLinecap="round" fill="transparent" r="52" cx="60" cy="60"/>
+                  <circle className="progress-ring-path" stroke="var(--primary)" strokeWidth="8" strokeDasharray="326" strokeDashoffset="26" strokeLinecap="round" fill="transparent" r="52" cx="60" cy="60"/>
                 </svg>
                 <div className="ring-text">
                   <span className="ring-value">92%</span>
@@ -340,23 +340,24 @@ const Dashboard = ({ userRole }) => {
 
           {/* Recent Results */}
           <div className="section-title">
-            <span>Recent Results</span>
-            <Link to="/results" className="view-all-link">View All &rarr;</Link>
+            <span>Course Result</span>
+            <span style={{color: 'var(--text-muted)', fontSize: '18px', cursor: 'pointer', lineHeight: 1}}>—</span>
           </div>
-          <div className="dashboard-card">
-            <div className="recent-results-list">
-              {recentResults.map(res => (
-                <div key={res.id} className="result-item">
-                  <div className="result-subject">
-                    <FiAward className="res-icon" />
-                    <span>{res.subject}</span>
+          <div className="dashboard-card course-result-card" style={{ padding: '30px 20px' }}>
+            <div className="vertical-pill-chart">
+              {recentResults.map((res, idx) => {
+                const percent = (res.marks / res.total) * 100;
+                const isHighlight = idx === 1; // Highlight the middle one
+                return (
+                  <div key={res.id} className="pill-col">
+                    <span className="pill-label">{res.subject}</span>
+                    <div className="pill-track">
+                      <div className={`pill-fill ${isHighlight ? 'highlight' : ''}`} style={{ height: `${percent}%` }}></div>
+                    </div>
+                    <span className="pill-value">{res.marks}</span>
                   </div>
-                  <div className="result-score">
-                    <span className="score-obtained">{res.marks}</span>
-                    <span className="score-total">/{res.total}</span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 

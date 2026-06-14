@@ -144,7 +144,7 @@ const Profile = () => {
             <div className="info-grid" style={{ gap: '16px' }}>
               <div className="info-group">
                 <span className="label">Semester</span>
-                <span className="value" style={{ color: 'var(--prof-accent-teal)', fontSize: '1.2rem' }}>{userData.semester}</span>
+                <span className="value" style={{ color: 'var(--primary)', fontSize: '1.2rem' }}>{userData.semester}</span>
               </div>
               <div className="info-group">
                 <span className="label">Section</span>

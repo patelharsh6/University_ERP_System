@@ -2,50 +2,49 @@
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
 
 :root {
-  /* 🎨 REFINED PALETTE — Warm Professional University ERP */
-  --primary: #2563EB;          /* Electric Blue */
-  --primary-hover: #1D4ED8;
-  --primary-soft: #dbeafe;     /* Soft blue tint */
-  --secondary: #0c1425;        /* Rich Navy */
-  --accent: #0ea5e9;           /* Sky Blue - harmonious */
-  --success: #059669;          /* Deeper emerald - richer */
-  --success-soft: #d1fae5;
-  --warning: #d97706;          /* Warm amber - deeper */
-  --warning-soft: #fef3c7;
-  --danger: #dc2626;           /* True red - cleaner */
-  --danger-soft: #fee2e2;
-  --main-bg: #f1f5f9;          /* Slightly warmer bg */
-  --card-bg: #FFFFFF;          /* Card Background */
-  --text-primary: #0f172a;     /* Deeper text for contrast */
-  --text-secondary: #334155;   /* Secondary text tier */
-  --text-muted: #64748B;
-  --border-light: #e2e8f0;
-  --border-subtle: #f1f5f9;    /* Very subtle separator */
+  /* 🎨 MODERN SOFT-UI PALETTE */
+  --primary: #4318FF;          /* Vibrant Indigo/Purple */
+  --primary-hover: #3311DB;
+  --primary-soft: #F4F7FE;     
+  --secondary: #2B3674;        /* Deep Slate (Primary Text) */
+  --accent: #00B884;           /* Vibrant Green/Teal */
+  --success: #05CD99;          
+  --success-soft: #E6FBF5;
+  --warning: #FFCE20;          
+  --warning-soft: #FFF9E5;
+  --danger: #EE5D50;           
+  --danger-soft: #FDEFEF;
+  --main-bg: #F4F7FE;          /* Soft light grey-blue */
+  --card-bg: #FFFFFF;          /* Pure white cards */
+  --text-primary: #2B3674;     /* Deep slate for headings */
+  --text-secondary: #A3AED0;   /* Soft slate for secondary text */
+  --text-muted: #A3AED0;
+  --border-light: rgba(163, 174, 208, 0.15); /* Very soft borders if needed at all */
+  --border-subtle: transparent;
 
-  /* Sidebar — Ocean Slate */
-  --sidebar-bg: #1e3a5f;
-  --sidebar-text: #ffffff; /* Pure white */
-  --sidebar-hover-bg: rgba(255, 255, 255, 0.1);
-  --sidebar-hover-text: #ffffff;
-  --sidebar-active-bg: rgba(13,148,136,0.22);
-  --sidebar-active-text: #5eead4;
-  --sidebar-border: rgba(255,255,255,0.06);
-  --sidebar-section: rgba(255,255,255,0.28);
+  /* Sidebar — Clean Light */
+  --sidebar-bg: #FFFFFF;
+  --sidebar-text: #A3AED0;
+  --sidebar-hover-bg: #F4F7FE;
+  --sidebar-hover-text: #4318FF;
+  --sidebar-active-bg: #00B884; /* Using the vibrant green from the first image for active state */
+  --sidebar-active-text: #FFFFFF;
+  --sidebar-border: transparent; /* No hard borders */
+  --sidebar-section: #A3AED0;
 
-  --radius-lg: 14px;
-  --radius-md: 10px;
+  --radius-lg: 20px;
+  --radius-md: 14px;
   --radius-sm: 8px;
 
-  /* Layered shadow system */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
-  --shadow-xl: 0 8px 30px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+  /* Premium soft shadows */
+  --shadow-sm: 0 4px 12px rgba(112, 144, 176, 0.08);
+  --shadow-md: 0 14px 24px rgba(112, 144, 176, 0.1);
+  --shadow-lg: 0 18px 40px rgba(112, 144, 176, 0.12);
+  --shadow-xl: 0 24px 50px rgba(112, 144, 176, 0.15);
 
-  /* Compatibility Fallbacks */
   --accent-primary: var(--primary);
-  --accent-bg: rgba(37, 99, 235, 0.08);
-  --topbar-bg: #FFFFFF;
+  --accent-bg: rgba(67, 24, 255, 0.05);
+  --topbar-bg: transparent;
 
   font-family: 'DM Sans', 'Inter', sans-serif;
 }
@@ -96,12 +95,12 @@ body {
 
 /* Sidebar Header */
 .sidebar-header {
-  height: 70px;
+  height: 90px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 0 20px;
-  border-bottom: 1px solid var(--sidebar-border);
+  border-bottom: none; /* Removed border */
   position: relative;
 }
 
@@ -113,26 +112,27 @@ body {
 }
 
 .sidebar-logo-icon {
-  width: 36px;
-  height: 36px;
-  background: #0d9488;
-  border-radius: var(--radius-sm);
+  width: 40px;
+  height: 40px;
+  background: var(--primary); /* Modern vibrant logo background */
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-weight: 800;
-  font-size: 1.25rem;
+  font-size: 1.4rem;
   font-family: 'Sora', sans-serif;
   flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(67, 24, 255, 0.3);
 }
 
 .sidebar-brand-text {
   font-family: 'Sora', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: -0.3px;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--secondary); /* Deep slate for logo text */
+  letter-spacing: -0.5px;
   transition: opacity 0.2s ease, width 0.2s ease;
   white-space: nowrap;
   opacity: 1;
@@ -148,13 +148,13 @@ body {
 
 /* Sidebar Menu Wrapper */
 .sidebar-menu {
-  padding: 24px 12px;
+  padding: 10px 20px;
   overflow-y: auto;
   overflow-x: hidden;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
 }
 
 /* Custom Scrollbar for Sidebar */
@@ -162,19 +162,19 @@ body {
   width: 4px;
 }
 .sidebar-menu::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--border-light);
   border-radius: 4px;
 }
 
 /* Category Label */
 .menu-category {
-  font-family: 'Sora', sans-serif;
-  font-size: 0.65rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
   text-transform: uppercase;
   color: var(--sidebar-section);
-  margin: 16px 0 8px 14px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  margin: 16px 0 8px 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   transition: opacity 0.2s ease, height 0.2s ease;
   white-space: nowrap;
 }
@@ -192,23 +192,24 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 9px 14px;
+  padding: 12px 16px;
   color: var(--sidebar-text);
   text-decoration: none;
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 0.95rem;
+  font-weight: 600;
   border-radius: var(--radius-md);
-  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
-  margin-bottom: 2px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 4px;
   white-space: nowrap;
   outline: none;
+  border: none;
 }
 
 .menu-item-content {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .menu-item svg {
@@ -228,17 +229,14 @@ body {
 }
 
 .menu-item:hover svg {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 /* Active State */
 .menu-item.active {
   background-color: var(--sidebar-active-bg);
   color: var(--sidebar-active-text);
-  font-weight: 600;
-  box-shadow: none;
-  border-left: 3px solid #0d9488;
-  padding-left: 11px;
+  box-shadow: 0 4px 12px rgba(0, 184, 132, 0.2); /* Soft shadow for active pill */
 }
 
 .menu-item.active .menu-item-content svg {
@@ -321,19 +319,19 @@ body {
 /* Collapse Toggle Button */
 .collapse-toggle-btn {
   position: absolute;
-  bottom: 20px;
+  top: 32px; /* Moved to top beside logo or below */
   right: -12px;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  border: 1px solid var(--border-light);
-  background-color: #FFFFFF;
-  color: var(--text-primary);
+  border: none;
+  background-color: var(--card-bg);
+  color: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 2px 8px rgba(112, 144, 176, 0.2);
   transition: all 0.2s ease;
   z-index: 105;
   outline: none;
@@ -342,7 +340,6 @@ body {
 .collapse-toggle-btn:hover {
   background-color: var(--primary);
   color: white;
-  border-color: var(--primary);
   transform: scale(1.1);
 }
 
@@ -364,13 +361,13 @@ body {
 }
 
 .top-navbar {
-  height: 64px;
+  height: 80px; /* Taller, softer navbar */
   background-color: var(--topbar-bg);
   display: flex;
   align-items: center;
   justify-content: flex-end; 
-  padding: 0 28px;
-  border-bottom: 1px solid var(--border-light);
+  padding: 0 32px;
+  border-bottom: none; /* No border for seamless look */
   flex-shrink: 0;
 }
 
@@ -384,14 +381,18 @@ body {
   display: flex;
   align-items: center;
   gap: 20px;
+  background: var(--card-bg); /* Enclose icons in a soft pill */
+  padding: 8px 16px;
+  border-radius: 30px;
+  box-shadow: var(--shadow-sm);
 }
 
 .icon-btn {
-  background: var(--card-bg);
-  border: 1px solid var(--border-light);
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  background: transparent;
+  border: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -402,9 +403,8 @@ body {
 }
 
 .icon-btn:hover {
-  border-color: var(--primary);
+  background-color: var(--main-bg);
   color: var(--primary);
-  transform: translateY(-1px);
 }
 
 .icon-btn-dot {
@@ -421,37 +421,33 @@ body {
 .profile-box {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 4px 12px 4px 4px;
-  border: 1px solid var(--border-light);
-  border-radius: 10px;
+  gap: 12px;
+  padding: 4px;
+  border: none; /* Removed border */
+  border-radius: 30px;
   cursor: pointer;
   transition: all 0.2s ease;
-  background-color: var(--card-bg);
+  background-color: transparent;
 }
 
 .profile-box:hover {
-  border-color: var(--primary);
-  background-color: var(--primary-soft, #dbeafe);
+  background-color: var(--main-bg);
 }
 
 .profile-img {
-  width: 30px;
-  height: 30px;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: white;
-  border-radius: 8px;
+  width: 38px;
+  height: 38px;
+  background: url('https://i.pravatar.cc/150?u=harsh') center/cover no-repeat; /* Realistic avatar */
+  color: transparent;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Sora', sans-serif;
-  font-weight: 700;
-  font-size: 0.8rem;
   box-shadow: var(--shadow-sm);
 }
 
 .content-wrapper {
-  padding: 28px 32px;
+  padding: 24px 40px;
   overflow-y: auto;
   height: 100%;
   background-color: var(--main-bg);
