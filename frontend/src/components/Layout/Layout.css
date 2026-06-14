@@ -24,9 +24,9 @@
 
   /* Sidebar — Ocean Slate */
   --sidebar-bg: #1e3a5f;
-  --sidebar-text: rgba(255,255,255,0.58);
-  --sidebar-hover-bg: rgba(255,255,255,0.05);
-  --sidebar-hover-text: rgba(255,255,255,0.85);
+  --sidebar-text: #ffffff; /* Pure white */
+  --sidebar-hover-bg: rgba(255, 255, 255, 0.1);
+  --sidebar-hover-text: #ffffff;
   --sidebar-active-bg: rgba(13,148,136,0.22);
   --sidebar-active-text: #5eead4;
   --sidebar-border: rgba(255,255,255,0.06);
@@ -102,7 +102,6 @@ body {
   justify-content: space-between;
   padding: 0 20px;
   border-bottom: 1px solid var(--sidebar-border);
-  background-color: var(--card-bg);
   position: relative;
 }
 
@@ -131,8 +130,8 @@ body {
 .sidebar-brand-text {
   font-family: 'Sora', sans-serif;
   font-size: 1.1rem;
-  font-weight: 800;
-  color: var(--text-primary);
+  font-weight: 700;
+  color: #ffffff;
   letter-spacing: -0.3px;
   transition: opacity 0.2s ease, width 0.2s ease;
   white-space: nowrap;
@@ -552,9 +551,9 @@ body {
   
   --sidebar-bg: #080d19;
   --sidebar-border: #1e293b;
-  --sidebar-hover-bg: rgba(255, 255, 255, 0.05);
-  --sidebar-hover-text: #e2e8f0;
-  --sidebar-text: #6b7f99;
+  --sidebar-hover-bg: rgba(255, 255, 255, 0.08);
+  --sidebar-hover-text: #ffffff;
+  --sidebar-text: #ffffff; /* Pure white */
   --sidebar-active-bg: rgba(59, 130, 246, 0.12);
   --sidebar-active-text: #60a5fa;
   
