@@ -2,10 +2,13 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import TopNavbar from './TopNavbar';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 import './Layout.css';
 
 const Layout = ({ children, userRole, setUserRole }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const location = useLocation();
   
   // Persist collapsed state to localStorage
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
@@ -63,9 +66,20 @@ const Layout = ({ children, userRole, setUserRole }) => {
           toggleDarkMode={toggleDarkMode}
         />
 
-        {/* Dynamic Content */}
+        {/* Dynamic Content with Framer Motion Page Transitions */}
         <div className="content-wrapper">
-          {children}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              style={{ height: '100%' }}
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </div>

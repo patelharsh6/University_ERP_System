@@ -4,7 +4,8 @@ import './Dashboard.css';
 import { 
   FiUser, FiCalendar, FiCreditCard, FiTrendingUp, 
   FiMaximize, FiCheckCircle, FiAlertTriangle, FiBookOpen, FiPlus,
-  FiArrowUp, FiArrowDown, FiEdit3, FiAward, FiRadio, FiClock
+  FiArrowUp, FiArrowDown, FiEdit3, FiAward, FiRadio, FiClock,
+  FiCpu, FiTarget
 } from 'react-icons/fi';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
@@ -12,6 +13,7 @@ import {
 } from 'recharts';
 import FacultyDashboard from '../faculty/FacultyDashboard';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 /* ─────────────── Custom Recharts Tooltip ─────────────── */
 const PremiumTooltip = ({ active, payload, label, formatter }) => {
@@ -19,25 +21,39 @@ const PremiumTooltip = ({ active, payload, label, formatter }) => {
   const val = formatter ? formatter(payload[0].value) : payload[0].value;
   return (
     <div style={{
-      background: '#0f172a',
-      border: '1px solid rgba(255,255,255,0.06)',
-      borderRadius: '8px',
+      background: 'var(--surface-color)',
+      border: '1px solid var(--card-border)',
+      borderRadius: 'var(--radius-md)',
       padding: '10px 14px',
-      boxShadow: '0 8px 24px rgba(0,0,0,0.25)',
+      boxShadow: 'var(--shadow-lg)',
     }}>
-      <p style={{ color: '#94a3b8', fontSize: '0.7rem', fontWeight: 600, margin: 0, fontFamily: 'DM Sans, sans-serif', letterSpacing: '0.02em', textTransform: 'uppercase' }}>{label}</p>
-      <p style={{ color: '#f8fafc', fontSize: '0.92rem', fontWeight: 700, margin: '4px 0 0', fontFamily: 'Sora, sans-serif' }}>{val}</p>
+      <p style={{ color: 'var(--text-secondary)', fontSize: '0.7rem', fontWeight: 600, margin: 0, letterSpacing: '0.02em', textTransform: 'uppercase' }}>{label}</p>
+      <p style={{ color: 'var(--text-primary)', fontSize: '0.95rem', fontWeight: 700, margin: '4px 0 0' }}>{val}</p>
     </div>
   );
+};
+
+// Animation Variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
 };
 
 const Dashboard = ({ userRole }) => {
   
   // --- STUDENT MOCK DATA ---
-  const studentName = "Harsh";
+  const studentName = "Harsh Patel";
   
   const studentStats = [
-    { title: "Attendance", value: "92%", icon: <FiCalendar />, color: "stat-teal", sub: "Excellent" },
+    { title: "Attendance", value: "92%", icon: <FiCalendar />, color: "stat-teal", sub: "Goal achieved" },
     { title: "CGPA", value: "8.7", icon: <FiAward />, color: "stat-indigo", sub: "Top 10%" },
     { title: "Pending Assignments", value: "3", icon: <FiEdit3 />, color: "stat-amber", sub: "Due this week" },
     { title: "Outstanding Fees", value: "₹5,000", icon: <FiCreditCard />, color: "stat-rose", sub: "Due 15 Mar" },
@@ -61,7 +77,7 @@ const Dashboard = ({ userRole }) => {
     { id: 3, title: "Project Submission Deadline", date: "10 Feb", type: "important" },
   ];
 
-  // --- ADMIN MOCK DATA (Retained) ---
+  // --- ADMIN MOCK DATA ---
   const currentDate = "Mon, 08 Jun 2026";
   const adminStats = [
     { title: "Total Students", value: "12,500", icon: <FiUser />, color: "stat-indigo", sub: "+4% from last sem", trend: "up" },
@@ -80,26 +96,15 @@ const Dashboard = ({ userRole }) => {
     { month: 'Apr', collected: 900000 }, { month: 'May', collected: 2100000 }, { month: 'Jun', collected: 4500000 },
   ];
 
-  const growthData = [
-    { year: '2021', students: 8500 }, { year: '2022', students: 9600 }, { year: '2023', students: 10400 },
-    { year: '2024', students: 11200 }, { year: '2025', students: 12100 }, { year: '2026', students: 12500 },
-  ];
-
-  const enrollmentData = [
-    { name: 'CS', value: 4500, color: '#6366f1' }, { name: 'ECE', value: 3200, color: '#0d9488' },
-    { name: 'Mech', value: 2400, color: '#f59e0b' }, { name: 'Civil', value: 1400, color: '#f43f5e' },
-    { name: 'Other', value: 1000, color: '#8b5cf6' },
-  ];
-
   const recentStudents = [
-    { id: 1, name: "Aarav Mehta", course: "B.Tech CSE", fee: "₹1,20,000", status: "active", avatar: "#6366f1" },
+    { id: 1, name: "Aarav Mehta", course: "B.Tech CSE", fee: "₹1,20,000", status: "active", avatar: "#2563EB" },
     { id: 2, name: "Priya Sharma", course: "B.Tech ECE", fee: "₹85,000", status: "pending", avatar: "#8b5cf6" },
-    { id: 3, name: "Rohan Das", course: "B.Tech Mech", fee: "₹1,10,000", status: "active", avatar: "#0d9488" },
-    { id: 4, name: "Sneha Gupta", course: "B.Tech Civil", fee: "₹45,000", status: "overdue", avatar: "#f43f5e" },
-    { id: 5, name: "Vikram Singh", course: "B.Tech CSE", fee: "₹1,20,000", status: "active", avatar: "#f59e0b" },
+    { id: 3, name: "Rohan Das", course: "B.Tech Mech", fee: "₹1,10,000", status: "active", avatar: "#10B981" },
+    { id: 4, name: "Sneha Gupta", course: "B.Tech Civil", fee: "₹45,000", status: "overdue", avatar: "#EF4444" },
+    { id: 5, name: "Vikram Singh", course: "B.Tech CSE", fee: "₹1,20,000", status: "active", avatar: "#F59E0B" },
   ];
 
-  const axisStyle = { fill: '#94a3b8', fontSize: 10.5, fontFamily: 'DM Sans, sans-serif' };
+  const axisStyle = { fill: 'var(--text-secondary)', fontSize: 11, fontFamily: 'var(--font-family)' };
 
   // FACULTY DASHBOARD VIEW
   if (userRole === 'faculty') {
@@ -109,13 +114,13 @@ const Dashboard = ({ userRole }) => {
   // ADMIN DASHBOARD VIEW
   if (userRole === 'admin') {
     return (
-      <div className="dashboard-container">
+      <motion.div className="dashboard-container" variants={containerVariants} initial="hidden" animate="show">
         
         {/* WELCOME HEADER */}
-        <div className="welcome-header">
+        <motion.div className="welcome-header" variants={itemVariants}>
           <div className="welcome-text">
             <h1>Admin Dashboard</h1>
-            <p>University Analytics &bull; Campus Performance Overview</p>
+            <p>University Analytics & Campus Performance Overview</p>
           </div>
           <div className="header-right">
             <span className="date-badge">{currentDate}</span>
@@ -123,28 +128,28 @@ const Dashboard = ({ userRole }) => {
               <FiPlus /> Add Student
             </Link>
           </div>
-        </div>
+        </motion.div>
 
         {/* TOP STATISTICS CARDS */}
-        <div className="stats-grid">
+        <motion.div className="stats-grid" variants={itemVariants}>
           {adminStats.map((stat, index) => (
-            <div key={index} className="stat-card admin-stat">
+            <div key={index} className="stat-card">
               <div className="stat-header">
                 <span className="stat-label">{stat.title}</span>
                 <div className={`stat-icon ${stat.color}`}>{stat.icon}</div>
               </div>
               <div className="stat-value">{stat.value}</div>
               <div className="stat-sub" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                {stat.trend === 'up' && <FiArrowUp style={{ color: '#0d9488', fontSize: '0.8rem' }} />}
-                {stat.trend === 'down' && <FiArrowDown style={{ color: '#f43f5e', fontSize: '0.8rem' }} />}
+                {stat.trend === 'up' && <FiArrowUp style={{ color: 'var(--success)', fontSize: '0.8rem' }} />}
+                {stat.trend === 'down' && <FiArrowDown style={{ color: 'var(--danger)', fontSize: '0.8rem' }} />}
                 {stat.sub}
               </div>
             </div>
           ))}
-        </div>
+        </motion.div>
 
         {/* CHARTS GRID SECTION */}
-        <div className="admin-charts-grid">
+        <motion.div className="admin-charts-grid" variants={itemVariants}>
           
           <div className="dashboard-card chart-container-box">
             <div className="chart-info">
@@ -159,23 +164,23 @@ const Dashboard = ({ userRole }) => {
                 <AreaChart data={attendanceTrendsData}>
                   <defs>
                     <linearGradient id="adminAttGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#0d9488" stopOpacity={0.2}/>
-                      <stop offset="100%" stopColor="#0d9488" stopOpacity={0}/>
+                      <stop offset="0%" stopColor="var(--success)" stopOpacity={0.2}/>
+                      <stop offset="100%" stopColor="var(--success)" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--card-border, #e2e8f0)" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--card-border)" />
                   <XAxis dataKey="month" axisLine={false} tickLine={false} tick={axisStyle} />
                   <YAxis domain={[85, 100]} axisLine={false} tickLine={false} tick={axisStyle} tickFormatter={(v) => `${v}%`} />
                   <RechartsTooltip content={<PremiumTooltip formatter={(v) => `${v}%`} />} />
                   <Area 
                     type="monotone" 
                     dataKey="rate" 
-                    stroke="#0d9488" 
+                    stroke="var(--success)" 
                     strokeWidth={2} 
                     fillOpacity={1} 
                     fill="url(#adminAttGrad)" 
-                    dot={{ r: 3.5, fill: '#0d9488', stroke: '#fff', strokeWidth: 2 }}
-                    activeDot={{ r: 5, stroke: '#0d9488', strokeWidth: 2, fill: '#fff' }}
+                    dot={{ r: 3.5, fill: 'var(--success)', stroke: 'var(--surface-color)', strokeWidth: 2 }}
+                    activeDot={{ r: 5, stroke: 'var(--success)', strokeWidth: 2, fill: 'var(--surface-color)' }}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -195,11 +200,11 @@ const Dashboard = ({ userRole }) => {
                 <BarChart data={revenueAnalyticsData} barCategoryGap="25%">
                   <defs>
                     <linearGradient id="revBarGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#6366f1" stopOpacity={0.9}/>
-                      <stop offset="100%" stopColor="#6366f1" stopOpacity={0.5}/>
+                      <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.9}/>
+                      <stop offset="100%" stopColor="var(--primary)" stopOpacity={0.5}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--card-border, #e2e8f0)" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--card-border)" />
                   <XAxis dataKey="month" axisLine={false} tickLine={false} tick={axisStyle} />
                   <YAxis axisLine={false} tickLine={false} tick={axisStyle} tickFormatter={(v) => `₹${(v / 100000).toFixed(0)}L`} />
                   <RechartsTooltip content={<PremiumTooltip formatter={(v) => `₹${v.toLocaleString('en-IN')}`} />} />
@@ -214,11 +219,11 @@ const Dashboard = ({ userRole }) => {
             </div>
           </div>
 
-        </div>
+        </motion.div>
 
         {/* RECENT STUDENTS TABLE */}
-        <div className="admin-recent-section">
-          <div className="section-title" style={{ marginBottom: '16px' }}>
+        <motion.div className="admin-recent-section" variants={itemVariants}>
+          <div className="section-title">
             <span>Recent Enrollments</span>
             <Link to="/students" className="view-all-link">View All &rarr;</Link>
           </div>
@@ -243,8 +248,8 @@ const Dashboard = ({ userRole }) => {
                         {s.name}
                       </div>
                     </td>
-                    <td style={{ color: 'var(--text-muted)' }}>{s.course}</td>
-                    <td style={{ fontWeight: 600, fontFamily: 'Sora, sans-serif', fontSize: '13px' }}>{s.fee}</td>
+                    <td style={{ color: 'var(--text-secondary)' }}>{s.course}</td>
+                    <td style={{ fontWeight: 600, fontFamily: 'var(--font-family)', fontSize: 'var(--text-sm)' }}>{s.fee}</td>
                     <td>
                       <span className={`status-pill ${s.status}`}>
                         {s.status.charAt(0).toUpperCase() + s.status.slice(1)}
@@ -255,20 +260,20 @@ const Dashboard = ({ userRole }) => {
               </tbody>
             </table>
           </div>
-        </div>
+        </motion.div>
 
-      </div>
+      </motion.div>
     );
   }
 
   // ==========================================
-  // STUDENT DASHBOARD VIEW (Requested Redesign)
+  // STUDENT DASHBOARD VIEW
   // ==========================================
   return (
-    <div className="dashboard-container">
+    <motion.div className="dashboard-container" variants={containerVariants} initial="hidden" animate="show">
       
       {/* 1. WELCOME HEADER */}
-      <div className="welcome-header student-header">
+      <motion.div className="welcome-header student-header" variants={itemVariants}>
         <div className="welcome-text">
           <h1>Good Morning, {studentName} 👋</h1>
           <div className="student-meta-tags">
@@ -284,10 +289,10 @@ const Dashboard = ({ userRole }) => {
             <FiMaximize /> Scan ID
           </button>
         </div>
-      </div>
+      </motion.div>
 
       {/* 2. QUICK STATS CARDS */}
-      <div className="stats-grid">
+      <motion.div className="stats-grid" variants={itemVariants}>
         {studentStats.map((stat, index) => (
           <div key={index} className={`stat-card`}>
             <div className="stat-header">
@@ -295,15 +300,16 @@ const Dashboard = ({ userRole }) => {
               <div className={`stat-icon ${stat.color}`}>{stat.icon}</div>
             </div>
             <div className="stat-value">{stat.value}</div>
+            <div className="stat-sub">{stat.sub}</div>
           </div>
         ))}
-      </div>
+      </motion.div>
 
       {/* 3. MAIN CONTENT GRID */}
       <div className="student-main-grid">
         
         {/* LEFT COLUMN */}
-        <div className="student-col-left">
+        <motion.div className="student-col-left" variants={itemVariants}>
           
           {/* Attendance Overview */}
           <div className="section-title">Attendance Overview</div>
@@ -311,8 +317,19 @@ const Dashboard = ({ userRole }) => {
             <div className="attendance-circle-container">
               <div className="progress-ring-wrapper">
                 <svg className="progress-ring" width="120" height="120">
-                  <circle className="progress-ring-bg" stroke="var(--card-border)" strokeWidth="8" fill="transparent" r="52" cx="60" cy="60"/>
-                  <circle className="progress-ring-path" stroke="var(--primary)" strokeWidth="8" strokeDasharray="326" strokeDashoffset="26" strokeLinecap="round" fill="transparent" r="52" cx="60" cy="60"/>
+                  <circle className="progress-ring-bg" stroke="var(--hover-bg)" strokeWidth="8" fill="transparent" r="52" cx="60" cy="60"/>
+                  <motion.circle 
+                    className="progress-ring-path" 
+                    stroke="var(--primary)" 
+                    strokeWidth="8" 
+                    strokeDasharray="326" 
+                    strokeLinecap="round" 
+                    fill="transparent" 
+                    r="52" cx="60" cy="60"
+                    initial={{ strokeDashoffset: 326 }}
+                    animate={{ strokeDashoffset: 326 - (326 * 0.92) }}
+                    transition={{ duration: 1.5, ease: "easeOut" }}
+                  />
                 </svg>
                 <div className="ring-text">
                   <span className="ring-value">92%</span>
@@ -341,7 +358,6 @@ const Dashboard = ({ userRole }) => {
           {/* Recent Results */}
           <div className="section-title">
             <span>Course Result</span>
-            <span style={{color: 'var(--text-muted)', fontSize: '18px', cursor: 'pointer', lineHeight: 1}}>—</span>
           </div>
           <div className="dashboard-card course-result-card" style={{ padding: '30px 20px' }}>
             <div className="vertical-pill-chart">
@@ -352,7 +368,12 @@ const Dashboard = ({ userRole }) => {
                   <div key={res.id} className="pill-col">
                     <span className="pill-label">{res.subject}</span>
                     <div className="pill-track">
-                      <div className={`pill-fill ${isHighlight ? 'highlight' : ''}`} style={{ height: `${percent}%` }}></div>
+                      <motion.div 
+                        className={`pill-fill ${isHighlight ? 'highlight' : ''}`} 
+                        initial={{ height: 0 }}
+                        animate={{ height: `${percent}%` }}
+                        transition={{ duration: 1, delay: idx * 0.2 }}
+                      />
                     </div>
                     <span className="pill-value">{res.marks}</span>
                   </div>
@@ -361,10 +382,10 @@ const Dashboard = ({ userRole }) => {
             </div>
           </div>
 
-        </div>
+        </motion.div>
 
         {/* MIDDLE COLUMN */}
-        <div className="student-col-middle">
+        <motion.div className="student-col-middle" variants={itemVariants}>
           {/* Upcoming Classes */}
           <div className="section-title">
             <span>Upcoming Classes</span>
@@ -386,10 +407,29 @@ const Dashboard = ({ userRole }) => {
               ))}
             </div>
           </div>
-        </div>
+          
+          {/* AI Suggestions / Progress Tracker */}
+          <div className="section-title" style={{ marginTop: '32px' }}>
+            <span>AI Study Assistant</span>
+            <FiCpu color="var(--primary)" />
+          </div>
+          <div className="dashboard-card" style={{ background: 'linear-gradient(135deg, var(--surface-color), var(--active-bg))', border: '1px solid var(--primary-soft)' }}>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+              <div style={{ background: 'var(--primary)', color: 'white', padding: '10px', borderRadius: '12px' }}>
+                <FiTarget size={20} />
+              </div>
+              <div>
+                <h4 style={{ margin: '0 0 4px 0', fontSize: 'var(--text-base)' }}>Study Streak: 12 Days 🔥</h4>
+                <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>You are well prepared for your upcoming DBMS quiz. Review chapter 4 to maximize your score.</p>
+                <button className="btn btn-secondary" style={{ marginTop: '12px', fontSize: 'var(--text-xs)', padding: '6px 12px' }}>View Recommended Material</button>
+              </div>
+            </div>
+          </div>
+          
+        </motion.div>
 
         {/* RIGHT COLUMN */}
-        <div className="student-col-right">
+        <motion.div className="student-col-right" variants={itemVariants}>
           {/* Recent Announcements */}
           <div className="section-title">
             <span>Announcements</span>
@@ -408,10 +448,10 @@ const Dashboard = ({ userRole }) => {
               ))}
             </div>
           </div>
-        </div>
+        </motion.div>
 
       </div>
-    </div>
+    </motion.div>
   );
 };
 

@@ -1,4 +1,4 @@
-// src/pages/FacultyDashboard.jsx
+// src/pages/faculty/FacultyDashboard.jsx
 import React from 'react';
 import './FacultyDashboard.css';
 import { 
@@ -7,6 +7,38 @@ import {
   FaUserGraduate, FaTasks 
 } from 'react-icons/fa';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, CartesianGrid, YAxis } from 'recharts';
+import { motion } from 'framer-motion';
+
+const PremiumTooltip = ({ active, payload, label, formatter }) => {
+  if (!active || !payload || !payload.length) return null;
+  const val = formatter ? formatter(payload[0].value) : payload[0].value;
+  return (
+    <div style={{
+      background: 'var(--surface-color)',
+      border: '1px solid var(--card-border)',
+      borderRadius: 'var(--radius-md)',
+      padding: '10px 14px',
+      boxShadow: 'var(--shadow-lg)',
+    }}>
+      <p style={{ color: 'var(--text-secondary)', fontSize: '0.7rem', fontWeight: 600, margin: 0, letterSpacing: '0.02em', textTransform: 'uppercase' }}>{label}</p>
+      <p style={{ color: 'var(--text-primary)', fontSize: '0.95rem', fontWeight: 700, margin: '4px 0 0' }}>{val}</p>
+    </div>
+  );
+};
+
+// Animation Variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+};
 
 const FacultyDashboard = () => {
   // --- MOCK DATA ---
@@ -38,11 +70,13 @@ const FacultyDashboard = () => {
     { name: 'CS305', avgMarks: 71 },
   ];
 
+  const axisStyle = { fill: 'var(--text-secondary)', fontSize: 11, fontFamily: 'var(--font-family)' };
+
   return (
-    <div className="fac-dashboard-container">
+    <motion.div className="fac-dashboard-container" variants={containerVariants} initial="hidden" animate="show">
       
       {/* 🟦 1. HEADER & QUICK ACTIONS */}
-      <div className="fac-header">
+      <motion.div className="fac-header" variants={itemVariants}>
         <div className="fac-welcome">
           <h1>Good Morning, {facultyName} 👋</h1>
           <p>{department} | Faculty Portal</p>
@@ -58,10 +92,10 @@ const FacultyDashboard = () => {
             <FaBullhorn /> Post Notice
           </button>
         </div>
-      </div>
+      </motion.div>
 
       {/* 🟩 2. SUMMARY STATS */}
-      <div className="fac-stats-grid">
+      <motion.div className="fac-stats-grid" variants={itemVariants}>
         {stats.map((stat, index) => (
           <div key={index} className="fac-stat-card">
             <div className={`fac-stat-icon ${stat.color}`}>{stat.icon}</div>
@@ -71,19 +105,19 @@ const FacultyDashboard = () => {
             </div>
           </div>
         ))}
-      </div>
+      </motion.div>
 
       {/* 🟨 3. MAIN GRID */}
       <div className="fac-main-grid">
         
         {/* LEFT COLUMN (70%) */}
-        <div className="fac-col-left">
+        <motion.div className="fac-col-left" variants={itemVariants}>
           
           {/* Today's Schedule */}
           <div className="fac-section">
             <div className="fac-section-header">
-              <h2 className="fac-section-title"><FaClock color="#0EA5E9" /> Today's Schedule</h2>
-              <span style={{ fontSize: '0.85rem', color: '#64748B', fontWeight: '600' }}>12 Feb 2026</span>
+              <h2 className="fac-section-title"><FaClock color="var(--primary)" /> Today's Schedule</h2>
+              <span style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', fontWeight: '600' }}>12 Feb 2026</span>
             </div>
             
             <div>
@@ -105,8 +139,8 @@ const FacultyDashboard = () => {
                         <FaQrcode /> Accept Attendance
                       </button>
                     )}
-                    {cls.status === 'completed' && <span style={{ color: '#10B981', fontWeight: '600', fontSize: '0.9rem' }}>Recorded</span>}
-                    {cls.status === 'upcoming' && <span style={{ color: '#94A3B8', fontWeight: '600', fontSize: '0.9rem' }}>Upcoming</span>}
+                    {cls.status === 'completed' && <span style={{ color: 'var(--success)', fontWeight: '600', fontSize: 'var(--text-sm)' }}>Recorded</span>}
+                    {cls.status === 'upcoming' && <span style={{ color: 'var(--text-secondary)', fontWeight: '600', fontSize: 'var(--text-sm)' }}>Upcoming</span>}
                   </div>
                 </div>
               ))}
@@ -117,29 +151,29 @@ const FacultyDashboard = () => {
           <div className="fac-section">
             <div className="fac-section-header">
               <h2 className="fac-section-title"><FaTasks color="#8B5CF6" /> Pending Evaluations</h2>
-              <button style={{ background: 'none', border: 'none', color: '#0EA5E9', cursor: 'pointer', fontWeight: '600' }}>View All</button>
+              <button style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontWeight: '500', fontSize: 'var(--text-sm)' }}>View All</button>
             </div>
             
             <div>
               {pendingGrading.map(task => (
                 <div key={task.id} className="grading-item">
                   <div>
-                    <h4 style={{ margin: '0 0 4px 0', color: '#0F172A', fontSize: '1rem' }}>{task.task}</h4>
-                    <div style={{ fontSize: '0.85rem', color: '#64748B' }}>{task.course}</div>
+                    <h4 style={{ margin: '0 0 4px 0', color: 'var(--text-primary)', fontSize: 'var(--text-base)', fontWeight: '600' }}>{task.task}</h4>
+                    <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>{task.course}</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                     <span className="grade-badge">{task.pending} Pending</span>
-                    <button className="fac-btn fac-btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem' }}>Grade Now</button>
+                    <button className="fac-btn fac-btn-secondary" style={{ padding: '6px 12px', fontSize: 'var(--text-xs)' }}>Grade Now</button>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-        </div>
+        </motion.div>
 
         {/* RIGHT COLUMN (30%) */}
-        <div className="fac-col-right">
+        <motion.div className="fac-col-right" variants={itemVariants}>
           
           {/* AI Insights Panel (Premium Feature) */}
           <div className="insight-card">
@@ -151,7 +185,7 @@ const FacultyDashboard = () => {
 
           {/* Alerts Section */}
           <div className="fac-section" style={{ padding: '20px' }}>
-            <h2 className="fac-section-title" style={{ marginBottom: '16px' }}><FaExclamationTriangle color="#EF4444" /> Action Required</h2>
+            <h2 className="fac-section-title" style={{ marginBottom: '16px' }}><FaExclamationTriangle color="var(--danger)" /> Action Required</h2>
             
             <div className="alert-item">
               <div className="alert-icon"><FaExclamationTriangle /></div>
@@ -160,8 +194,8 @@ const FacultyDashboard = () => {
                 <p>12 students in CS101 have fallen below 75% attendance.</p>
               </div>
             </div>
-            <div className="alert-item" style={{ borderBottom: 'none' }}>
-              <div className="alert-icon"><FaExclamationTriangle color="#F59E0B" /></div>
+            <div className="alert-item">
+              <div className="alert-icon"><FaExclamationTriangle color="var(--warning)" /></div>
               <div className="alert-content">
                 <h4>Missing Submissions</h4>
                 <p>5 students haven't submitted Lab Report 2 (Past Due).</p>
@@ -171,23 +205,29 @@ const FacultyDashboard = () => {
 
           {/* Performance Snapshot */}
           <div className="fac-section" style={{ padding: '20px' }}>
-            <h2 className="fac-section-title" style={{ marginBottom: '16px' }}><FaChartBar color="#10B981" /> Avg Class Marks</h2>
+            <h2 className="fac-section-title" style={{ marginBottom: '16px' }}><FaChartBar color="var(--success)" /> Avg Class Marks</h2>
             <div style={{ height: '180px', width: '100%' }}>
               <ResponsiveContainer>
                 <BarChart data={performanceData}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} dy={10} />
+                  <defs>
+                    <linearGradient id="facBarGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.9}/>
+                      <stop offset="100%" stopColor="var(--primary)" stopOpacity={0.5}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--card-border)" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={axisStyle} dy={10} />
                   <YAxis domain={[0, 100]} hide />
-                  <Tooltip cursor={{ fill: '#F8FAFC' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-                  <Bar dataKey="avgMarks" fill="#0EA5E9" radius={[4, 4, 0, 0]} barSize={30} />
+                  <Tooltip content={<PremiumTooltip formatter={(v) => `${v}%`} />} cursor={{ fill: 'var(--hover-bg)' }} />
+                  <Bar dataKey="avgMarks" fill="url(#facBarGrad)" radius={[4, 4, 0, 0]} maxBarSize={38} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
