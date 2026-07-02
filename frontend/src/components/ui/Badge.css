@@ -1,0 +1,36 @@
+.premium-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  font-family: var(--font-family);
+  line-height: 1.2;
+}
+
+.premium-badge-default {
+  background-color: var(--hover-bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--card-border);
+}
+
+.premium-badge-primary {
+  background-color: rgba(37, 99, 235, 0.1);
+  color: var(--primary);
+}
+
+.premium-badge-success {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+}
+
+.premium-badge-warning {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: var(--warning);
+}
+
+.premium-badge-danger {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+}

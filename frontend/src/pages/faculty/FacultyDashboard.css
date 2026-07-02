@@ -112,10 +112,25 @@
   flex-shrink: 0;
 }
 
-.icon-blue { background: rgba(37, 99, 235, 0.1); color: var(--primary); }
-.icon-purple { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
-.icon-green { background: rgba(16, 185, 129, 0.1); color: var(--success); }
-.icon-orange { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+.icon-blue {
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--primary);
+}
+
+.icon-purple {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8B5CF6;
+}
+
+.icon-green {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+}
+
+.icon-orange {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning);
+}
 
 .fac-stat-content h3 {
   font-family: var(--font-family-display);
@@ -206,9 +221,17 @@
 }
 
 @keyframes pulse-blue {
-  0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+  }
 }
 
 /* Grading List */
@@ -220,8 +243,14 @@
   border-bottom: 1px solid var(--card-border);
 }
 
-.grading-item:last-child { border-bottom: none; padding-bottom: 0; }
-.grading-item:first-child { padding-top: 0; }
+.grading-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.grading-item:first-child {
+  padding-top: 0;
+}
 
 .grade-badge {
   background: rgba(245, 158, 11, 0.1);
@@ -265,8 +294,14 @@
   border-bottom: 1px solid var(--card-border);
 }
 
-.alert-item:last-child { border-bottom: none; padding-bottom: 0; }
-.alert-item:first-child { padding-top: 0; }
+.alert-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.alert-item:first-child {
+  padding-top: 0;
+}
 
 .alert-icon {
   color: var(--danger);
@@ -304,13 +339,34 @@
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .fac-main-grid { grid-template-columns: 1fr; }
+  .fac-main-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 600px) {
-  .fac-header { flex-direction: column; align-items: flex-start; }
-  .fac-quick-actions { width: 100%; flex-direction: column; }
-  .fac-btn { justify-content: center; }
-  .fac-class-card { flex-direction: column; align-items: flex-start; gap: 16px; }
-  .fac-class-card button { width: 100%; justify-content: center; }
+  .fac-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .fac-quick-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .fac-btn {
+    justify-content: center;
+  }
+
+  .fac-class-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .fac-class-card button {
+    width: 100%;
+    justify-content: center;
+  }
 }

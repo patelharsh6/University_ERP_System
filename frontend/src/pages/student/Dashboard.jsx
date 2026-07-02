@@ -9,11 +9,18 @@ import {
 } from 'react-icons/fi';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
-  BarChart, Bar, PieChart, Pie, Cell, Legend
+  BarChart, Bar
 } from 'recharts';
 import FacultyDashboard from '../faculty/FacultyDashboard';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+
+// UI Components
+import Card from '../../components/ui/Card';
+import Button from '../../components/ui/Button';
+import Badge from '../../components/ui/Badge';
+import KPI from '../../components/ui/KPI';
+import Table from '../../components/ui/Table';
 
 /* ─────────────── Custom Recharts Tooltip ─────────────── */
 const PremiumTooltip = ({ active, payload, label, formatter }) => {
@@ -53,10 +60,10 @@ const Dashboard = ({ userRole }) => {
   const studentName = "Harsh Patel";
   
   const studentStats = [
-    { title: "Attendance", value: "92%", icon: <FiCalendar />, color: "stat-teal", sub: "Goal achieved" },
-    { title: "CGPA", value: "8.7", icon: <FiAward />, color: "stat-indigo", sub: "Top 10%" },
-    { title: "Pending Assignments", value: "3", icon: <FiEdit3 />, color: "stat-amber", sub: "Due this week" },
-    { title: "Outstanding Fees", value: "₹5,000", icon: <FiCreditCard />, color: "stat-rose", sub: "Due 15 Mar" },
+    { title: "Attendance", value: "92%", icon: <FiCalendar />, color: "icon-green", sub: "Goal achieved" },
+    { title: "CGPA", value: "8.7", icon: <FiAward />, color: "icon-purple", sub: "Top 10%" },
+    { title: "Pending Assignments", value: "3", icon: <FiEdit3 />, color: "icon-orange", sub: "Due this week" },
+    { title: "Outstanding Fees", value: "₹5,000", icon: <FiCreditCard />, color: "icon-blue", sub: "Due 15 Mar" },
   ];
 
   const upcomingClasses = [
@@ -80,10 +87,10 @@ const Dashboard = ({ userRole }) => {
   // --- ADMIN MOCK DATA ---
   const currentDate = "Mon, 08 Jun 2026";
   const adminStats = [
-    { title: "Total Students", value: "12,500", icon: <FiUser />, color: "stat-indigo", sub: "+4% from last sem", trend: "up" },
-    { title: "Attendance Rate", value: "92%", icon: <FiCalendar />, color: "stat-teal", sub: "Goal: >90%", trend: "up" },
-    { title: "Revenue", value: "₹45,00,000", icon: <FiCreditCard />, color: "stat-purple", sub: "Outstanding: ₹8.4L", trend: "up" },
-    { title: "Courses Offered", value: "48", icon: <FiBookOpen />, color: "stat-cyan", sub: "6 departments", trend: "neutral" },
+    { title: "Total Students", value: "12,500", icon: <FiUser />, color: "icon-purple", sub: "+4% from last sem", trend: "up" },
+    { title: "Attendance Rate", value: "92%", icon: <FiCalendar />, color: "icon-green", sub: "Goal: >90%", trend: "up" },
+    { title: "Revenue", value: "₹45,00,000", icon: <FiCreditCard />, color: "icon-blue", sub: "Outstanding: ₹8.4L", trend: "up" },
+    { title: "Courses Offered", value: "48", icon: <FiBookOpen />, color: "icon-orange", sub: "6 departments", trend: "neutral" },
   ];
 
   const attendanceTrendsData = [
@@ -96,12 +103,39 @@ const Dashboard = ({ userRole }) => {
     { month: 'Apr', collected: 900000 }, { month: 'May', collected: 2100000 }, { month: 'Jun', collected: 4500000 },
   ];
 
-  const recentStudents = [
+  const recentStudentsData = [
     { id: 1, name: "Aarav Mehta", course: "B.Tech CSE", fee: "₹1,20,000", status: "active", avatar: "#2563EB" },
     { id: 2, name: "Priya Sharma", course: "B.Tech ECE", fee: "₹85,000", status: "pending", avatar: "#8b5cf6" },
     { id: 3, name: "Rohan Das", course: "B.Tech Mech", fee: "₹1,10,000", status: "active", avatar: "#10B981" },
     { id: 4, name: "Sneha Gupta", course: "B.Tech Civil", fee: "₹45,000", status: "overdue", avatar: "#EF4444" },
     { id: 5, name: "Vikram Singh", course: "B.Tech CSE", fee: "₹1,20,000", status: "active", avatar: "#F59E0B" },
+  ];
+
+  const adminTableColumns = [
+    {
+      header: "Student",
+      cell: (row) => (
+        <div className="student-name-cell">
+          <div className="student-avatar" style={{ background: row.avatar }}>
+            {row.name.split(' ').map(n => n[0]).join('')}
+          </div>
+          {row.name}
+        </div>
+      )
+    },
+    { accessor: "course", header: "Course" },
+    { 
+      header: "Fees Paid",
+      cell: (row) => <span style={{ fontWeight: 600, fontFamily: 'var(--font-family)', fontSize: 'var(--text-sm)' }}>{row.fee}</span>
+    },
+    {
+      header: "Status",
+      cell: (row) => (
+        <Badge variant={row.status === 'active' ? 'success' : row.status === 'pending' ? 'warning' : 'danger'}>
+          {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
+        </Badge>
+      )
+    }
   ];
 
   const axisStyle = { fill: 'var(--text-secondary)', fontSize: 11, fontFamily: 'var(--font-family)' };
@@ -124,41 +158,32 @@ const Dashboard = ({ userRole }) => {
           </div>
           <div className="header-right">
             <span className="date-badge">{currentDate}</span>
-            <Link to="/registration" className="quick-action-btn" style={{ textDecoration: 'none' }}>
-              <FiPlus /> Add Student
-            </Link>
+            <Button icon={<FiPlus />} onClick={() => window.location.href = '/registration'}>
+              Add Student
+            </Button>
           </div>
         </motion.div>
 
         {/* TOP STATISTICS CARDS */}
         <motion.div className="stats-grid" variants={itemVariants}>
           {adminStats.map((stat, index) => (
-            <div key={index} className="stat-card">
-              <div className="stat-header">
-                <span className="stat-label">{stat.title}</span>
-                <div className={`stat-icon ${stat.color}`}>{stat.icon}</div>
-              </div>
-              <div className="stat-value">{stat.value}</div>
-              <div className="stat-sub" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                {stat.trend === 'up' && <FiArrowUp style={{ color: 'var(--success)', fontSize: '0.8rem' }} />}
-                {stat.trend === 'down' && <FiArrowDown style={{ color: 'var(--danger)', fontSize: '0.8rem' }} />}
-                {stat.sub}
-              </div>
-            </div>
+            <KPI 
+              key={index}
+              title={stat.title}
+              value={stat.value}
+              icon={stat.icon}
+              iconBgClass={stat.color}
+              trend={stat.trend}
+              trendValue={stat.sub}
+              delay={index * 0.1}
+            />
           ))}
         </motion.div>
 
         {/* CHARTS GRID SECTION */}
         <motion.div className="admin-charts-grid" variants={itemVariants}>
           
-          <div className="dashboard-card chart-container-box">
-            <div className="chart-info">
-              <div>
-                <h4>Attendance Trends</h4>
-                <p>Monthly aggregate attendance rate</p>
-              </div>
-              <span className="chart-period-badge">Jan — Jun 2026</span>
-            </div>
+          <Card title="Attendance Trends" subtitle="Monthly aggregate attendance rate" action={<Badge>Jan — Jun 2026</Badge>}>
             <div style={{ height: '230px', width: '100%', marginTop: '16px' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={attendanceTrendsData}>
@@ -185,16 +210,9 @@ const Dashboard = ({ userRole }) => {
                 </AreaChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </Card>
 
-          <div className="dashboard-card chart-container-box">
-            <div className="chart-info">
-              <div>
-                <h4>Revenue Collection</h4>
-                <p>Monthly tuition fee collection</p>
-              </div>
-              <span className="chart-period-badge">Jan — Jun 2026</span>
-            </div>
+          <Card title="Revenue Collection" subtitle="Monthly tuition fee collection" action={<Badge>Jan — Jun 2026</Badge>}>
             <div style={{ height: '230px', width: '100%', marginTop: '16px' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={revenueAnalyticsData} barCategoryGap="25%">
@@ -217,7 +235,7 @@ const Dashboard = ({ userRole }) => {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </Card>
 
         </motion.div>
 
@@ -227,39 +245,9 @@ const Dashboard = ({ userRole }) => {
             <span>Recent Enrollments</span>
             <Link to="/students" className="view-all-link">View All &rarr;</Link>
           </div>
-          <div className="dashboard-card" style={{ padding: 0, overflow: 'hidden' }}>
-            <table className="recent-table">
-              <thead>
-                <tr>
-                  <th>Student</th>
-                  <th>Course</th>
-                  <th>Fees Paid</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentStudents.map((s) => (
-                  <tr key={s.id}>
-                    <td>
-                      <div className="student-name-cell">
-                        <div className="student-avatar" style={{ background: s.avatar }}>
-                          {s.name.split(' ').map(n => n[0]).join('')}
-                        </div>
-                        {s.name}
-                      </div>
-                    </td>
-                    <td style={{ color: 'var(--text-secondary)' }}>{s.course}</td>
-                    <td style={{ fontWeight: 600, fontFamily: 'var(--font-family)', fontSize: 'var(--text-sm)' }}>{s.fee}</td>
-                    <td>
-                      <span className={`status-pill ${s.status}`}>
-                        {s.status.charAt(0).toUpperCase() + s.status.slice(1)}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Card noPadding>
+            <Table columns={adminTableColumns} data={recentStudentsData} />
+          </Card>
         </motion.div>
 
       </motion.div>
@@ -285,23 +273,22 @@ const Dashboard = ({ userRole }) => {
           </div>
         </div>
         <div className="header-right">
-          <button className="quick-action-btn">
-            <FiMaximize /> Scan ID
-          </button>
+          <Button icon={<FiMaximize />}>Scan ID</Button>
         </div>
       </motion.div>
 
       {/* 2. QUICK STATS CARDS */}
       <motion.div className="stats-grid" variants={itemVariants}>
         {studentStats.map((stat, index) => (
-          <div key={index} className={`stat-card`}>
-            <div className="stat-header">
-              <span className="stat-label">{stat.title}</span>
-              <div className={`stat-icon ${stat.color}`}>{stat.icon}</div>
-            </div>
-            <div className="stat-value">{stat.value}</div>
-            <div className="stat-sub">{stat.sub}</div>
-          </div>
+          <KPI 
+            key={index}
+            title={stat.title}
+            value={stat.value}
+            icon={stat.icon}
+            iconBgClass={stat.color}
+            trendValue={stat.sub}
+            delay={index * 0.1}
+          />
         ))}
       </motion.div>
 
@@ -313,7 +300,7 @@ const Dashboard = ({ userRole }) => {
           
           {/* Attendance Overview */}
           <div className="section-title">Attendance Overview</div>
-          <div className="dashboard-card attendance-overview-card">
+          <Card className="attendance-overview-card">
             <div className="attendance-circle-container">
               <div className="progress-ring-wrapper">
                 <svg className="progress-ring" width="120" height="120">
@@ -353,13 +340,13 @@ const Dashboard = ({ userRole }) => {
               </div>
               <Link to="/attendance" className="view-all-link" style={{ marginTop: '8px', display: 'inline-block' }}>View Details &rarr;</Link>
             </div>
-          </div>
+          </Card>
 
           {/* Recent Results */}
           <div className="section-title">
             <span>Course Result</span>
           </div>
-          <div className="dashboard-card course-result-card" style={{ padding: '30px 20px' }}>
+          <Card className="course-result-card">
             <div className="vertical-pill-chart">
               {recentResults.map((res, idx) => {
                 const percent = (res.marks / res.total) * 100;
@@ -380,7 +367,7 @@ const Dashboard = ({ userRole }) => {
                 );
               })}
             </div>
-          </div>
+          </Card>
 
         </motion.div>
 
@@ -391,7 +378,7 @@ const Dashboard = ({ userRole }) => {
             <span>Upcoming Classes</span>
             <Link to="/timetable" className="view-all-link">Full Timetable &rarr;</Link>
           </div>
-          <div className="dashboard-card">
+          <Card>
             <div className="upcoming-classes-list">
               {upcomingClasses.map((cls) => (
                 <div key={cls.id} className="upcoming-class-item">
@@ -406,14 +393,14 @@ const Dashboard = ({ userRole }) => {
                 </div>
               ))}
             </div>
-          </div>
+          </Card>
           
           {/* AI Suggestions / Progress Tracker */}
           <div className="section-title" style={{ marginTop: '32px' }}>
             <span>AI Study Assistant</span>
             <FiCpu color="var(--primary)" />
           </div>
-          <div className="dashboard-card" style={{ background: 'linear-gradient(135deg, var(--surface-color), var(--active-bg))', border: '1px solid var(--primary-soft)' }}>
+          <Card style={{ background: 'linear-gradient(135deg, var(--surface-color), var(--active-bg))', border: '1px solid var(--primary-soft)' }}>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
               <div style={{ background: 'var(--primary)', color: 'white', padding: '10px', borderRadius: '12px' }}>
                 <FiTarget size={20} />
@@ -421,10 +408,10 @@ const Dashboard = ({ userRole }) => {
               <div>
                 <h4 style={{ margin: '0 0 4px 0', fontSize: 'var(--text-base)' }}>Study Streak: 12 Days 🔥</h4>
                 <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>You are well prepared for your upcoming DBMS quiz. Review chapter 4 to maximize your score.</p>
-                <button className="btn btn-secondary" style={{ marginTop: '12px', fontSize: 'var(--text-xs)', padding: '6px 12px' }}>View Recommended Material</button>
+                <Button variant="secondary" size="sm" style={{ marginTop: '12px' }}>View Recommended Material</Button>
               </div>
             </div>
-          </div>
+          </Card>
           
         </motion.div>
 
@@ -435,7 +422,7 @@ const Dashboard = ({ userRole }) => {
             <span>Announcements</span>
             <Link to="/announcements" className="view-all-link">View All &rarr;</Link>
           </div>
-          <div className="dashboard-card">
+          <Card>
             <div className="dashboard-announcements-list">
               {announcements.map((item) => (
                 <div key={item.id} className="dashboard-announce-item">
@@ -447,7 +434,7 @@ const Dashboard = ({ userRole }) => {
                 </div>
               ))}
             </div>
-          </div>
+          </Card>
         </motion.div>
 
       </div>

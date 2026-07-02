@@ -139,13 +139,33 @@
   justify-content: center;
 }
 
-.stat-teal { color: var(--success); }
-.stat-indigo { color: var(--primary); }
-.stat-amber { color: var(--warning); }
-.stat-rose { color: var(--danger); }
-.stat-blue { color: var(--primary-hover); }
-.stat-purple { color: #8b5cf6; }
-.stat-cyan { color: #06b6d4; }
+.stat-teal {
+  color: var(--success);
+}
+
+.stat-indigo {
+  color: var(--primary);
+}
+
+.stat-amber {
+  color: var(--warning);
+}
+
+.stat-rose {
+  color: var(--danger);
+}
+
+.stat-blue {
+  color: var(--primary-hover);
+}
+
+.stat-purple {
+  color: #8b5cf6;
+}
+
+.stat-cyan {
+  color: #06b6d4;
+}
 
 .stat-value {
   font-family: var(--font-family-display);
@@ -246,7 +266,10 @@
 
 .ring-text {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -275,8 +298,14 @@
   height: 10px;
   border-radius: var(--radius-full);
 }
-.att-indicator.present { background-color: var(--success); }
-.att-indicator.absent { background-color: var(--danger); }
+
+.att-indicator.present {
+  background-color: var(--success);
+}
+
+.att-indicator.absent {
+  background-color: var(--danger);
+}
 
 .att-details {
   display: flex;
@@ -285,8 +314,14 @@
   font-size: var(--text-sm);
 }
 
-.att-label { color: var(--text-secondary); }
-.att-val { font-weight: 600; color: var(--text-primary); }
+.att-label {
+  color: var(--text-secondary);
+}
+
+.att-val {
+  font-weight: 600;
+  color: var(--text-primary);
+}
 
 /* --- COURSE RESULTS (VERTICAL PILL CHART) --- */
 .vertical-pill-chart {
@@ -413,9 +448,21 @@
   margin-top: 6px;
   flex-shrink: 0;
 }
-.announce-indicator.urgent { background-color: var(--danger); box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2); }
-.announce-indicator.important { background-color: var(--warning); box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2); }
-.announce-indicator.general { background-color: var(--primary); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2); }
+
+.announce-indicator.urgent {
+  background-color: var(--danger);
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+}
+
+.announce-indicator.important {
+  background-color: var(--warning);
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
+}
+
+.announce-indicator.general {
+  background-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+}
 
 .announce-content {
   display: flex;
@@ -546,6 +593,17 @@
   font-weight: 500;
 }
 
-.status-pill.active { background: rgba(16, 185, 129, 0.1); color: var(--success); }
-.status-pill.pending { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
-.status-pill.overdue { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+.status-pill.active {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+}
+
+.status-pill.pending {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning);
+}
+
+.status-pill.overdue {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+}

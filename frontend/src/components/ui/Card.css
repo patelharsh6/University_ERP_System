@@ -1,0 +1,46 @@
+.premium-ui-card {
+  background-color: var(--surface-color);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.premium-card-header {
+  padding: var(--space-3) var(--space-3) var(--space-2) var(--space-3);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid transparent;
+}
+
+.premium-card-title {
+  font-family: var(--font-family-display);
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.premium-card-subtitle {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: var(--space-1) 0 0 0;
+}
+
+.premium-card-content {
+  padding: var(--space-3);
+  flex-grow: 1;
+}
+
+.premium-card-content.no-padding {
+  padding: 0;
+}
+
+.premium-card-header:has(+ .premium-card-content.no-padding) {
+  border-bottom-color: var(--card-border);
+}

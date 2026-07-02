@@ -9,6 +9,12 @@ import {
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, CartesianGrid, YAxis } from 'recharts';
 import { motion } from 'framer-motion';
 
+// UI Components
+import Card from '../../components/ui/Card';
+import Button from '../../components/ui/Button';
+import Badge from '../../components/ui/Badge';
+import KPI from '../../components/ui/KPI';
+
 const PremiumTooltip = ({ active, payload, label, formatter }) => {
   if (!active || !payload || !payload.length) return null;
   const val = formatter ? formatter(payload[0].value) : payload[0].value;
@@ -82,28 +88,23 @@ const FacultyDashboard = () => {
           <p>{department} | Faculty Portal</p>
         </div>
         <div className="fac-quick-actions">
-          <button className="fac-btn fac-btn-primary">
-            <FaQrcode /> Start Attendance
-          </button>
-          <button className="fac-btn fac-btn-secondary">
-            <FaPlus /> Create Assignment
-          </button>
-          <button className="fac-btn fac-btn-secondary">
-            <FaBullhorn /> Post Notice
-          </button>
+          <Button icon={<FaQrcode />} variant="primary">Start Attendance</Button>
+          <Button icon={<FaPlus />} variant="secondary">Create Assignment</Button>
+          <Button icon={<FaBullhorn />} variant="secondary">Post Notice</Button>
         </div>
       </motion.div>
 
       {/* 🟩 2. SUMMARY STATS */}
       <motion.div className="fac-stats-grid" variants={itemVariants}>
         {stats.map((stat, index) => (
-          <div key={index} className="fac-stat-card">
-            <div className={`fac-stat-icon ${stat.color}`}>{stat.icon}</div>
-            <div className="fac-stat-content">
-              <h3>{stat.value}</h3>
-              <p>{stat.label}</p>
-            </div>
-          </div>
+          <KPI 
+            key={index}
+            title={stat.label}
+            value={stat.value}
+            icon={stat.icon}
+            iconBgClass={stat.color}
+            delay={index * 0.1}
+          />
         ))}
       </motion.div>
 
@@ -122,7 +123,7 @@ const FacultyDashboard = () => {
             
             <div>
               {todaysClasses.map(cls => (
-                <div key={cls.id} className={`fac-class-card ${cls.status}`}>
+                <Card key={cls.id} className={`fac-class-card ${cls.status}`}>
                   <div className="fac-class-info">
                     <h4>{cls.subject}</h4>
                     <div className="fac-class-meta">
@@ -135,14 +136,14 @@ const FacultyDashboard = () => {
                   </div>
                   <div>
                     {cls.status === 'active' && (
-                      <button className="fac-btn fac-btn-primary pulse-btn">
-                        <FaQrcode /> Accept Attendance
-                      </button>
+                      <Button icon={<FaQrcode />} variant="primary" className="pulse-btn">
+                        Accept Attendance
+                      </Button>
                     )}
                     {cls.status === 'completed' && <span style={{ color: 'var(--success)', fontWeight: '600', fontSize: 'var(--text-sm)' }}>Recorded</span>}
                     {cls.status === 'upcoming' && <span style={{ color: 'var(--text-secondary)', fontWeight: '600', fontSize: 'var(--text-sm)' }}>Upcoming</span>}
                   </div>
-                </div>
+                </Card>
               ))}
             </div>
           </div>
@@ -151,21 +152,21 @@ const FacultyDashboard = () => {
           <div className="fac-section">
             <div className="fac-section-header">
               <h2 className="fac-section-title"><FaTasks color="#8B5CF6" /> Pending Evaluations</h2>
-              <button style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontWeight: '500', fontSize: 'var(--text-sm)' }}>View All</button>
+              <Button variant="ghost" size="sm">View All</Button>
             </div>
             
             <div>
               {pendingGrading.map(task => (
-                <div key={task.id} className="grading-item">
+                <Card key={task.id} className="grading-item">
                   <div>
                     <h4 style={{ margin: '0 0 4px 0', color: 'var(--text-primary)', fontSize: 'var(--text-base)', fontWeight: '600' }}>{task.task}</h4>
                     <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>{task.course}</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <span className="grade-badge">{task.pending} Pending</span>
-                    <button className="fac-btn fac-btn-secondary" style={{ padding: '6px 12px', fontSize: 'var(--text-xs)' }}>Grade Now</button>
+                    <Badge variant="warning">{task.pending} Pending</Badge>
+                    <Button variant="secondary" size="sm">Grade Now</Button>
                   </div>
-                </div>
+                </Card>
               ))}
             </div>
           </div>
@@ -176,53 +177,58 @@ const FacultyDashboard = () => {
         <motion.div className="fac-col-right" variants={itemVariants}>
           
           {/* AI Insights Panel (Premium Feature) */}
-          <div className="insight-card">
-            <div className="insight-header"><FaMagic /> AI Class Insights</div>
-            <div className="insight-text">
+          <Card title="AI Class Insights" icon={<FaMagic color="var(--primary)" />}>
+            <div className="insight-text" style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
               <strong>CS102 (DBMS)</strong> is showing a 15% drop in assignment submissions this week. Consider extending the deadline or reviewing Chapter 3.
             </div>
-          </div>
+          </Card>
 
           {/* Alerts Section */}
-          <div className="fac-section" style={{ padding: '20px' }}>
+          <div className="fac-section" style={{ marginTop: '24px' }}>
             <h2 className="fac-section-title" style={{ marginBottom: '16px' }}><FaExclamationTriangle color="var(--danger)" /> Action Required</h2>
             
-            <div className="alert-item">
-              <div className="alert-icon"><FaExclamationTriangle /></div>
-              <div className="alert-content">
-                <h4>Low Attendance Alert</h4>
-                <p>12 students in CS101 have fallen below 75% attendance.</p>
+            <Card className="alert-item" style={{ marginBottom: '12px' }}>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                <div style={{ color: 'var(--danger)' }}><FaExclamationTriangle /></div>
+                <div>
+                  <h4 style={{ margin: '0 0 4px 0', fontSize: 'var(--text-sm)' }}>Low Attendance Alert</h4>
+                  <p style={{ margin: 0, fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>12 students in CS101 have fallen below 75% attendance.</p>
+                </div>
               </div>
-            </div>
-            <div className="alert-item">
-              <div className="alert-icon"><FaExclamationTriangle color="var(--warning)" /></div>
-              <div className="alert-content">
-                <h4>Missing Submissions</h4>
-                <p>5 students haven't submitted Lab Report 2 (Past Due).</p>
+            </Card>
+            <Card className="alert-item">
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                <div style={{ color: 'var(--warning)' }}><FaExclamationTriangle /></div>
+                <div>
+                  <h4 style={{ margin: '0 0 4px 0', fontSize: 'var(--text-sm)' }}>Missing Submissions</h4>
+                  <p style={{ margin: 0, fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>5 students haven't submitted Lab Report 2 (Past Due).</p>
+                </div>
               </div>
-            </div>
+            </Card>
           </div>
 
           {/* Performance Snapshot */}
-          <div className="fac-section" style={{ padding: '20px' }}>
+          <div className="fac-section" style={{ marginTop: '24px' }}>
             <h2 className="fac-section-title" style={{ marginBottom: '16px' }}><FaChartBar color="var(--success)" /> Avg Class Marks</h2>
-            <div style={{ height: '180px', width: '100%' }}>
-              <ResponsiveContainer>
-                <BarChart data={performanceData}>
-                  <defs>
-                    <linearGradient id="facBarGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.9}/>
-                      <stop offset="100%" stopColor="var(--primary)" stopOpacity={0.5}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--card-border)" />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={axisStyle} dy={10} />
-                  <YAxis domain={[0, 100]} hide />
-                  <Tooltip content={<PremiumTooltip formatter={(v) => `${v}%`} />} cursor={{ fill: 'var(--hover-bg)' }} />
-                  <Bar dataKey="avgMarks" fill="url(#facBarGrad)" radius={[4, 4, 0, 0]} maxBarSize={38} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            <Card>
+              <div style={{ height: '180px', width: '100%' }}>
+                <ResponsiveContainer>
+                  <BarChart data={performanceData}>
+                    <defs>
+                      <linearGradient id="facBarGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.9}/>
+                        <stop offset="100%" stopColor="var(--primary)" stopOpacity={0.5}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--card-border)" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={axisStyle} dy={10} />
+                    <YAxis domain={[0, 100]} hide />
+                    <Tooltip content={<PremiumTooltip formatter={(v) => `${v}%`} />} cursor={{ fill: 'var(--hover-bg)' }} />
+                    <Bar dataKey="avgMarks" fill="url(#facBarGrad)" radius={[4, 4, 0, 0]} maxBarSize={38} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </Card>
           </div>
 
         </motion.div>

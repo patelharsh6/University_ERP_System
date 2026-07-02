@@ -10,11 +10,11 @@
   --success: #10B981;
   --warning: #F59E0B;
   --danger: #EF4444;
-  
+
   --text-primary: #111827;
   --text-secondary: #6B7280;
   --text-inverse: #FFFFFF;
-  
+
   --card-border: #E5E7EB;
   --hover-bg: #F3F4F6;
   --active-bg: #EFF6FF;
@@ -23,14 +23,19 @@
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --font-family-display: 'Sora', var(--font-family);
   --line-height: 1.6;
-  
-  --text-xs: 0.75rem; /* 12px */
-  --text-sm: 0.8125rem; /* 13px */
-  --text-base: 0.9375rem; /* 15px */
-  --text-lg: 1.125rem; /* 18px */
-  --text-xl: 1.5rem; /* 24px */
-  --text-2xl: 2.125rem; /* 34px */
-  --text-3xl: 2.25rem; /* 36px */
+
+  --text-xs: 0.75rem;
+  /* 12px for card labels */
+  --text-sm: 0.8125rem;
+  /* 13px for captions/card labels */
+  --text-base: 0.9375rem;
+  /* 15px for body */
+  --text-lg: 1.5rem;
+  /* 24px for section titles */
+  --text-xl: 2.125rem;
+  /* 34px for card numbers */
+  --text-2xl: 2.25rem;
+  /* 36px for dashboard title */
 
   /* Spacing (8px Grid) */
   --space-1: 8px;
@@ -63,14 +68,14 @@
   --sidebar-bg: #1E293B;
   --primary: #3B82F6;
   --primary-hover: #60A5FA;
-  
+
   --text-primary: #F8FAFC;
   --text-secondary: #94A3B8;
-  
+
   --card-border: #334155;
   --hover-bg: #334155;
   --active-bg: #1E3A8A;
-  
+
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.25);
@@ -91,7 +96,12 @@ body {
   transition: background-color var(--transition-base), color var(--transition-base);
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-family-display);
   margin-top: 0;
   color: var(--text-primary);
@@ -173,9 +183,17 @@ a:hover {
 
 /* Skeleton Loading */
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: .5; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: .5;
+  }
 }
+
 .skeleton {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   background-color: var(--card-border);
@@ -183,17 +201,50 @@ a:hover {
 }
 
 /* Micro Utilities */
-.text-xs { font-size: var(--text-xs); }
-.text-sm { font-size: var(--text-sm); }
-.text-base { font-size: var(--text-base); }
-.text-lg { font-size: var(--text-lg); }
-.text-xl { font-size: var(--text-xl); }
-.text-2xl { font-size: var(--text-2xl); }
-.text-3xl { font-size: var(--text-3xl); }
-.font-medium { font-weight: 500; }
-.font-semibold { font-weight: 600; }
-.font-bold { font-weight: 700; }
-.text-muted { color: var(--text-secondary); }
+.text-xs {
+  font-size: var(--text-xs);
+}
+
+.text-sm {
+  font-size: var(--text-sm);
+}
+
+.text-base {
+  font-size: var(--text-base);
+}
+
+.text-lg {
+  font-size: var(--text-lg);
+}
+
+.text-xl {
+  font-size: var(--text-xl);
+}
+
+.text-2xl {
+  font-size: var(--text-2xl);
+}
+
+.text-3xl {
+  font-size: var(--text-3xl);
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.text-muted {
+  color: var(--text-secondary);
+}
+
 .uppercase-title {
   text-transform: uppercase;
   letter-spacing: 0.05em;
