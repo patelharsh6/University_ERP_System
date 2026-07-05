@@ -626,6 +626,32 @@
     backdrop-filter: blur(2px);
     z-index: 90;
   }
+
+  .nav-breadcrumbs {
+    display: none;
+  }
+
+  .command-palette-trigger {
+    width: auto;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .search-placeholder {
+    display: none;
+  }
+
+  .nav-right {
+    gap: var(--space-1);
+  }
+
+  .profile-info {
+    display: none;
+  }
+
+  .nav-divider {
+    display: none;
+  }
 }
 
 /* Role Selector dropdown */
