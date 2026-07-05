@@ -18,7 +18,7 @@
   flex-direction: column;
   flex-shrink: 0;
   border-right: 1px solid var(--card-border);
-  transition: width var(--transition-base), transform var(--transition-base);
+  transition: transform var(--transition-base);
   position: relative;
   z-index: 100;
 }
@@ -227,7 +227,7 @@
   width: 100%;
 }
 
-.app-container.sidebar-collapsed .menu-item span {
+.app-container.sidebar-collapsed .menu-item .menu-text {
   display: none;
 }
 
