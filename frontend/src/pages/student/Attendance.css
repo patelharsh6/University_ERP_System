@@ -1,264 +1,583 @@
 /* src/pages/student/Attendance.css */
 
-:root {
-  --att-bg:             #f8fafc;
-  --att-card-bg:        #ffffff;
-  --att-card-border:    #e2e8f0;
-  
-  --att-text-primary:   #1e293b;
-  --att-text-secondary: #334155;
-  --att-text-muted:     #94a3b8;
-  
-  --att-accent:         #0d9488;
-  --att-present:        #059669;
-  --att-absent:         #dc2626;
-  --att-leave:          #d97706;
-}
-
-.attendance-container {
-  max-width: 1200px;
+/* ─── Container ────────────────────────────────────────────── */
+.att2-container {
+  max-width: 760px;
   margin: 0 auto;
-  font-family: 'DM Sans', sans-serif;
-  color: var(--att-text-secondary);
-  animation: fadeIn 0.4s ease-out;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 48px;
+  animation: att2-fade 0.35s ease;
 }
 
-/* --- HEADER AND FILTERS --- */
-.attendance-header {
+@keyframes att2-fade {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Header ─────────────────────────────────────────────── */
+.att2-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  justify-content: space-between;
 }
 
-.attendance-header h1 {
-  font-family: 'Sora', sans-serif;
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: var(--att-text-primary);
+.att2-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
   margin: 0;
+  letter-spacing: -0.02em;
 }
 
-.attendance-filters {
+/* ─── Semester Dropdown ──────────────────────────────────── */
+.att2-sem-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.att2-sem-btn {
   display: flex;
-  gap: 12px;
-}
-
-.att-select {
-  padding: 8px 16px;
-  border: 1px solid var(--att-card-border);
-  border-radius: 8px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  color: var(--att-text-primary);
-  background-color: var(--att-card-bg);
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  max-width: 360px;
+  padding: 10px 14px;
+  background: var(--surface-color);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
   cursor: pointer;
+  font-family: var(--font-family);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.att2-sem-btn:hover,
+.att2-sem-btn:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
   outline: none;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-  transition: all 0.2s;
 }
 
-.att-select:focus {
-  border-color: var(--att-accent);
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+.att2-chevron {
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
 }
 
-/* --- OVERALL STATS --- */
-.att-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  margin-bottom: 24px;
+.att2-chevron.open {
+  transform: rotate(180deg);
 }
 
-.att-stat-card {
-  background: var(--att-card-bg);
-  border: 1px solid var(--att-card-border);
+.att2-sem-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 360px;
+  background: var(--surface-color);
+  border: 1px solid var(--card-border);
   border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.att2-sem-option {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: var(--font-family);
+  transition: background 0.15s;
+}
+
+.att2-sem-option:hover {
+  background: var(--hover-bg);
+}
+
+.att2-sem-option.active {
+  background: var(--active-bg);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* ─── Tabs ───────────────────────────────────────────────── */
+.att2-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--card-border);
+  background: var(--surface-color);
+  border-radius: 12px 12px 0 0;
+  padding: 0 4px;
+}
+
+.att2-tab {
+  position: relative;
+  padding: 12px 18px;
+  background: none;
+  border: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: var(--font-family);
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+
+.att2-tab:hover {
+  color: var(--text-primary);
+}
+
+.att2-tab-active {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.att2-tab-underline {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 2px 2px 0 0;
+}
+
+/* ─── Tab Body ────────────────────────────────────────────── */
+.att2-tab-body {
+  background: var(--surface-color);
+  border: 1px solid var(--card-border);
+  border-top: none;
+  border-radius: 0 0 16px 16px;
   padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  gap: 20px;
+}
+
+/* ─── Donut Chart ─────────────────────────────────────────── */
+.att2-donut-wrap {
   position: relative;
-  overflow: hidden;
+  width: 100%;
 }
 
-.att-stat-card::before {
-  content: '';
+.att2-donut-center {
   position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 4px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
 }
 
-.att-stat-card.stat-present::before { background: var(--att-present); }
-.att-stat-card.stat-absent::before { background: var(--att-absent); }
-.att-stat-card.stat-leave::before { background: var(--att-leave); }
-.att-stat-card.stat-total::before { background: var(--att-accent); }
-
-.att-stat-title {
-  font-size: 12px;
+.att2-donut-pct {
+  font-size: 1.6rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--att-text-muted);
+  letter-spacing: -0.03em;
 }
 
-.att-stat-value {
-  font-family: 'Sora', sans-serif;
-  font-size: 28px;
-  font-weight: 800;
-  color: var(--att-text-primary);
+/* ─── Overall Stats ──────────────────────────────────────── */
+.att2-overall-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: center;
 }
 
-.att-stat-card.stat-present .att-stat-value { color: var(--att-present); }
-.att-stat-card.stat-absent .att-stat-value { color: var(--att-absent); }
-.att-stat-card.stat-leave .att-stat-value { color: var(--att-leave); }
-
-/* --- MAIN GRID (Table + Calendar) --- */
-.att-main-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
+.att2-stat-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
 }
 
-.att-card {
-  background: var(--att-card-bg);
-  border: 1px solid var(--att-card-border);
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+.att2-stat-label {
+  color: var(--text-secondary);
 }
 
-.att-card-title {
-  font-family: 'Sora', sans-serif;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--att-text-primary);
-  margin-bottom: 20px;
-}
-
-/* Subject Table */
-.att-subject-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.att-subject-table th {
-  text-align: left;
-  padding: 12px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--att-text-muted);
-  border-bottom: 1px solid var(--att-card-border);
-}
-
-.att-subject-table td {
-  padding: 16px 12px;
-  font-size: 14px;
-  color: var(--att-text-primary);
-  border-bottom: 1px solid var(--att-card-border);
-}
-
-.att-subject-table tr:last-child td {
-  border-bottom: none;
-}
-
-.subject-name-cell {
+.att2-stat-val {
   font-weight: 600;
+  color: var(--text-primary);
 }
 
-.att-progress-bar {
-  width: 100%;
-  height: 8px;
-  background: var(--att-bg);
-  border-radius: 4px;
+.att2-not-recorded {
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-style: italic;
+}
+
+/* ─── Subject Mini List (Overall Tab) ───────────────────── */
+.att2-subject-mini-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid var(--card-border);
+  padding-top: 16px;
+}
+
+.att2-subject-mini-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.att2-subject-mini-info {
+  flex: 0 0 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+.att2-mini-code {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 0.04em;
+}
+
+.att2-mini-name {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
   overflow: hidden;
-  margin-top: 6px;
+  text-overflow: ellipsis;
 }
 
-.att-progress-fill {
-  height: 100%;
-  border-radius: 4px;
-}
-
-.fill-good { background: var(--att-present); }
-.fill-warn { background: var(--att-leave); }
-.fill-bad { background: var(--att-absent); }
-
-/* Calendar Heatmap */
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
+.att2-mini-bar-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
   gap: 10px;
 }
 
-.calendar-day-header {
-  text-align: center;
-  font-size: 11px;
+.att2-mini-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--card-border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.att2-mini-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.att2-mini-pct {
+  font-size: 0.82rem;
   font-weight: 700;
-  color: var(--att-text-muted);
-  text-transform: uppercase;
-  margin-bottom: 8px;
+  min-width: 38px;
+  text-align: right;
 }
 
-.calendar-cell {
-  aspect-ratio: 1;
+/* ─── Subject-wise Bar Chart ─────────────────────────────── */
+.att2-bar-chart-wrap {
+  width: 100%;
+}
+
+.att2-bar-legend {
   display: flex;
-  align-items: center;
+  gap: 20px;
   justify-content: center;
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: 8px;
-  background: var(--att-bg);
-  color: var(--att-text-secondary);
-  position: relative;
-  border: 1px solid var(--att-card-border);
 }
 
-.calendar-cell.present { background: rgba(5, 150, 105, 0.1); color: var(--att-present); border-color: rgba(5, 150, 105, 0.2); }
-.calendar-cell.absent { background: rgba(220, 38, 38, 0.1); color: var(--att-absent); border-color: rgba(220, 38, 38, 0.2); }
-.calendar-cell.leave { background: rgba(217, 119, 6, 0.1); color: var(--att-leave); border-color: rgba(217, 119, 6, 0.2); }
-.calendar-cell.empty { background: transparent; border: none; }
-
-.calendar-legend {
-  display: flex;
-  gap: 16px;
-  margin-top: 24px;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.legend-item {
+.att2-legend-item {
   display: flex;
   align-items: center;
   gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
-.legend-dot {
+.att2-legend-dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
 }
 
-.legend-dot.present { background: var(--att-present); }
-.legend-dot.absent { background: var(--att-absent); }
-.legend-dot.leave { background: var(--att-leave); }
-
-/* --- DARK THEME --- */
-.app-container.dark-theme .attendance-container {
-  --att-card-bg: #1e293b;
-  --att-card-border: #334155;
-  --att-bg: #0f172a;
-  --att-text-primary: #f8fafc;
-  --att-text-secondary: #cbd5e1;
-  --att-text-muted: #94a3b8;
+/* ─── Subject Table ──────────────────────────────────────── */
+.att2-subject-table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
 }
 
-@media (max-width: 900px) {
-  .att-main-grid {
-    grid-template-columns: 1fr;
+.att2-subject-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.att2-subject-table thead tr {
+  background: var(--hover-bg);
+}
+
+.att2-subject-table th {
+  padding: 11px 14px;
+  text-align: left;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.att2-subject-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--card-border);
+  color: var(--text-primary);
+}
+
+.att2-subject-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.att2-subject-table tbody tr:hover {
+  background: var(--hover-bg);
+}
+
+.att2-code-cell {
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 0.78rem;
+}
+
+.att2-pct-badge {
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+/* ─── Log Tab ────────────────────────────────────────────── */
+.att2-log-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.att2-log-filter-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.att2-radio-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.att2-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.att2-radio {
+  display: none;
+}
+
+.att2-radio-custom {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--card-border);
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0;
+  transition: border-color 0.2s;
+}
+
+.att2-radio:checked + .att2-radio-custom {
+  border-color: var(--primary);
+}
+
+.att2-radio:checked + .att2-radio-custom::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
+  border-radius: 50%;
+}
+
+/* ─── Subject Selector ────────────────────────────────────── */
+.att2-subject-selector {
+  position: relative;
+}
+
+.att2-subject-select {
+  width: 100%;
+  padding: 10px 40px 10px 14px;
+  background: var(--surface-color);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: var(--font-family);
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+.att2-subject-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.att2-select-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+/* ─── Log Cards ──────────────────────────────────────────── */
+.att2-log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.att2-log-card {
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-color);
+}
+
+.att2-log-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.att2-log-row:last-child {
+  border-bottom: none;
+}
+
+.att2-log-field {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-secondary);
+}
+
+.att2-log-value {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  text-align: right;
+}
+
+.att2-status-badge {
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 99px;
+}
+
+.status-present {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+}
+
+.status-absent {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+}
+
+.att2-log-empty {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* ─── Tooltip ────────────────────────────────────────────── */
+.att2-tooltip {
+  background: var(--surface-color);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  box-shadow: var(--shadow-md);
+  font-size: 0.82rem;
+}
+
+.att2-tooltip-title {
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 2px;
+}
+
+.att2-tooltip-sub {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  margin-bottom: 4px;
+}
+
+.att2-tooltip-stat {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.att2-tooltip-pct {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+/* ─── Dark Theme ─────────────────────────────────────────── */
+.dark-theme .att2-container {
+  --card-border: #334155;
+  --hover-bg: #334155;
+}
+
+/* ─── Responsive ─────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .att2-tabs {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .att2-tab {
+    padding: 10px 12px;
+    font-size: 0.8rem;
+  }
+
+  .att2-subject-mini-info {
+    flex: 0 0 140px;
+  }
+
+  .att2-sem-dropdown {
+    min-width: 100%;
   }
 }

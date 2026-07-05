@@ -67,7 +67,7 @@ const Courses = () => {
               </div>
             </div>
 
-            <Link to={`/subjects`} className="btn-view-subject">
+            <Link to={`/s/subjects`} className="btn-view-subject">
               View Subject Details <FiArrowRight />
             </Link>
           </div>
