@@ -1,67 +1,64 @@
 // src/components/Layout/menuConfig.js
 import React from 'react';
 import { 
-  FiHome, 
-  FiUser, 
-  FiBookOpen, 
-  FiLayers, 
-  FiCheckCircle, 
-  FiCalendar, 
-  FiAward, 
-  FiEdit3, 
-  FiCreditCard, 
-  FiRadio, 
-  FiFileText, 
-  FiSend, 
-  FiMessageSquare, 
-  FiBell,
-  FiSettings
+  FiHome, FiUser, FiBookOpen, FiLayers, FiCheckCircle, FiCalendar, FiAward, 
+  FiEdit3, FiCreditCard, FiRadio, FiFileText, FiSend, FiMessageSquare, FiBell,
+  FiSettings, FiMessageCircle, FiCheckSquare, FiBarChart2, FiList, FiSun, FiGrid,
+  FiHeart, FiUserCheck
 } from 'react-icons/fi';
 
-export const menuConfig = [
+export const studentMenu = [
   {
     category: "",
     items: [
-      { title: "Dashboard", icon: <FiHome />, path: "/" },
-      { title: "Profile", icon: <FiUser />, path: "/profile" }
+      { title: "My Institution", icon: <FiHome />, path: "/s/institution" },
+      { title: "Courses", icon: <FiBookOpen />, path: "/s/courses" },
+      { title: "Attendance", icon: <FiCheckSquare />, path: "/s/attendance" },
+      { title: "Timetable", icon: <FiGrid />, path: "/s/timetable" },
+      { title: "Messages", icon: <FiMessageCircle />, path: "/s/messages" },
+      { title: "Notifications", icon: <FiBell />, path: "/s/notifications", badge: "18", badgeType: "announcement" },
+      { title: "Reports", icon: <FiBarChart2 />, path: "/s/reports" },
+      { title: "Assessments", icon: <FiList />, path: "/s/assessments" },
+      { title: "Billing", icon: <FiCreditCard />, path: "/s/billing" },
+      { title: "Exam schedules", icon: <FiCalendar />, path: "/s/exam-schedules" },
+      { title: "Holidays", icon: <FiSun />, path: "/s/holidays" },
+      { title: "Student counselling", icon: <FiHeart />, path: "/s/counselling" },
+      { title: "Enrollment", icon: <FiUserCheck />, path: "/s/enrollment" },
+      { title: "Announcement", icon: <FiRadio />, path: "/s/announcements" },
+      { title: "Final Result", icon: <FiAward />, path: "/s/results" },
+      { title: "Clearance", icon: <FiCheckCircle />, path: "/s/clearance" },
+      { title: "Feedback", icon: <FiMessageSquare />, path: "/s/feedback" }
+    ]
+  }
+];
+
+export const facultyMenu = [
+  {
+    category: "",
+    items: [
+      { title: "Dashboard", icon: <FiHome />, path: "/f/dashboard" },
     ]
   },
   {
     category: "ACADEMICS",
     items: [
-      { title: "Courses", icon: <FiBookOpen />, path: "/courses" },
-      { title: "Subjects", icon: <FiLayers />, path: "/subjects" },
-      { title: "Attendance", icon: <FiCheckCircle />, path: "/attendance", badge: "92%", badgeType: "attend" },
-      { title: "Timetable", icon: <FiCalendar />, path: "/timetable" },
-      { title: "Results", icon: <FiAward />, path: "/results" },
-      { title: "Assignments", icon: <FiEdit3 />, path: "/assignments", badge: "3", badgeType: "due" }
+      { title: "Course Management", icon: <FiBookOpen />, path: "/f/courses" },
     ]
-  },
-  {
-    category: "FINANCE",
-    items: [
-      { title: "Fees", icon: <FiCreditCard />, path: "/billing" }
-    ]
-  },
-  {
-    category: "COMMUNICATION",
-    items: [
-      { title: "Announcements", icon: <FiRadio />, path: "/announcements" },
-      { title: "Notifications", icon: <FiBell />, path: "/notifications", badge: "2", badgeType: "announcement" }
-    ]
-  },
-  {
-    category: "RESOURCES",
-    items: [
-      { title: "Study Materials", icon: <FiFileText />, path: "/materials" },
-      { title: "Leave Requests", icon: <FiSend />, path: "/leaves" }
-    ]
-  },
+  }
+];
+
+export const adminMenu = [
   {
     category: "",
     items: [
-      { title: "Feedback", icon: <FiMessageSquare />, path: "/feedback" },
-      { title: "Settings", icon: <FiSettings />, path: "/settings" }
+      { title: "Dashboard", icon: <FiHome />, path: "/a/dashboard" },
+    ]
+  },
+  {
+    category: "MANAGEMENT",
+    items: [
+      { title: "Students", icon: <FiUser />, path: "/a/students" },
+      { title: "Registration", icon: <FiCheckCircle />, path: "/a/registration" },
     ]
   }
 ];

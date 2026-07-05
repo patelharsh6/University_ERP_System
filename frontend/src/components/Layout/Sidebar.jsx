@@ -3,11 +3,12 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { FaChevronLeft, FaChevronRight, FaRegClock, FaThumbtack } from 'react-icons/fa';
 import './Layout.css';
-import { menuConfig } from './menuConfig';
+import { studentMenu, adminMenu, facultyMenu } from './menuConfig';
 import Badge from '../ui/Badge';
 import { motion } from 'framer-motion';
 
-const Sidebar = ({ isOpen, isCollapsed, toggleCollapse, toggleSidebar }) => {
+const Sidebar = ({ isOpen, isCollapsed, toggleCollapse, toggleSidebar, userRole }) => {
+  const menuConfig = userRole === 'admin' ? adminMenu : userRole === 'faculty' ? facultyMenu : studentMenu;
   return (
     <motion.aside
       className={`sidebar ${isOpen ? 'mobile-open' : ''} ${isCollapsed ? 'collapsed' : ''}`}
@@ -16,7 +17,7 @@ const Sidebar = ({ isOpen, isCollapsed, toggleCollapse, toggleSidebar }) => {
     >
       {/* Sidebar Header */}
       <div className="sidebar-header">
-        <NavLink to="/" className="sidebar-brand">
+        <NavLink to={`/${userRole === 'admin' ? 'a' : userRole === 'faculty' ? 'f' : 's'}/dashboard`} className="sidebar-brand">
           <div className="sidebar-logo-icon">U</div>
           {!isCollapsed && (
             <motion.span

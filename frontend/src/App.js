@@ -8,49 +8,69 @@ import Reports from './pages/student/Reports';
 import Billing from './pages/student/Billing';
 import Announcements from './pages/student/Announcements'; 
 import Feedback from './pages/student/Feedback';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import Results from './pages/student/Results';
 import Dashboard from './pages/student/Dashboard';
+import AdminDashboard from './pages/admin/AdminDashboard';
 import Courses from './pages/student/Courses';
 import FacultyDashboard from './pages/faculty/FacultyDashboard';
 import CourseManagement from './pages/faculty/CourseManagement';
-import StudentsList from './pages/student/StudentsList';
-import RegistrationForm from './pages/student/RegistrationForm';
+import StudentsList from './pages/admin/StudentsList';
+import RegistrationForm from './pages/admin/RegistrationForm';
 import Assignments from './pages/student/Assignments';
 import StudyMaterials from './pages/student/StudyMaterials';
 import LeaveRequests from './pages/student/LeaveRequests';
 import Notifications from './pages/student/Notifications';
+import Messages from './pages/student/Messages';
 import Settings from './pages/student/Settings';
 import Subjects from './pages/student/Subjects';
+import MyInstitution from './pages/student/MyInstitution';
+import ExamSchedule from './pages/student/ExamSchedule';
+import Holidays from './pages/student/Holidays';
+import Counselling from './pages/student/Counselling';
 
 function App() {
-  const [userRole, setUserRole] = useState('admin'); // Default to 'admin' to show premium SaaS metrics
+  const [userRole, setUserRole] = useState('student'); // Default to 'student'
 
   return (
     <div className="App">
       <BrowserRouter>
         <Layout userRole={userRole} setUserRole={setUserRole}>
           <Routes>
-            <Route path="/" element={<Dashboard userRole={userRole} />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/attendance" element={<Attendance />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/timetable" element={<Timetable />} />
-            <Route path="/billing" element={<Billing />} />
-            <Route path="/announcements" element={<Announcements />} />
-            <Route path="/feedback" element={<Feedback />} />
-            <Route path="/results" element={<Results />} />
-            <Route path="/courses" element={<Courses />} />
-            <Route path="/students" element={<StudentsList />} />
-            <Route path="/registration" element={<RegistrationForm />} />
-            <Route path="/faculty-dashboard" element={<FacultyDashboard />} />
-            <Route path="/course-management" element={<CourseManagement />} />
-            <Route path="/assignments" element={<Assignments />} />
-            <Route path="/materials" element={<StudyMaterials />} />
-            <Route path="/leaves" element={<LeaveRequests />} />
-            <Route path="/notifications" element={<Notifications />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/subjects" element={<Subjects />} />
+            {/* Root Redirect */}
+            <Route path="/" element={<Navigate to={`/${userRole === 'admin' ? 'a' : userRole === 'faculty' ? 'f' : 's'}/dashboard`} replace />} />
+
+            {/* Admin Routes */}
+            <Route path="/a/dashboard" element={<AdminDashboard />} />
+            <Route path="/a/students" element={<StudentsList />} />
+            <Route path="/a/registration" element={<RegistrationForm />} />
+
+            {/* Faculty Routes */}
+            <Route path="/f/dashboard" element={<FacultyDashboard />} />
+            <Route path="/f/courses" element={<CourseManagement />} />
+
+            {/* Student Routes */}
+            <Route path="/s/dashboard" element={<Dashboard userRole="student" />} />
+            <Route path="/s/profile" element={<Profile />} />
+            <Route path="/s/attendance" element={<Attendance />} />
+            <Route path="/s/reports" element={<Reports />} />
+            <Route path="/s/timetable" element={<Timetable />} />
+            <Route path="/s/billing" element={<Billing />} />
+            <Route path="/s/announcements" element={<Announcements />} />
+            <Route path="/s/feedback" element={<Feedback />} />
+            <Route path="/s/results" element={<Results />} />
+            <Route path="/s/courses" element={<Courses />} />
+            <Route path="/s/assignments" element={<Assignments />} />
+            <Route path="/s/materials" element={<StudyMaterials />} />
+            <Route path="/s/leaves" element={<LeaveRequests />} />
+            <Route path="/s/notifications" element={<Notifications />} />
+            <Route path="/s/messages" element={<Messages />} />
+            <Route path="/s/settings" element={<Settings />} />
+            <Route path="/s/subjects" element={<Subjects />} />
+            <Route path="/s/institution" element={<MyInstitution />} />
+            <Route path="/s/exam-schedules" element={<ExamSchedule />} />
+            <Route path="/s/holidays" element={<Holidays />} />
+            <Route path="/s/counselling" element={<Counselling />} />
           </Routes>
         </Layout>
       </BrowserRouter>

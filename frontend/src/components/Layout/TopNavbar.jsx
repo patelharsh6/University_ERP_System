@@ -1,6 +1,6 @@
 // src/components/Layout/TopNavbar.jsx
 import React, { useState, useEffect } from 'react';
-import { FaBars, FaBell, FaSun, FaMoon, FaSearch, FaPlus, FaCommentAlt, FaChevronRight } from 'react-icons/fa';
+import { FaBars, FaBell, FaSun, FaMoon, FaSearch, FaChevronRight } from 'react-icons/fa';
 import { useLocation } from 'react-router-dom';
 import './Layout.css';
 import Badge from '../ui/Badge';
@@ -56,34 +56,6 @@ const TopNavbar = ({ toggleSidebar, userRole, setUserRole, isDarkMode, toggleDar
         </div>
 
         <div className="nav-right">
-          {/* Selectors */}
-          <div className="nav-selectors">
-            <select className="nav-select-dropdown">
-              <option>Main Campus</option>
-              <option>North Campus</option>
-            </select>
-            <select className="nav-select-dropdown">
-              <option>2026-27</option>
-              <option>2025-26</option>
-            </select>
-            <select className="nav-select-dropdown">
-              <option>Fall Sem</option>
-              <option>Spring Sem</option>
-            </select>
-          </div>
-
-          <div className="nav-divider" />
-
-          {/* Quick Create */}
-          <button className="icon-btn" title="Quick Create">
-            <FaPlus size={14} />
-          </button>
-
-          {/* Messages */}
-          <button className="icon-btn" title="Messages">
-            <FaCommentAlt size={14} />
-          </button>
-
           {/* Notifications */}
           <button className="icon-btn" title="Notifications">
             <FaBell size={14} />
@@ -98,6 +70,35 @@ const TopNavbar = ({ toggleSidebar, userRole, setUserRole, isDarkMode, toggleDar
           >
             {isDarkMode ? <FaSun size={14} style={{ color: '#F59E0B' }} /> : <FaMoon size={14} />}
           </button>
+
+          <div className="nav-divider" />
+
+          {/* Role Switcher (Testing Tool) */}
+          <select 
+            value={userRole} 
+            onChange={(e) => {
+              setUserRole(e.target.value);
+              // Force navigation to the new role's dashboard to ensure correct display
+              window.location.href = `/${e.target.value === 'admin' ? 'a' : e.target.value === 'faculty' ? 'f' : 's'}/dashboard`;
+            }}
+            style={{ 
+              background: 'var(--surface-color)', 
+              color: 'var(--text-primary)', 
+              border: '1px solid var(--card-border)', 
+              borderRadius: 'var(--radius-sm)', 
+              padding: '6px 8px', 
+              outline: 'none',
+              fontFamily: 'var(--font-family)',
+              fontSize: 'var(--text-sm)',
+              cursor: 'pointer',
+              marginRight: '8px'
+            }}
+            title="Switch User Role"
+          >
+            <option value="student">Student</option>
+            <option value="faculty">Faculty</option>
+            <option value="admin">Admin</option>
+          </select>
 
           <div className="nav-divider" />
           
