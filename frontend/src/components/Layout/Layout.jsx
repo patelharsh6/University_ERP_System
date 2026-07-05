@@ -49,6 +49,7 @@ const Layout = ({ children, userRole, setUserRole }) => {
         isCollapsed={isSidebarCollapsed}
         toggleCollapse={toggleCollapse}
         toggleSidebar={() => setIsSidebarOpen(false)} // Close when item clicked
+        userRole={userRole}
       />
 
       {/* Overlay for Mobile (Click to close sidebar) */}
