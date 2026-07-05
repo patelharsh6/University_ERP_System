@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import './Counselling.css';
 import {
   FiHeart, FiCalendar, FiClock, FiUser, FiMessageSquare,
-  FiCheckCircle, FiAlertCircle, FiPlus, FiStar, FiPhone,
+  FiCheckCircle, FiPlus, FiStar, FiPhone,
   FiMail, FiMapPin, FiChevronRight, FiBookOpen, FiSmile,
   FiAlertTriangle, FiActivity, FiX
 } from 'react-icons/fi';

@@ -3,16 +3,14 @@ import React, { useState, useEffect } from 'react';
 import './ExamSchedule.css';
 import {
   FiCalendar, FiClock, FiMapPin, FiBook, FiDownload,
-  FiAlertCircle, FiCheckCircle, FiFilter, FiSearch,
+  FiAlertCircle, FiCheckCircle, FiSearch,
   FiChevronRight, FiAward, FiFileText, FiInfo
 } from 'react-icons/fi';
 
 // ─── Mock Data ─────────────────────────────────────────────────────────────────
-const examInfo = {
+const commonExamInfo = {
   semester: 'Semester VI',
   batch: 'CE – 2023–2027',
-  examType: 'Mid-Semester Examinations',
-  session: 'Winter 2026',
   venue: 'Adani University – Main Campus',
   reportingTime: '08:45 AM',
   examStartTime: '09:00 AM',
@@ -25,160 +23,22 @@ const examInfo = {
   ],
 };
 
-const exams = [
-  {
-    id: 1,
-    code: 'CE601',
-    subject: 'Database Management Systems',
-    shortName: 'DBMS',
-    date: '2026-07-15',
-    displayDate: 'Tue, 15 Jul 2026',
-    day: 'Tuesday',
-    time: '09:00 AM – 12:00 PM',
-    duration: '3 Hours',
-    room: 'Room 304',
-    block: 'A Block',
-    seat: 'A-24',
-    faculty: 'Dr. Rajesh Sharma',
-    credits: 4,
-    type: 'Theory',
-    status: 'upcoming',
-    color: '#2563eb',
-  },
-  {
-    id: 2,
-    code: 'CE602',
-    subject: 'Artificial Intelligence',
-    shortName: 'AI',
-    date: '2026-07-17',
-    displayDate: 'Thu, 17 Jul 2026',
-    day: 'Thursday',
-    time: '09:00 AM – 12:00 PM',
-    duration: '3 Hours',
-    room: 'Room 204',
-    block: 'B Block',
-    seat: 'B-11',
-    faculty: 'Prof. Anita Verma',
-    credits: 4,
-    type: 'Theory',
-    status: 'upcoming',
-    color: '#0d9488',
-  },
-  {
-    id: 3,
-    code: 'CE603',
-    subject: 'Computer Networks',
-    shortName: 'CN',
-    date: '2026-07-19',
-    displayDate: 'Sat, 19 Jul 2026',
-    day: 'Saturday',
-    time: '09:00 AM – 12:00 PM',
-    duration: '3 Hours',
-    room: 'Room 202',
-    block: 'A Block',
-    seat: 'A-07',
-    faculty: 'Dr. Sanjay Gupta',
-    credits: 4,
-    type: 'Theory',
-    status: 'upcoming',
-    color: '#8b5cf6',
-  },
-  {
-    id: 4,
-    code: 'CE604',
-    subject: 'Software Engineering',
-    shortName: 'SE',
-    date: '2026-07-22',
-    displayDate: 'Tue, 22 Jul 2026',
-    day: 'Tuesday',
-    time: '09:00 AM – 12:00 PM',
-    duration: '3 Hours',
-    room: 'Room 101',
-    block: 'C Block',
-    seat: 'C-33',
-    faculty: 'Prof. Meera Desai',
-    credits: 4,
-    type: 'Theory',
-    status: 'upcoming',
-    color: '#f59e0b',
-  },
-  {
-    id: 5,
-    code: 'CE605',
-    subject: 'Web Technologies',
-    shortName: 'WT',
-    date: '2026-07-24',
-    displayDate: 'Thu, 24 Jul 2026',
-    day: 'Thursday',
-    time: '09:00 AM – 12:00 PM',
-    duration: '3 Hours',
-    room: 'Room 305',
-    block: 'B Block',
-    seat: 'B-22',
-    faculty: 'Dr. Priya Singh',
-    credits: 3,
-    type: 'Theory',
-    status: 'upcoming',
-    color: '#ec4899',
-  },
-  {
-    id: 6,
-    code: 'CE606',
-    subject: 'Internet of Things',
-    shortName: 'IoT',
-    date: '2026-07-26',
-    displayDate: 'Sat, 26 Jul 2026',
-    day: 'Saturday',
-    time: '09:00 AM – 11:00 AM',
-    duration: '2 Hours',
-    room: 'Room 106',
-    block: 'A Block',
-    seat: 'A-15',
-    faculty: 'Prof. Kiran Mehta',
-    credits: 3,
-    type: 'Theory',
-    status: 'upcoming',
-    color: '#ef4444',
-  },
-  // Practicals
-  {
-    id: 7,
-    code: 'CE601P',
-    subject: 'DBMS Lab',
-    shortName: 'DBMS Lab',
-    date: '2026-07-10',
-    displayDate: 'Thu, 10 Jul 2026',
-    day: 'Thursday',
-    time: '09:00 AM – 12:00 PM',
-    duration: '3 Hours',
-    room: 'DB Lab 1',
-    block: 'Lab Block',
-    seat: 'PC-08',
-    faculty: 'Dr. Rajesh Sharma',
-    credits: 2,
-    type: 'Practical',
-    status: 'upcoming',
-    color: '#2563eb',
-  },
-  {
-    id: 8,
-    code: 'CE603P',
-    subject: 'Computer Networks Lab',
-    shortName: 'CN Lab',
-    date: '2026-07-12',
-    displayDate: 'Sat, 12 Jul 2026',
-    day: 'Saturday',
-    time: '09:00 AM – 12:00 PM',
-    duration: '3 Hours',
-    room: 'Network Lab 2',
-    block: 'Lab Block',
-    seat: 'PC-12',
-    faculty: 'Dr. Sanjay Gupta',
-    credits: 2,
-    type: 'Practical',
-    status: 'upcoming',
-    color: '#8b5cf6',
-  },
+const examSessionsList = [
+  { id: 'mid', name: 'Mid-Semester Examinations', session: 'Winter 2026' },
+  { id: 'final', name: 'Final Examinations', session: 'Winter 2026' },
+];
+
+const allExams = [
+  // Mid Sem Exams
+  { id: 1, sessionId: 'mid', code: 'CE601', subject: 'Database Management Systems', shortName: 'DBMS', date: '2026-07-15', displayDate: 'Tue, 15 Jul 2026', day: 'Tuesday', time: '09:00 AM – 10:30 AM', duration: '1.5 Hours', room: 'Room 304', block: 'A Block', seat: 'A-24', faculty: 'Dr. Rajesh Sharma', credits: 4, type: 'Theory', color: '#2563eb' },
+  { id: 2, sessionId: 'mid', code: 'CE602', subject: 'Artificial Intelligence', shortName: 'AI', date: '2026-07-17', displayDate: 'Thu, 17 Jul 2026', day: 'Thursday', time: '09:00 AM – 10:30 AM', duration: '1.5 Hours', room: 'Room 204', block: 'B Block', seat: 'B-11', faculty: 'Prof. Anita Verma', credits: 4, type: 'Theory', color: '#0d9488' },
+  { id: 3, sessionId: 'mid', code: 'CE603', subject: 'Computer Networks', shortName: 'CN', date: '2026-07-19', displayDate: 'Sat, 19 Jul 2026', day: 'Saturday', time: '09:00 AM – 10:30 AM', duration: '1.5 Hours', room: 'Room 202', block: 'A Block', seat: 'A-07', faculty: 'Dr. Sanjay Gupta', credits: 4, type: 'Theory', color: '#8b5cf6' },
+  // Final Exams
+  { id: 4, sessionId: 'final', code: 'CE601', subject: 'Database Management Systems', shortName: 'DBMS', date: '2026-11-20', displayDate: 'Fri, 20 Nov 2026', day: 'Friday', time: '09:00 AM – 12:00 PM', duration: '3 Hours', room: 'Room 304', block: 'A Block', seat: 'A-24', faculty: 'Dr. Rajesh Sharma', credits: 4, type: 'Theory', color: '#2563eb' },
+  { id: 5, sessionId: 'final', code: 'CE602', subject: 'Artificial Intelligence', shortName: 'AI', date: '2026-11-23', displayDate: 'Mon, 23 Nov 2026', day: 'Monday', time: '09:00 AM – 12:00 PM', duration: '3 Hours', room: 'Room 204', block: 'B Block', seat: 'B-11', faculty: 'Prof. Anita Verma', credits: 4, type: 'Theory', color: '#0d9488' },
+  { id: 6, sessionId: 'final', code: 'CE603', subject: 'Computer Networks', shortName: 'CN', date: '2026-11-25', displayDate: 'Wed, 25 Nov 2026', day: 'Wednesday', time: '09:00 AM – 12:00 PM', duration: '3 Hours', room: 'Room 202', block: 'A Block', seat: 'A-07', faculty: 'Dr. Sanjay Gupta', credits: 4, type: 'Theory', color: '#8b5cf6' },
+  { id: 7, sessionId: 'final', code: 'CE604', subject: 'Software Engineering', shortName: 'SE', date: '2026-11-28', displayDate: 'Sat, 28 Nov 2026', day: 'Saturday', time: '09:00 AM – 12:00 PM', duration: '3 Hours', room: 'Room 101', block: 'C Block', seat: 'C-33', faculty: 'Prof. Meera Desai', credits: 4, type: 'Theory', color: '#f59e0b' },
+  { id: 8, sessionId: 'final', code: 'CE601P', subject: 'DBMS Lab', shortName: 'DBMS Lab', date: '2026-11-10', displayDate: 'Tue, 10 Nov 2026', day: 'Tuesday', time: '09:00 AM – 12:00 PM', duration: '3 Hours', room: 'DB Lab 1', block: 'Lab Block', seat: 'PC-08', faculty: 'Dr. Rajesh Sharma', credits: 2, type: 'Practical', color: '#2563eb' },
 ];
 
 // ─── Countdown Hook ────────────────────────────────────────────────────────────
@@ -190,7 +50,7 @@ function useCountdown(targetDateStr) {
     const update = () => {
       const now = new Date();
       const diff = target - now;
-      if (diff <= 0) { setTimeLeft('In progress'); return; }
+      if (diff <= 0) { setTimeLeft('Done/In progress'); return; }
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
       const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       if (days > 0) setTimeLeft(`${days}d ${hours}h`);
@@ -207,7 +67,6 @@ function useCountdown(targetDateStr) {
 // ─── Exam Card ─────────────────────────────────────────────────────────────────
 const ExamCard = ({ exam, onClick }) => {
   const countdown = useCountdown(exam.date);
-  const isNext = exam.id === 7; // first upcoming practical
   const isSoon = exam.date === '2026-07-15' || exam.date === '2026-07-10';
 
   return (
@@ -267,14 +126,19 @@ const ExamCard = ({ exam, onClick }) => {
 
 // ─── Main Component ────────────────────────────────────────────────────────────
 const ExamSchedule = () => {
+  const [activeSessionId, setActiveSessionId] = useState('mid');
   const [activeFilter, setActiveFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedExam, setSelectedExam] = useState(null);
   const [viewMode, setViewMode] = useState('cards'); // 'cards' | 'table'
 
+  const activeSessionObj = examSessionsList.find(s => s.id === activeSessionId);
   const filters = ['All', 'Theory', 'Practical'];
 
-  const filtered = exams.filter(e => {
+  // Filter exams by session first, then by user filters
+  const sessionExams = allExams.filter(e => e.sessionId === activeSessionId);
+  
+  const filtered = sessionExams.filter(e => {
     const matchFilter = activeFilter === 'All' || e.type === activeFilter;
     const matchSearch = !searchQuery ||
       e.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -285,7 +149,7 @@ const ExamSchedule = () => {
   // Sort by date
   const sorted = [...filtered].sort((a, b) => new Date(a.date) - new Date(b.date));
 
-  const nextExam = exams.reduce((prev, curr) =>
+  const nextExam = sessionExams.reduce((prev, curr) =>
     new Date(curr.date) > new Date() &&
     (!prev || new Date(curr.date) < new Date(prev.date)) ? curr : prev, null);
 
@@ -298,7 +162,7 @@ const ExamSchedule = () => {
           <div className="exam-header-icon"><FiCalendar size={22} /></div>
           <div>
             <h1 className="exam-page-title">Exam Schedule</h1>
-            <p className="exam-page-sub">{examInfo.examType} · {examInfo.session}</p>
+            <p className="exam-page-sub">{commonExamInfo.batch} · {activeSessionObj.session}</p>
           </div>
         </div>
         <div className="exam-header-right">
@@ -306,6 +170,19 @@ const ExamSchedule = () => {
             <FiDownload size={14} /> Hall Ticket
           </button>
         </div>
+      </div>
+
+      {/* ── EXAM SESSION SELECTOR ── */}
+      <div className="exam-session-selector">
+        {examSessionsList.map(session => (
+          <button
+            key={session.id}
+            className={`session-tab ${activeSessionId === session.id ? 'active' : ''}`}
+            onClick={() => { setActiveSessionId(session.id); setActiveFilter('All'); }}
+          >
+            {session.name}
+          </button>
+        ))}
       </div>
 
       {/* ── NEXT EXAM BANNER ── */}
@@ -333,19 +210,19 @@ const ExamSchedule = () => {
       {/* ── KPI STRIP ── */}
       <div className="exam-kpi-strip">
         <div className="exam-kpi">
-          <span className="kpi-value">{exams.length}</span>
+          <span className="kpi-value">{sessionExams.length}</span>
           <span className="kpi-label">Total Exams</span>
         </div>
         <div className="exam-kpi">
-          <span className="kpi-value">{exams.filter(e => e.type === 'Theory').length}</span>
+          <span className="kpi-value">{sessionExams.filter(e => e.type === 'Theory').length}</span>
           <span className="kpi-label">Theory</span>
         </div>
         <div className="exam-kpi">
-          <span className="kpi-value">{exams.filter(e => e.type === 'Practical').length}</span>
+          <span className="kpi-value">{sessionExams.filter(e => e.type === 'Practical').length}</span>
           <span className="kpi-label">Practical</span>
         </div>
         <div className="exam-kpi">
-          <span className="kpi-value">{exams.reduce((s, e) => s + e.credits, 0)}</span>
+          <span className="kpi-value">{sessionExams.reduce((s, e) => s + e.credits, 0)}</span>
           <span className="kpi-label">Total Credits</span>
         </div>
       </div>
@@ -384,6 +261,7 @@ const ExamSchedule = () => {
           {sorted.map(exam => (
             <ExamCard key={exam.id} exam={exam} onClick={setSelectedExam} />
           ))}
+          {sorted.length === 0 && <p style={{color:'var(--text-secondary)'}}>No exams found for the selected filter.</p>}
         </div>
       ) : (
         <div className="exam-table-wrap">
@@ -420,6 +298,11 @@ const ExamSchedule = () => {
                   </td>
                 </tr>
               ))}
+              {sorted.length === 0 && (
+                <tr>
+                  <td colSpan="8" style={{textAlign:'center', color:'var(--text-secondary)'}}>No exams found.</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -431,13 +314,13 @@ const ExamSchedule = () => {
           <FiInfo size={16} /> Important Instructions
         </div>
         <ul className="instr-list">
-          {examInfo.instructions.map((instr, i) => (
+          {commonExamInfo.instructions.map((instr, i) => (
             <li key={i}><FiCheckCircle size={13} className="instr-check" />{instr}</li>
           ))}
         </ul>
         <div className="instr-footer">
-          <span>📍 {examInfo.venue}</span>
-          <span>⏰ Report by {examInfo.reportingTime}</span>
+          <span>📍 {commonExamInfo.venue}</span>
+          <span>⏰ Report by {commonExamInfo.reportingTime}</span>
         </div>
       </div>
 

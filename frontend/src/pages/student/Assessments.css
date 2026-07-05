@@ -1,0 +1,281 @@
+/* src/pages/student/Assessments.css */
+
+.assessments-page {
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: var(--font-family, 'Inter', sans-serif);
+  animation: fadeInAst 0.35s ease-out;
+  padding-bottom: 40px;
+}
+
+@keyframes fadeInAst {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── HEADER ─────────────────────────────────────────────────────── */
+.assessments-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.assessments-title-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.assessments-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.assessments-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.7rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--text-primary, #111827);
+}
+
+.assessments-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary, #6b7280);
+  margin: 3px 0 0;
+}
+
+/* ── KPI STRIP ──────────────────────────────────────────────────── */
+.assessments-kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.ast-kpi {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--surface-color, #fff);
+  border: 1px solid var(--card-border, #e5e7eb);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.ast-icon { flex-shrink: 0; }
+.ast-kpi.pending .ast-icon { color: #f59e0b; }
+.ast-kpi.completed .ast-icon { color: #10b981; }
+.ast-kpi.total .ast-icon { color: #6366f1; }
+
+.ast-val {
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 800;
+  font-family: 'Sora', sans-serif;
+  color: var(--text-primary, #111827);
+  line-height: 1.1;
+}
+
+.ast-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-secondary, #6b7280);
+}
+
+/* ── TABS ───────────────────────────────────────────────────────── */
+.ast-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--card-border, #e5e7eb);
+  padding-bottom: 0;
+}
+
+.ast-tab {
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary, #6b7280);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s;
+}
+
+.ast-tab:hover { color: var(--text-primary, #111827); }
+.ast-tab.active { color: #8b5cf6; border-bottom-color: #8b5cf6; }
+
+/* ── LIST & CARDS ───────────────────────────────────────────────── */
+.ast-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ast-card {
+  background: var(--surface-color, #fff);
+  border: 1px solid var(--card-border, #e5e7eb);
+  border-radius: 16px;
+  padding: 20px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ast-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+}
+
+.ast-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.ast-type-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.type-project { background: rgba(37,99,235,0.1); color: #2563eb; }
+.type-assignment { background: rgba(245,158,11,0.1); color: #f59e0b; }
+.type-quiz { background: rgba(236,72,153,0.1); color: #ec4899; }
+.type-lab { background: rgba(16,185,129,0.1); color: #10b981; }
+
+.ast-weightage {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary, #6b7280);
+}
+
+.ast-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+  margin: 0 0 4px;
+}
+
+.ast-card-course {
+  font-size: 13.5px;
+  color: var(--text-secondary, #6b7280);
+  margin: 0 0 16px;
+}
+
+.ast-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.ast-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.ast-meta-item strong { color: var(--text-primary, #111827); }
+.due-date svg { color: #f59e0b; }
+.submit-date svg { color: #10b981; }
+
+.ast-instructions {
+  font-size: 13.5px;
+  color: var(--text-primary, #374151);
+  background: var(--hover-bg, #f9fafb);
+  padding: 12px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.ast-grading-box {
+  border: 1px solid rgba(16,185,129,0.3);
+  background: rgba(16,185,129,0.05);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.ast-grade-score {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.ast-grade-score .label { font-size: 12px; font-weight: 600; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; }
+.ast-grade-score .score { font-size: 1.2rem; font-weight: 800; color: #047857; font-family: 'Sora', sans-serif; }
+
+.ast-feedback {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: #065f46;
+  font-style: italic;
+}
+.ast-feedback p { margin: 0; }
+.ast-feedback svg { flex-shrink: 0; margin-top: 2px; }
+
+.ast-card-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.ast-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ast-btn.primary {
+  background: #8b5cf6;
+  color: #fff;
+  border: none;
+}
+.ast-btn.primary:hover { background: #7c3aed; }
+
+.ast-btn.secondary {
+  background: transparent;
+  color: var(--text-secondary, #6b7280);
+  border: 1px solid var(--card-border, #e5e7eb);
+}
+.ast-btn.secondary:hover { border-color: #8b5cf6; color: #8b5cf6; }
+
+.ast-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary, #94a3b8);
+}
+.ast-empty svg { margin-bottom: 16px; opacity: 0.4; }
+
+/* ── DARK THEME ─────────────────────────────────────────────────── */
+.app-container.dark-theme .assessments-page {
+  --surface-color: #1e293b;
+  --card-border: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --hover-bg: #334155;
+}
+.app-container.dark-theme .ast-instructions { color: #cbd5e1; }

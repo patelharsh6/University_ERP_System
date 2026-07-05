@@ -28,6 +28,9 @@ import MyInstitution from './pages/student/MyInstitution';
 import ExamSchedule from './pages/student/ExamSchedule';
 import Holidays from './pages/student/Holidays';
 import Counselling from './pages/student/Counselling';
+import Assessments from './pages/student/Assessments';
+import Enrollment from './pages/student/Enrollment';
+import Clearance from './pages/student/Clearance';
 
 function App() {
   const [userRole, setUserRole] = useState('student'); // Default to 'student'
@@ -71,6 +74,9 @@ function App() {
             <Route path="/s/exam-schedules" element={<ExamSchedule />} />
             <Route path="/s/holidays" element={<Holidays />} />
             <Route path="/s/counselling" element={<Counselling />} />
+            <Route path="/s/assessments" element={<Assessments />} />
+            <Route path="/s/enrollment" element={<Enrollment />} />
+            <Route path="/s/clearance" element={<Clearance />} />
           </Routes>
         </Layout>
       </BrowserRouter>

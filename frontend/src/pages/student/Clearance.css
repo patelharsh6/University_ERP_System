@@ -1,0 +1,275 @@
+/* src/pages/student/Clearance.css */
+
+.clearance-page {
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: var(--font-family, 'Inter', sans-serif);
+  animation: fadeInClr 0.35s ease-out;
+  padding-bottom: 40px;
+}
+
+@keyframes fadeInClr {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── HEADER ─────────────────────────────────────────────────────── */
+.clearance-header {
+  margin-bottom: 24px;
+}
+
+.clearance-title-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.clearance-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clearance-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.7rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--text-primary, #111827);
+}
+
+.clearance-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary, #6b7280);
+  margin: 3px 0 0;
+}
+
+/* ── STATUS CARD ────────────────────────────────────────────────── */
+.overall-status-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 30px;
+  border-radius: 16px;
+  margin-bottom: 30px;
+  color: #fff;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.overall-status-card.cleared {
+  background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.25);
+}
+
+.overall-status-card.pending {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.25);
+}
+
+.status-card-left h2 {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 0 0 4px;
+}
+
+.status-card-left p {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.status-card-right {
+  text-align: right;
+}
+
+.status-label {
+  display: block;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.status-value {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  font-size: 1.4rem;
+  font-weight: 800;
+  font-family: 'Sora', sans-serif;
+  margin-bottom: 6px;
+}
+
+.status-date {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* ── DEPARTMENTS ────────────────────────────────────────────────── */
+.departments-list h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+  margin: 0 0 16px;
+}
+
+.dept-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.dept-card {
+  background: var(--surface-color, #fff);
+  border: 1px solid var(--card-border, #e5e7eb);
+  border-radius: 14px;
+  padding: 20px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.dept-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+}
+
+.dept-card.cleared { border-color: rgba(16, 185, 129, 0.3); }
+.dept-card.pending { border-color: rgba(245, 158, 11, 0.3); }
+
+.dept-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.dept-icon {
+  font-size: 24px;
+}
+
+.dept-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+.dept-badge.cleared { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.dept-badge.pending { background: rgba(245, 158, 11, 0.1); color: #d97706; }
+
+.dept-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+  margin: 0 0 8px;
+}
+
+.dept-remarks {
+  font-size: 13px;
+  color: var(--text-secondary, #4b5563);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.dept-action-btn {
+  width: 100%;
+  margin-top: 16px;
+  padding: 8px;
+  background: transparent;
+  border: 1px solid #f59e0b;
+  color: #d97706;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.dept-action-btn:hover {
+  background: #f59e0b;
+  color: #fff;
+}
+
+/* ── FOOTER CARD ────────────────────────────────────────────────── */
+.clearance-footer-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface-color, #fff);
+  border: 1px dashed var(--card-border, #cbd5e1);
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.footer-card-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.footer-card-info svg { color: #6366f1; }
+.footer-card-info h4 { margin: 0 0 4px; font-size: 15px; font-weight: 700; color: var(--text-primary, #111827); }
+.footer-card-info p { margin: 0; font-size: 13px; color: var(--text-secondary, #6b7280); }
+
+.download-cert-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.download-cert-btn:not(:disabled):hover { background: #4f46e5; transform: translateY(-1px); }
+.download-cert-btn:disabled { background: var(--card-border, #e2e8f0); color: #94a3b8; cursor: not-allowed; }
+
+/* ── INSTRUCTIONS ───────────────────────────────────────────────── */
+.clearance-instructions {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(99, 102, 241, 0.05);
+  border-radius: 12px;
+  color: #4f46e5;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.clearance-instructions svg { flex-shrink: 0; margin-top: 2px; }
+
+/* ── DARK THEME ─────────────────────────────────────────────────── */
+.app-container.dark-theme .clearance-page {
+  --surface-color: #1e293b;
+  --card-border: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+}
+.app-container.dark-theme .clearance-instructions { color: #818cf8; }
+.app-container.dark-theme .dept-action-btn:hover { color: #fff; }
+
+/* ── RESPONSIVE ─────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .overall-status-card { flex-direction: column; align-items: flex-start; }
+  .status-card-right { text-align: left; }
+  .status-value { justify-content: flex-start; }
+  .clearance-footer-card { flex-direction: column; align-items: stretch; text-align: center; }
+  .footer-card-info { flex-direction: column; }
+}

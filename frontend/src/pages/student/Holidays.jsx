@@ -2,8 +2,7 @@
 import React, { useState } from 'react';
 import './Holidays.css';
 import {
-  FiSun, FiCalendar, FiChevronLeft, FiChevronRight,
-  FiStar, FiGrid, FiList, FiInfo, FiGift
+  FiSun, FiCalendar, FiGift
 } from 'react-icons/fi';
 
 // ─── Mock Data ─────────────────────────────────────────────────────────────────
@@ -65,11 +64,7 @@ const TYPE_CONFIG = {
   University: { color: '#0d9488', bg: 'rgba(13,148,136,0.1)' },
 };
 
-const MONTH_NUMS = {
-  January: '01', February: '02', March: '03', April: '04',
-  May: '05', June: '06', July: '07', August: '08',
-  September: '09', October: '10', November: '11', December: '12',
-};
+
 
 function getDaysUntil(dateStr) {
   const today = new Date();
@@ -93,7 +88,6 @@ function getDayOfWeek(dateStr) {
 const Holidays = () => {
   const [activeMonth, setActiveMonth] = useState('All');
   const [activeType, setActiveType] = useState('All');
-  const [viewMode, setViewMode] = useState('list'); // 'list' | 'calendar'
 
   const types = ['All', 'National', 'Festival', 'State', 'University'];
 
