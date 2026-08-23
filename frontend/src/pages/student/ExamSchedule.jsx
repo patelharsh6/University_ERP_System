@@ -41,53 +41,16 @@ const allExams = [
   { id: 8, sessionId: 'final', code: 'CE601P', subject: 'DBMS Lab', shortName: 'DBMS Lab', date: '2026-11-10', displayDate: 'Tue, 10 Nov 2026', day: 'Tuesday', time: '09:00 AM – 12:00 PM', duration: '3 Hours', room: 'DB Lab 1', block: 'Lab Block', seat: 'PC-08', faculty: 'Dr. Rajesh Sharma', credits: 2, type: 'Practical', color: '#2563eb' },
 ];
 
-// ─── Countdown Hook ────────────────────────────────────────────────────────────
-function useCountdown(targetDateStr) {
-  const [timeLeft, setTimeLeft] = useState('');
-
-  useEffect(() => {
-    const target = new Date(`${targetDateStr}T09:00:00`);
-    const update = () => {
-      const now = new Date();
-      const diff = target - now;
-      if (diff <= 0) { setTimeLeft('Done/In progress'); return; }
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      if (days > 0) setTimeLeft(`${days}d ${hours}h`);
-      else setTimeLeft(`${hours}h left`);
-    };
-    update();
-    const interval = setInterval(update, 60000);
-    return () => clearInterval(interval);
-  }, [targetDateStr]);
-
-  return timeLeft;
-}
-
 // ─── Exam Card ─────────────────────────────────────────────────────────────────
 const ExamCard = ({ exam, onClick }) => {
-  const countdown = useCountdown(exam.date);
-  const isSoon = exam.date === '2026-07-15' || exam.date === '2026-07-10';
-
   return (
     <div
-      className={`exam-card ${isSoon ? 'soon' : ''}`}
+      className="exam-card"
       style={{ '--exam-color': exam.color }}
       onClick={() => onClick(exam)}
     >
       <div className="exam-card-accent" />
       <div className="exam-card-body">
-        {/* Top Row */}
-        <div className="exam-card-top">
-          <div className="exam-type-badge" style={{ background: `${exam.color}15`, color: exam.color }}>
-            {exam.type === 'Practical' ? '🧪' : '📝'} {exam.type}
-          </div>
-          <div className="exam-countdown">
-            <FiClock size={12} />
-            {countdown}
-          </div>
-        </div>
-
         {/* Subject */}
         <div className="exam-subject-row">
           <span className="exam-code" style={{ color: exam.color }}>{exam.code}</span>
@@ -113,12 +76,6 @@ const ExamCard = ({ exam, onClick }) => {
             <span>Seat: <strong>{exam.seat}</strong></span>
           </div>
         </div>
-
-        {/* Footer */}
-        <div className="exam-card-footer">
-          <span className="exam-faculty">{exam.faculty}</span>
-          <div className="exam-credits">{exam.credits} Credits</div>
-        </div>
       </div>
     </div>
   );
@@ -130,7 +87,6 @@ const ExamSchedule = () => {
   const [activeFilter, setActiveFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedExam, setSelectedExam] = useState(null);
-  const [viewMode, setViewMode] = useState('cards'); // 'cards' | 'table'
 
   const activeSessionObj = examSessionsList.find(s => s.id === activeSessionId);
   const filters = ['All', 'Theory', 'Practical'];
@@ -148,10 +104,6 @@ const ExamSchedule = () => {
 
   // Sort by date
   const sorted = [...filtered].sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  const nextExam = sessionExams.reduce((prev, curr) =>
-    new Date(curr.date) > new Date() &&
-    (!prev || new Date(curr.date) < new Date(prev.date)) ? curr : prev, null);
 
   return (
     <div className="exam-schedule-page">
@@ -185,48 +137,6 @@ const ExamSchedule = () => {
         ))}
       </div>
 
-      {/* ── NEXT EXAM BANNER ── */}
-      {nextExam && (
-        <div className="next-exam-banner" style={{ '--next-color': nextExam.color }}>
-          <div className="next-exam-label">
-            <FiAlertCircle size={16} />
-            <span>Next Exam</span>
-          </div>
-          <div className="next-exam-info">
-            <strong>{nextExam.subject}</strong>
-            <span className="next-exam-sep">·</span>
-            <span>{nextExam.displayDate}</span>
-            <span className="next-exam-sep">·</span>
-            <span>{nextExam.time}</span>
-            <span className="next-exam-sep">·</span>
-            <span>Seat: <strong>{nextExam.seat}</strong></span>
-          </div>
-          <div className="next-exam-action" onClick={() => setSelectedExam(nextExam)}>
-            Details <FiChevronRight size={14} />
-          </div>
-        </div>
-      )}
-
-      {/* ── KPI STRIP ── */}
-      <div className="exam-kpi-strip">
-        <div className="exam-kpi">
-          <span className="kpi-value">{sessionExams.length}</span>
-          <span className="kpi-label">Total Exams</span>
-        </div>
-        <div className="exam-kpi">
-          <span className="kpi-value">{sessionExams.filter(e => e.type === 'Theory').length}</span>
-          <span className="kpi-label">Theory</span>
-        </div>
-        <div className="exam-kpi">
-          <span className="kpi-value">{sessionExams.filter(e => e.type === 'Practical').length}</span>
-          <span className="kpi-label">Practical</span>
-        </div>
-        <div className="exam-kpi">
-          <span className="kpi-value">{sessionExams.reduce((s, e) => s + e.credits, 0)}</span>
-          <span className="kpi-label">Total Credits</span>
-        </div>
-      </div>
-
       {/* ── CONTROLS ── */}
       <div className="exam-controls">
         <div className="exam-search">
@@ -249,64 +159,15 @@ const ExamSchedule = () => {
             </button>
           ))}
         </div>
-        <div className="view-toggle">
-          <button className={viewMode === 'cards' ? 'active' : ''} onClick={() => setViewMode('cards')} title="Card view">⊞</button>
-          <button className={viewMode === 'table' ? 'active' : ''} onClick={() => setViewMode('table')} title="Table view">≡</button>
-        </div>
       </div>
 
       {/* ── CONTENT ── */}
-      {viewMode === 'cards' ? (
-        <div className="exam-cards-grid">
-          {sorted.map(exam => (
-            <ExamCard key={exam.id} exam={exam} onClick={setSelectedExam} />
-          ))}
-          {sorted.length === 0 && <p style={{color:'var(--text-secondary)'}}>No exams found for the selected filter.</p>}
-        </div>
-      ) : (
-        <div className="exam-table-wrap">
-          <table className="exam-table">
-            <thead>
-              <tr>
-                <th>Subject</th>
-                <th>Code</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Room</th>
-                <th>Seat</th>
-                <th>Duration</th>
-                <th>Type</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sorted.map(exam => (
-                <tr key={exam.id} onClick={() => setSelectedExam(exam)} className="exam-table-row">
-                  <td>
-                    <span className="table-subject-dot" style={{ background: exam.color }} />
-                    {exam.subject}
-                  </td>
-                  <td><span className="table-code-badge" style={{ color: exam.color, background: `${exam.color}15` }}>{exam.code}</span></td>
-                  <td>{exam.displayDate}</td>
-                  <td>{exam.time}</td>
-                  <td>{exam.room}</td>
-                  <td><strong>{exam.seat}</strong></td>
-                  <td>{exam.duration}</td>
-                  <td>
-                    <span className={`table-type-pill ${exam.type === 'Practical' ? 'practical' : 'theory'}`}>
-                      {exam.type}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-              {sorted.length === 0 && (
-                <tr>
-                  <td colSpan="8" style={{textAlign:'center', color:'var(--text-secondary)'}}>No exams found.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <div className="exam-cards-grid">
+        {sorted.map(exam => (
+          <ExamCard key={exam.id} exam={exam} onClick={setSelectedExam} />
+        ))}
+        {sorted.length === 0 && <p style={{color:'var(--text-secondary)'}}>No exams found for the selected filter.</p>}
+      </div>
 
       {/* ── INSTRUCTIONS BOX ── */}
       <div className="exam-instructions">
