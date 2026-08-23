@@ -144,7 +144,7 @@ Every Django app follows the same shape — `models.py`, `serializers.py`, `view
 ### 1. Clone
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/patelharsh6/University_ERP_System
 cd University_ERP_System
 ```
 
