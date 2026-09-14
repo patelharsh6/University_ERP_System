@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from .models import User, UserPreference
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -14,6 +14,18 @@ class UserSerializer(serializers.ModelSerializer):
             'is_active_account', 'created_at', 'updated_at',
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
+
+
+class UserAdminUpdateSerializer(serializers.ModelSerializer):
+    """Serializer for admin user updates (including activation/deactivation)."""
+
+    class Meta:
+        model = User
+        fields = [
+            'username', 'email', 'first_name', 'last_name',
+            'role', 'phone', 'enrollment_id', 'employee_id',
+            'is_active_account', 'date_of_birth', 'gender',
+        ]
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -114,3 +126,15 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
             'first_name', 'last_name', 'phone', 'profile_picture',
             'date_of_birth', 'gender',
         ]
+
+
+class UserPreferenceSerializer(serializers.ModelSerializer):
+    """Serializer for user UI preferences."""
+
+    class Meta:
+        model = UserPreference
+        fields = [
+            'theme', 'sidebar_collapsed', 'email_notifications',
+            'push_notifications', 'created_at', 'updated_at',
+        ]
+        read_only_fields = ['created_at', 'updated_at']

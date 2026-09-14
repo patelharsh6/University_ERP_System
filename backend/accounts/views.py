@@ -6,10 +6,12 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 
 from common.permissions import IsAdmin
-from .models import User
+from .models import User, UserPreference
 from .serializers import (
-    UserSerializer, RegisterSerializer, LoginSerializer, ProfileUpdateSerializer
+    UserSerializer, UserAdminUpdateSerializer, RegisterSerializer,
+    LoginSerializer, ProfileUpdateSerializer, UserPreferenceSerializer
 )
+from .selectors import get_admin_dashboard_summary
 
 
 class RegisterView(generics.CreateAPIView):
@@ -94,8 +96,48 @@ class ProfileView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 
+class UserPreferenceView(APIView):
+    """Get or update current user UI preferences."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        pref, _ = UserPreference.objects.get_or_create(user=request.user)
+        serializer = UserPreferenceSerializer(pref)
+        return Response(serializer.data)
+
+    def patch(self, request):
+        pref, _ = UserPreference.objects.get_or_create(user=request.user)
+        serializer = UserPreferenceSerializer(pref, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    def put(self, request):
+        return self.patch(request)
+
+
 class UserListView(generics.ListAPIView):
     """List all users (admin only)."""
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAdmin]
+
+
+class UserDetailView(generics.RetrieveUpdateAPIView):
+    """Retrieve or update a user (admin only, supports deactivation)."""
+    queryset = User.objects.all()
+    permission_classes = [IsAdmin]
+
+    def get_serializer_class(self):
+        if self.request.method in ('PUT', 'PATCH'):
+            return UserAdminUpdateSerializer
+        return UserSerializer
+
+
+class AdminDashboardSummaryView(APIView):
+    """University overview statistics (admin only)."""
+    permission_classes = [IsAdmin]
+
+    def get(self, request):
+        summary = get_admin_dashboard_summary()
+        return Response(summary)
