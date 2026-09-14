@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from common.constants import compute_grade_and_points
 
 
 class ExamResult(models.Model):
@@ -44,6 +45,12 @@ class ExamResult(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+    def save(self, *args, **kwargs):
+        if self.max_marks and self.max_marks > 0:
+            percentage = (self.marks_obtained / self.max_marks) * 100
+            self.grade, self.grade_points = compute_grade_and_points(percentage)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.student.get_full_name()} - {self.subject.code} ({self.exam_type}: {self.marks_obtained}/{self.max_marks})"

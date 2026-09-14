@@ -72,3 +72,45 @@ class LeaveRequest(models.Model):
 
     def __str__(self):
         return f"{self.student.get_full_name()} - {self.start_date} to {self.end_date}"
+
+
+class ClearanceItem(models.Model):
+    """Departmental clearance item for graduation or hall ticket eligibility."""
+
+    class Status(models.TextChoices):
+        PENDING = 'pending', 'Pending'
+        CLEARED = 'cleared', 'Cleared'
+        REJECTED = 'rejected', 'Rejected'
+
+    student = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='clearance_items',
+        limit_choices_to={'role': 'student'},
+    )
+    department = models.CharField(
+        max_length=100,
+        help_text='e.g., Library, Accounts, Laboratory, Sports, Hostel'
+    )
+    status = models.CharField(
+        max_length=10,
+        choices=Status.choices,
+        default=Status.PENDING,
+    )
+    remarks = models.TextField(blank=True)
+    cleared_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='cleared_items',
+    )
+    cleared_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['department']
+        unique_together = ['student', 'department']
+
+    def __str__(self):
+        return f"{self.student.get_full_name()} - {self.department} ({self.status})"

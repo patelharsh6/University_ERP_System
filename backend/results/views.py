@@ -1,26 +1,23 @@
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
+from common.mixins import RoleScopedQuerysetMixin
+from common.permissions import ReadOnlyOrFacultyAdmin
 from .models import ExamResult
 from .serializers import ExamResultSerializer
 
 
-class ExamResultListCreateView(generics.ListCreateAPIView):
+class ExamResultListCreateView(RoleScopedQuerysetMixin, generics.ListCreateAPIView):
+    """List exam results (students see only own published results) or create (faculty/admin)."""
+    queryset = ExamResult.objects.select_related('student', 'subject').all()
     serializer_class = ExamResultSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-        if user.role == 'student':
-            return ExamResult.objects.filter(
-                student=user, is_published=True
-            ).select_related('subject')
-        return ExamResult.objects.select_related('student', 'subject').all()
-
-    def perform_create(self, serializer):
-        serializer.save()
+    permission_classes = [ReadOnlyOrFacultyAdmin]
+    student_field = 'student'
+    published_only_for_student = True
 
 
-class ExamResultDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = ExamResult.objects.all()
+class ExamResultDetailView(RoleScopedQuerysetMixin, generics.RetrieveUpdateDestroyAPIView):
+    """Retrieve exam result (students see only own published result) or modify (faculty/admin)."""
+    queryset = ExamResult.objects.select_related('student', 'subject').all()
     serializer_class = ExamResultSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [ReadOnlyOrFacultyAdmin]
+    student_field = 'student'
+    published_only_for_student = True
