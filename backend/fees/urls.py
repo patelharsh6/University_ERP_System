@@ -5,4 +5,5 @@ urlpatterns = [
     path('', views.FeePaymentListCreateView.as_view(), name='fee-payment-list-create'),
     path('<int:pk>/', views.FeePaymentDetailView.as_view(), name='fee-payment-detail'),
     path('structure/', views.FeeStructureListCreateView.as_view(), name='fee-structure-list'),
+    path('structure/<int:pk>/', views.FeeStructureDetailView.as_view(), name='fee-structure-detail'),
 ]

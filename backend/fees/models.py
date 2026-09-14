@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 
 
 class FeeStructure(models.Model):
@@ -61,6 +62,16 @@ class FeePayment(models.Model):
 
     class Meta:
         ordering = ['-due_date']
+
+    def save(self, *args, **kwargs):
+        if self.amount_paid is not None and self.total_amount is not None:
+            if float(self.amount_paid) >= float(self.total_amount):
+                self.status = self.Status.PAID
+            elif float(self.amount_paid) > 0:
+                self.status = self.Status.PARTIAL
+            elif self.due_date and self.due_date < timezone.now().date():
+                self.status = self.Status.OVERDUE
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.student.get_full_name()} - {self.fee_structure.name} ({self.status})"
