@@ -18,6 +18,7 @@ class User(AbstractUser):
         choices=Role.choices,
         default=Role.STUDENT,
     )
+    email = models.EmailField(unique=True)
     phone = models.CharField(max_length=15, blank=True, null=True)
     enrollment_id = models.CharField(
         max_length=20, unique=True, blank=True, null=True,
@@ -50,3 +51,23 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.get_full_name()} ({self.role})"
+
+
+class UserPreference(models.Model):
+    """User UI and notification preferences."""
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name='preferences'
+    )
+    theme = models.CharField(
+        max_length=10,
+        choices=[('light', 'Light'), ('dark', 'Dark'), ('system', 'System')],
+        default='system'
+    )
+    sidebar_collapsed = models.BooleanField(default=False)
+    email_notifications = models.BooleanField(default=True)
+    push_notifications = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s preferences"

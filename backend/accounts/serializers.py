@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from django.contrib.auth import authenticate
 from .models import User
 
 
@@ -21,6 +20,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     """Serializer for user registration."""
     password = serializers.CharField(write_only=True, min_length=6)
     password_confirm = serializers.CharField(write_only=True, min_length=6)
+    role = serializers.ChoiceField(choices=User.Role.choices, default=User.Role.STUDENT)
 
     class Meta:
         model = User
@@ -31,14 +31,30 @@ class RegisterSerializer(serializers.ModelSerializer):
         ]
 
     def validate(self, data):
-        if data['password'] != data['password_confirm']:
+        if data.get('password') != data.get('password_confirm'):
             raise serializers.ValidationError({
                 'password_confirm': 'Passwords do not match.'
             })
+
+        requested_role = data.get('role', User.Role.STUDENT)
+        request = self.context.get('request')
+        is_admin = bool(
+            request and
+            getattr(request, 'user', None) and
+            request.user.is_authenticated and
+            (getattr(request.user, 'role', None) == 'admin' or request.user.is_superuser)
+        )
+
+        # Non-admins cannot register as faculty or admin
+        if requested_role != User.Role.STUDENT and not is_admin:
+            raise serializers.ValidationError({
+                'role': 'Only administrators can create faculty or admin accounts.'
+            })
+
         return data
 
     def create(self, validated_data):
-        validated_data.pop('password_confirm')
+        validated_data.pop('password_confirm', None)
         password = validated_data.pop('password')
         user = User(**validated_data)
         user.set_password(password)
@@ -57,15 +73,18 @@ class LoginSerializer(serializers.Serializer):
         identifier = data.get('identifier', '').strip()
         password = data.get('password')
 
-        # Try to find user by email, enrollment_id, or employee_id
+        if not identifier or not password:
+            raise serializers.ValidationError({
+                'identifier': 'Both identifier and password are required.'
+            })
+
+        # Safe lookup without raising MultipleObjectsReturned
         user = None
         lookup_fields = ['email', 'enrollment_id', 'employee_id', 'username']
         for field in lookup_fields:
-            try:
-                user = User.objects.get(**{field: identifier})
+            user = User.objects.filter(**{field: identifier}).first()
+            if user:
                 break
-            except User.DoesNotExist:
-                continue
 
         if user is None:
             raise serializers.ValidationError({
