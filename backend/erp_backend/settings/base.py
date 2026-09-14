@@ -1,19 +1,20 @@
 """
-Django settings for University ERP Backend.
+Base settings for University ERP Backend.
 """
 import os
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
 
-load_dotenv()
+# BASE_DIR is backend/ (two levels up from erp_backend/settings/)
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+# Load environment variables from backend/.env if it exists
+load_dotenv(BASE_DIR / '.env')
 
 # SECURITY
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key-change-in-production')
-DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 'yes')
+DEBUG = False
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 # Application definition
@@ -28,7 +29,10 @@ INSTALLED_APPS = [
     # Third-party
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
+    'django_filters',
+    'drf_spectacular',
 
     # Local apps
     'accounts',
@@ -40,6 +44,9 @@ INSTALLED_APPS = [
     'results',
     'announcements',
     'feedback',
+    'exams',
+    'calendar_app',
+    'counselling',
 ]
 
 MIDDLEWARE = [
@@ -73,7 +80,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'erp_backend.wsgi.application'
 
-# Database — SQLite (switch to PostgreSQL by changing this block)
+# Database — SQLite by default (can be overridden via environment or in prod.py)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -117,8 +124,15 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'common.pagination.StandardResultsSetPagination',
     'PAGE_SIZE': 20,
+    'EXCEPTION_HANDLER': 'common.exceptions.custom_exception_handler',
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 # Simple JWT settings
@@ -126,8 +140,16 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': False,
+    'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+# OpenAPI Docs (drf-spectacular)
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'University ERP API',
+    'DESCRIPTION': 'REST API for University ERP System with role-based access control.',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }
 
 # CORS settings
