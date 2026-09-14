@@ -1,5 +1,22 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
+
+
+class AcademicTerm(models.Model):
+    """Structured academic semester / term."""
+    name = models.CharField(max_length=100, help_text='e.g., Fall 2024, Semester 1')
+    code = models.CharField(max_length=20, unique=True, help_text='e.g., 2024-SEM1')
+    start_date = models.DateField()
+    end_date = models.DateField()
+    is_current = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-start_date']
+
+    def __str__(self):
+        return f"{self.name} ({self.code})"
 
 
 class Subject(models.Model):
@@ -75,17 +92,17 @@ class Enrollment(models.Model):
         unique_together = ['student', 'course']
         ordering = ['-enrolled_date']
 
+    def save(self, *args, **kwargs):
+        if self.progress >= 100:
+            self.is_completed = True
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.student.get_full_name()} → {self.course.title}"
 
 
 class Assignment(models.Model):
     """Course assignment."""
-
-    class Status(models.TextChoices):
-        PENDING = 'pending', 'Pending'
-        SUBMITTED = 'submitted', 'Submitted'
-        GRADED = 'graded', 'Graded'
 
     course = models.ForeignKey(
         Course, on_delete=models.CASCADE,
@@ -102,6 +119,56 @@ class Assignment(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.course.code}"
+
+
+class AssignmentSubmission(models.Model):
+    """Student submission for an assignment."""
+
+    class Status(models.TextChoices):
+        PENDING = 'pending', 'Pending Review'
+        GRADED = 'graded', 'Graded'
+        RESUBMIT = 'resubmit', 'Resubmission Requested'
+
+    assignment = models.ForeignKey(
+        Assignment, on_delete=models.CASCADE, related_name='submissions'
+    )
+    student = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='assignment_submissions',
+        limit_choices_to={'role': 'student'},
+    )
+    submission_file = models.FileField(upload_to='submissions/', blank=True, null=True)
+    submission_text = models.TextField(blank=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    is_late = models.BooleanField(default=False)
+    status = models.CharField(
+        max_length=10, choices=Status.choices, default=Status.PENDING
+    )
+    marks_obtained = models.FloatField(null=True, blank=True)
+    feedback = models.TextField(blank=True)
+    graded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='graded_submissions',
+        limit_choices_to={'role': 'faculty'},
+    )
+    graded_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ['assignment', 'student']
+        ordering = ['-submitted_at']
+
+    def save(self, *args, **kwargs):
+        if self.assignment and self.assignment.due_date:
+            sub_time = self.submitted_at or timezone.now()
+            if sub_time > self.assignment.due_date:
+                self.is_late = True
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.student.get_full_name()} → {self.assignment.title}"
 
 
 class StudyMaterial(models.Model):

@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ValidationError
 
 
 class AttendanceRecord(models.Model):
@@ -74,6 +75,14 @@ class Timetable(models.Model):
 
     class Meta:
         ordering = ['day', 'start_time']
+
+    def clean(self):
+        if self.start_time and self.end_time and self.end_time <= self.start_time:
+            raise ValidationError({'end_time': 'End time must be after start time.'})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.subject.code} - {self.day} {self.start_time}-{self.end_time}"
