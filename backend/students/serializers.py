@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from accounts.models import User
 from accounts.serializers import UserSerializer
-from .models import StudentProfile, LeaveRequest
+from .models import StudentProfile, LeaveRequest, ClearanceItem
 
 
 class StudentProfileSerializer(serializers.ModelSerializer):
@@ -50,3 +50,19 @@ class LeaveRequestSerializer(serializers.ModelSerializer):
                 'end_date': 'End date cannot be earlier than start date.'
             })
         return data
+
+
+class ClearanceItemSerializer(serializers.ModelSerializer):
+    student_name = serializers.SerializerMethodField()
+    cleared_by_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ClearanceItem
+        fields = '__all__'
+        read_only_fields = ['created_at', 'updated_at']
+
+    def get_student_name(self, obj):
+        return obj.student.get_full_name() if obj.student else ''
+
+    def get_cleared_by_name(self, obj):
+        return obj.cleared_by.get_full_name() if obj.cleared_by else None
