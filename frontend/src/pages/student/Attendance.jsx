@@ -72,7 +72,10 @@ const Attendance = () => {
   }, [summaryData]);
 
   // Attendance log entries
-  const rawLogs = Array.isArray(listData) ? listData : (listData?.results || []);
+  const rawLogs = useMemo(() => {
+    return Array.isArray(listData) ? listData : (listData?.results || []);
+  }, [listData]);
+
   const normalizedLogs = useMemo(() => {
     return rawLogs.map(r => ({
       id: r.id,

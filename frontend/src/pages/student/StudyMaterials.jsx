@@ -2,7 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import './StudyMaterials.css';
 import { 
-  FiBookOpen, FiDownload, FiEye, FiSearch, FiFileText, 
+  FiBookOpen, FiDownload, FiEye, FiFileText, 
   FiVideo, FiArchive, FiFile, FiExternalLink, FiInbox 
 } from 'react-icons/fi';
 import { useApi } from '../../hooks/useApi';
@@ -27,13 +27,17 @@ const StudyMaterials = () => {
     loading: loadingSubjects 
   } = useApi(endpoints.courses.subjects, { params: { page_size: 100 } });
 
-  const rawMaterials = Array.isArray(materialsData) 
-    ? materialsData 
-    : (materialsData?.results || []);
+  const rawMaterials = useMemo(() => {
+    return Array.isArray(materialsData) 
+      ? materialsData 
+      : (materialsData?.results || []);
+  }, [materialsData]);
 
-  const rawSubjects = Array.isArray(subjectsData) 
-    ? subjectsData 
-    : (subjectsData?.results || []);
+  const rawSubjects = useMemo(() => {
+    return Array.isArray(subjectsData) 
+      ? subjectsData 
+      : (subjectsData?.results || []);
+  }, [subjectsData]);
 
   const subjectOptions = useMemo(() => {
     const list = ['All Subjects'];

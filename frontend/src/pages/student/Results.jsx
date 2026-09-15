@@ -1,5 +1,5 @@
 // src/pages/student/Results.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './Results.css';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -19,7 +19,7 @@ const Results = () => {
   const { data: transcript, loading, error, refetch } = useApi(endpoints.results.transcript);
   const [selectedSemName, setSelectedSemName] = useState('');
 
-  const semesters = transcript?.semesters || [];
+  const semesters = useMemo(() => transcript?.semesters || [], [transcript]);
 
   useEffect(() => {
     if (semesters.length > 0 && !selectedSemName) {

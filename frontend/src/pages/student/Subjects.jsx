@@ -1,7 +1,7 @@
 // src/pages/student/Subjects.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './Subjects.css';
-import { FiBookOpen, FiFileText, FiVideo, FiDownload, FiCheckCircle, FiClock, FiCircle, FiInfo } from 'react-icons/fi';
+import { FiBookOpen, FiFileText, FiDownload, FiCheckCircle, FiClock, FiCircle, FiInfo } from 'react-icons/fi';
 import { useApi } from '../../hooks/useApi';
 import { endpoints } from '../../services/endpoints';
 import { formatDate } from '../../utils/format';
@@ -18,13 +18,17 @@ const Subjects = () => {
     params: { page_size: 100 }
   });
 
-  const rawSubjects = Array.isArray(subjectsData)
-    ? subjectsData
-    : (subjectsData?.results || []);
+  const rawSubjects = useMemo(() => {
+    return Array.isArray(subjectsData)
+      ? subjectsData
+      : (subjectsData?.results || []);
+  }, [subjectsData]);
 
-  const rawMaterials = Array.isArray(materialsData)
-    ? materialsData
-    : (materialsData?.results || []);
+  const rawMaterials = useMemo(() => {
+    return Array.isArray(materialsData)
+      ? materialsData
+      : (materialsData?.results || []);
+  }, [materialsData]);
 
   const [selectedSubjectId, setSelectedSubjectId] = useState('');
   const [activeTab, setActiveTab] = useState('modules');
@@ -35,9 +39,13 @@ const Subjects = () => {
     }
   }, [rawSubjects, selectedSubjectId]);
 
-  const currentSubject = rawSubjects.find(s => String(s.id) === String(selectedSubjectId)) || rawSubjects[0];
+  const currentSubject = useMemo(() => {
+    return rawSubjects.find(s => String(s.id) === String(selectedSubjectId)) || rawSubjects[0];
+  }, [rawSubjects, selectedSubjectId]);
 
-  const currentMaterials = rawMaterials.filter(m => String(m.subject) === String(selectedSubjectId) || String(m.subject_id) === String(selectedSubjectId));
+  const currentMaterials = useMemo(() => {
+    return rawMaterials.filter(m => String(m.subject) === String(selectedSubjectId) || String(m.subject_id) === String(selectedSubjectId));
+  }, [rawMaterials, selectedSubjectId]);
 
   const sampleModules = currentSubject ? [
     { id: 1, title: `Unit 1: Foundations of ${currentSubject.name}`, progress: 100, status: 'done' },

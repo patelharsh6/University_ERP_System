@@ -38,13 +38,17 @@ const Assignments = () => {
     method: 'POST',
   });
 
-  const rawAssignments = Array.isArray(assignmentsData) 
-    ? assignmentsData 
-    : (assignmentsData?.results || []);
+  const rawAssignments = useMemo(() => {
+    return Array.isArray(assignmentsData) 
+      ? assignmentsData 
+      : (assignmentsData?.results || []);
+  }, [assignmentsData]);
 
-  const rawSubmissions = Array.isArray(submissionsData) 
-    ? submissionsData 
-    : (submissionsData?.results || []);
+  const rawSubmissions = useMemo(() => {
+    return Array.isArray(submissionsData) 
+      ? submissionsData 
+      : (submissionsData?.results || []);
+  }, [submissionsData]);
 
   // Map submissions by assignment ID
   const submissionMap = useMemo(() => {
@@ -67,7 +71,7 @@ const Assignments = () => {
       let marksDisplay = null;
 
       if (sub) {
-        if (sub.status === 'graded' || sub.marks_obtained !== null && sub.marks_obtained !== undefined) {
+        if (sub.status === 'graded' || (sub.marks_obtained !== null && sub.marks_obtained !== undefined)) {
           status = 'graded';
           marksDisplay = `${sub.marks_obtained ?? 0}/${assign.max_marks || 100}`;
         } else {

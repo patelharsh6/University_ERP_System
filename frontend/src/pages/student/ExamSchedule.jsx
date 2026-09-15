@@ -1,10 +1,10 @@
 // src/pages/student/ExamSchedule.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './ExamSchedule.css';
 import {
   FiCalendar, FiClock, FiMapPin, FiBook, FiDownload,
-  FiAlertCircle, FiCheckCircle, FiSearch,
-  FiChevronRight, FiAward, FiFileText, FiInfo
+  FiCheckCircle, FiSearch,
+  FiAward, FiFileText, FiInfo
 } from 'react-icons/fi';
 
 // ─── Mock Data ─────────────────────────────────────────────────────────────────

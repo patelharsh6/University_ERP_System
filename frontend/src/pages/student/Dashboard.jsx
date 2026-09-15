@@ -1,5 +1,5 @@
 // src/pages/student/Dashboard.jsx
-import React, { useState } from 'react';
+import React from 'react';
 import './Dashboard.css';
 import {
   FiCheckSquare, FiAward, FiCreditCard, FiCalendar,

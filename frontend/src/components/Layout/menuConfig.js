@@ -1,9 +1,9 @@
 // src/components/Layout/menuConfig.js
 import React from 'react';
 import { 
-  FiHome, FiUser, FiBookOpen, FiLayers, FiCheckCircle, FiCalendar, FiAward, 
-  FiEdit3, FiCreditCard, FiRadio, FiFileText, FiSend, FiMessageSquare, FiBell,
-  FiSettings, FiMessageCircle, FiCheckSquare, FiBarChart2, FiList, FiSun, FiGrid,
+  FiHome, FiUser, FiBookOpen, FiCheckCircle, FiCalendar, FiAward, 
+  FiCreditCard, FiRadio, FiSend, FiMessageSquare, FiBell,
+  FiMessageCircle, FiCheckSquare, FiBarChart2, FiList, FiSun, FiGrid,
   FiHeart, FiUserCheck
 } from 'react-icons/fi';
 

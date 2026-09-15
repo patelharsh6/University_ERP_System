@@ -2,7 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import './Enrollment.css';
 import { 
-  FiUserCheck, FiBookOpen, FiAward, FiClock, 
+  FiUserCheck, FiAward, 
   FiCheckCircle, FiAlertCircle, FiInbox 
 } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
@@ -29,9 +29,11 @@ const Enrollment = () => {
     refetch: refetchTranscript 
   } = useApi(endpoints.results.transcript);
 
-  const rawEnrollments = Array.isArray(enrollmentsData) 
-    ? enrollmentsData 
-    : (enrollmentsData?.results || []);
+  const rawEnrollments = useMemo(() => {
+    return Array.isArray(enrollmentsData) 
+      ? enrollmentsData 
+      : (enrollmentsData?.results || []);
+  }, [enrollmentsData]);
 
   const currentSubjects = useMemo(() => {
     return rawEnrollments.map(enr => {

@@ -41,13 +41,17 @@ const Feedback = () => {
     method: 'POST',
   });
 
-  const rawEnrollments = Array.isArray(enrollmentsData) 
-    ? enrollmentsData 
-    : (enrollmentsData?.results || []);
+  const rawEnrollments = useMemo(() => {
+    return Array.isArray(enrollmentsData) 
+      ? enrollmentsData 
+      : (enrollmentsData?.results || []);
+  }, [enrollmentsData]);
 
-  const rawFeedbacks = Array.isArray(feedbackData) 
-    ? feedbackData 
-    : (feedbackData?.results || []);
+  const rawFeedbacks = useMemo(() => {
+    return Array.isArray(feedbackData) 
+      ? feedbackData 
+      : (feedbackData?.results || []);
+  }, [feedbackData]);
 
   // Map feedbacks by course ID
   const feedbackByCourse = useMemo(() => {

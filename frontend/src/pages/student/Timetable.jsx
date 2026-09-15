@@ -47,7 +47,9 @@ const Timetable = () => {
   const [view, setView] = useState('day'); // 'day' | 'week'
   const [weekOffset, setWeekOffset] = useState(0);
 
-  const timetableEntries = Array.isArray(rawTimetable) ? rawTimetable : (rawTimetable?.results || []);
+  const timetableEntries = useMemo(() => {
+    return Array.isArray(rawTimetable) ? rawTimetable : (rawTimetable?.results || []);
+  }, [rawTimetable]);
 
   const weekSchedule = useMemo(() => {
     const map = { Mon: [], Tue: [], Wed: [], Thu: [], Fri: [], Sat: [] };

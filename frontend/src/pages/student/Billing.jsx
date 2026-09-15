@@ -40,9 +40,11 @@ const Billing = () => {
     refetch: refetchFees 
   } = useApi(endpoints.fees.list, { params: { page_size: 100 } });
 
-  const rawFees = Array.isArray(feeData) 
-    ? feeData 
-    : (feeData?.results || []);
+  const rawFees = useMemo(() => {
+    return Array.isArray(feeData) 
+      ? feeData 
+      : (feeData?.results || []);
+  }, [feeData]);
 
   const normalizedFees = useMemo(() => {
     return rawFees.map(fee => {
