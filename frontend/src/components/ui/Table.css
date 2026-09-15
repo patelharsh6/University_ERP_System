@@ -1,9 +1,12 @@
+/* src/components/ui/Table.css */
+
 .premium-table-container {
   width: 100%;
   overflow-x: auto;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   border: 1px solid var(--card-border);
   background-color: var(--surface-color);
+  box-shadow: var(--shadow-sm);
 }
 
 .premium-table {
@@ -24,10 +27,33 @@
   font-size: var(--text-xs);
   border-bottom: 1px solid var(--card-border);
   white-space: nowrap;
+  user-select: none;
+}
+
+.premium-table th.th-sortable {
+  cursor: pointer;
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.premium-table th.th-sortable:hover {
+  color: var(--primary);
+  background-color: var(--card-border);
+}
+
+.th-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sort-icon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--primary);
 }
 
 .premium-table td {
-  padding: 16px;
+  padding: 14px 16px;
   border-bottom: 1px solid var(--card-border);
   color: var(--text-primary);
   vertical-align: middle;
@@ -38,18 +64,19 @@
 }
 
 .premium-table tbody tr:hover {
-  background-color: rgba(37, 99, 235, 0.02);
+  background-color: var(--hover-bg);
+}
+
+.premium-table tbody tr.tr-clickable {
+  cursor: pointer;
+}
+
+.premium-table tbody tr.tr-clickable:hover {
+  background-color: var(--primary-bg);
 }
 
 .premium-table tbody tr:last-child td {
   border-bottom: none;
-}
-
-.premium-table-empty {
-  text-align: center;
-  padding: var(--space-4) !important;
-  color: var(--text-secondary);
-  font-style: italic;
 }
 
 /* Utilities for column alignment */
