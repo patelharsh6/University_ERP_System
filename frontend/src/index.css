@@ -7,9 +7,23 @@
   --sidebar-bg: #FFFFFF;
   --primary: #2563EB;
   --primary-hover: #1D4ED8;
+  --primary-bg: #EFF6FF;
   --success: #10B981;
+  --success-bg: #DCFCE7;
   --warning: #F59E0B;
+  --warning-bg: #FEF3C7;
   --danger: #EF4444;
+  --danger-bg: #FEE2E2;
+  --info: #0284C7;
+  --info-bg: #E0F2FE;
+
+  /* Chart Colors */
+  --chart-1: #2563EB;
+  --chart-2: #10B981;
+  --chart-3: #F59E0B;
+  --chart-4: #8B5CF6;
+  --chart-5: #06B6D4;
+  --chart-6: #EC4899;
 
   --text-primary: #111827;
   --text-secondary: #6B7280;
@@ -68,6 +82,22 @@
   --sidebar-bg: #1E293B;
   --primary: #3B82F6;
   --primary-hover: #60A5FA;
+  --primary-bg: rgba(59, 130, 246, 0.15);
+  --success: #34D399;
+  --success-bg: rgba(52, 211, 153, 0.15);
+  --warning: #FBBF24;
+  --warning-bg: rgba(251, 191, 36, 0.15);
+  --danger: #F87171;
+  --danger-bg: rgba(248, 113, 113, 0.15);
+  --info: #38BDF8;
+  --info-bg: rgba(56, 189, 248, 0.15);
+
+  --chart-1: #60A5FA;
+  --chart-2: #34D399;
+  --chart-3: #FBBF24;
+  --chart-4: #A78BFA;
+  --chart-5: #22D3EE;
+  --chart-6: #F472B6;
 
   --text-primary: #F8FAFC;
   --text-secondary: #94A3B8;

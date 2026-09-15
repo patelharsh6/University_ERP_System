@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 import Layout from './components/Layout/Layout';
+import { ToastProvider } from './context/ToastContext';
 import Profile from './pages/student/Profile';
 import Attendance from './pages/student/Attendance';
 import Timetable from './pages/student/Timetable';
@@ -37,49 +38,51 @@ function App() {
 
   return (
     <div className="App">
-      <BrowserRouter>
-        <Layout userRole={userRole} setUserRole={setUserRole}>
-          <Routes>
-            {/* Root Redirect */}
-            <Route path="/" element={<Navigate to={`/${userRole === 'admin' ? 'a' : userRole === 'faculty' ? 'f' : 's'}/dashboard`} replace />} />
+      <ToastProvider>
+        <BrowserRouter>
+          <Layout userRole={userRole} setUserRole={setUserRole}>
+            <Routes>
+              {/* Root Redirect */}
+              <Route path="/" element={<Navigate to={`/${userRole === 'admin' ? 'a' : userRole === 'faculty' ? 'f' : 's'}/dashboard`} replace />} />
 
-            {/* Admin Routes */}
-            <Route path="/a/dashboard" element={<AdminDashboard />} />
-            <Route path="/a/students" element={<StudentsList />} />
-            <Route path="/a/registration" element={<RegistrationForm />} />
+              {/* Admin Routes */}
+              <Route path="/a/dashboard" element={<AdminDashboard />} />
+              <Route path="/a/students" element={<StudentsList />} />
+              <Route path="/a/registration" element={<RegistrationForm />} />
 
-            {/* Faculty Routes */}
-            <Route path="/f/dashboard" element={<FacultyDashboard />} />
-            <Route path="/f/courses" element={<CourseManagement />} />
+              {/* Faculty Routes */}
+              <Route path="/f/dashboard" element={<FacultyDashboard />} />
+              <Route path="/f/courses" element={<CourseManagement />} />
 
-            {/* Student Routes */}
-            <Route path="/s/dashboard" element={<Dashboard userRole="student" />} />
-            <Route path="/s/profile" element={<Profile />} />
-            <Route path="/s/attendance" element={<Attendance />} />
-            <Route path="/s/reports" element={<Reports />} />
-            <Route path="/s/timetable" element={<Timetable />} />
-            <Route path="/s/billing" element={<Billing />} />
-            <Route path="/s/announcements" element={<Announcements />} />
-            <Route path="/s/feedback" element={<Feedback />} />
-            <Route path="/s/results" element={<Results />} />
-            <Route path="/s/courses" element={<Courses />} />
-            <Route path="/s/assignments" element={<Assignments />} />
-            <Route path="/s/materials" element={<StudyMaterials />} />
-            <Route path="/s/leaves" element={<LeaveRequests />} />
-            <Route path="/s/notifications" element={<Notifications />} />
-            <Route path="/s/messages" element={<Messages />} />
-            <Route path="/s/settings" element={<Settings />} />
-            <Route path="/s/subjects" element={<Subjects />} />
-            <Route path="/s/institution" element={<MyInstitution />} />
-            <Route path="/s/exam-schedules" element={<ExamSchedule />} />
-            <Route path="/s/holidays" element={<Holidays />} />
-            <Route path="/s/counselling" element={<Counselling />} />
-            <Route path="/s/assessments" element={<Assessments />} />
-            <Route path="/s/enrollment" element={<Enrollment />} />
-            <Route path="/s/clearance" element={<Clearance />} />
-          </Routes>
-        </Layout>
-      </BrowserRouter>
+              {/* Student Routes */}
+              <Route path="/s/dashboard" element={<Dashboard userRole="student" />} />
+              <Route path="/s/profile" element={<Profile />} />
+              <Route path="/s/attendance" element={<Attendance />} />
+              <Route path="/s/reports" element={<Reports />} />
+              <Route path="/s/timetable" element={<Timetable />} />
+              <Route path="/s/billing" element={<Billing />} />
+              <Route path="/s/announcements" element={<Announcements />} />
+              <Route path="/s/feedback" element={<Feedback />} />
+              <Route path="/s/results" element={<Results />} />
+              <Route path="/s/courses" element={<Courses />} />
+              <Route path="/s/assignments" element={<Assignments />} />
+              <Route path="/s/materials" element={<StudyMaterials />} />
+              <Route path="/s/leaves" element={<LeaveRequests />} />
+              <Route path="/s/notifications" element={<Notifications />} />
+              <Route path="/s/messages" element={<Messages />} />
+              <Route path="/s/settings" element={<Settings />} />
+              <Route path="/s/subjects" element={<Subjects />} />
+              <Route path="/s/institution" element={<MyInstitution />} />
+              <Route path="/s/exam-schedules" element={<ExamSchedule />} />
+              <Route path="/s/holidays" element={<Holidays />} />
+              <Route path="/s/counselling" element={<Counselling />} />
+              <Route path="/s/assessments" element={<Assessments />} />
+              <Route path="/s/enrollment" element={<Enrollment />} />
+              <Route path="/s/clearance" element={<Clearance />} />
+            </Routes>
+          </Layout>
+        </BrowserRouter>
+      </ToastProvider>
     </div>
   );
 }
