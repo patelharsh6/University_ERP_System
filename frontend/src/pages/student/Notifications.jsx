@@ -1,117 +1,18 @@
 // src/pages/student/Notifications.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Notifications.css';
 import {
   FiBell, FiCheckCircle, FiAlertCircle, FiBookOpen, FiInfo,
   FiCreditCard, FiCalendar, FiFilter,
   FiAward, FiRadio, FiStar, FiX, FiSearch
 } from 'react-icons/fi';
-
-// ─── Mock Data ─────────────────────────────────────────────────────────────────
-const notifData = [
-  {
-    id: 1,
-    type: 'exam',
-    category: 'Academic',
-    title: 'Mid-Semester Exam Schedule Released',
-    description: 'The final examination timetable for Semester VI has been released. Exams begin from March 15, 2026. Download the schedule from the Timetable section.',
-    time: '2 hours ago',
-    date: 'Today',
-    isRead: false,
-    isStarred: true,
-    actionLabel: 'View Timetable',
-    actionPath: '/s/timetable',
-  },
-  {
-    id: 2,
-    type: 'system',
-    category: 'System',
-    title: 'Scheduled System Maintenance',
-    description: 'The ERP portal will be unavailable for maintenance on Sunday, July 7 from 2:00 AM – 4:00 AM. Please plan accordingly.',
-    time: '5 hours ago',
-    date: 'Today',
-    isRead: false,
-    isStarred: false,
-    actionLabel: null,
-  },
-  {
-    id: 3,
-    type: 'academic',
-    category: 'Academic',
-    title: 'Assignment Graded: Software Reqts. Specification',
-    description: 'Your assignment has been reviewed and graded. You scored 18/20. View detailed feedback in the Assignments section.',
-    time: '1 day ago',
-    date: 'Yesterday',
-    isRead: false,
-    isStarred: false,
-    actionLabel: 'View Feedback',
-    actionPath: '/s/assignments',
-  },
-  {
-    id: 4,
-    type: 'billing',
-    category: 'Finance',
-    title: 'Fee Payment Confirmation',
-    description: 'Your semester fee payment of ₹45,000 has been successfully received. Your receipt has been generated. Transaction ID: TXN202600421.',
-    time: '2 days ago',
-    date: 'Jul 3',
-    isRead: true,
-    isStarred: false,
-    actionLabel: 'Download Receipt',
-    actionPath: '/s/billing',
-  },
-  {
-    id: 5,
-    type: 'general',
-    category: 'General',
-    title: 'Library Overdue Notice',
-    description: '"Introduction to Algorithms" (3rd Ed.) is due for return tomorrow, July 6. Please return the book to avoid a fine of ₹10/day.',
-    time: '2 days ago',
-    date: 'Jul 3',
-    isRead: true,
-    isStarred: true,
-    actionLabel: null,
-  },
-  {
-    id: 6,
-    type: 'event',
-    category: 'Event',
-    title: 'Tech-Fest 2026 – Registration Open!',
-    description: 'Registration for Tech-Fest 2026 is now open. Join hackathons, coding contests, and robotics challenges. Early bird deadline: July 20.',
-    time: '3 days ago',
-    date: 'Jul 2',
-    isRead: true,
-    isStarred: false,
-    actionLabel: 'Register Now',
-    actionPath: '/s/announcements',
-  },
-  {
-    id: 7,
-    type: 'academic',
-    category: 'Academic',
-    title: 'New Study Material Uploaded',
-    description: 'Dr. Rajesh Sharma uploaded new notes for Database Management Systems – Unit 4: Normalization. Check the Study Materials section.',
-    time: '4 days ago',
-    date: 'Jul 1',
-    isRead: true,
-    isStarred: false,
-    actionLabel: 'View Materials',
-    actionPath: '/s/materials',
-  },
-  {
-    id: 8,
-    type: 'result',
-    category: 'Academic',
-    title: 'Semester V Results Declared',
-    description: 'Your Semester V examination results have been officially declared. Your CGPA for this semester is 8.7. Congratulations!',
-    time: '5 days ago',
-    date: 'Jun 30',
-    isRead: true,
-    isStarred: true,
-    actionLabel: 'View Results',
-    actionPath: '/s/results',
-  },
-];
+import { useApi } from '../../hooks/useApi';
+import { endpoints } from '../../services/endpoints';
+import { api } from '../../services/api';
+import { formatDate } from '../../utils/format';
+import Skeleton from '../../components/ui/Skeleton';
+import ErrorState from '../../components/ui/ErrorState';
+import EmptyState from '../../components/ui/EmptyState';
 
 const CATEGORIES = ['All', 'Academic', 'System', 'Finance', 'General', 'Event'];
 
@@ -138,10 +39,53 @@ const NotifIcon = ({ type }) => {
 
 // ─── Main Component ────────────────────────────────────────────────────────────
 const Notifications = () => {
-  const [notifications, setNotifications] = useState(notifData);
+  const { data: rawNotifs, loading, error, refetch } = useApi(endpoints.announcements.notifications, {
+    params: { page_size: 100 }
+  });
+
+  const [notifications, setNotifications] = useState([]);
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);
+
+  useEffect(() => {
+    if (rawNotifs) {
+      const list = Array.isArray(rawNotifs) ? rawNotifs : (rawNotifs.results || []);
+      const mapped = list.map(item => {
+        let type = 'general';
+        let category = 'General';
+        if (item.notification_type === 'warning') {
+          type = 'exam';
+          category = 'Academic';
+        } else if (item.notification_type === 'error') {
+          type = 'system';
+          category = 'System';
+        } else if (item.notification_type === 'success') {
+          type = 'result';
+          category = 'Academic';
+        }
+
+        const createdDate = item.created_at ? new Date(item.created_at) : new Date();
+        const isToday = createdDate.toDateString() === new Date().toDateString();
+        const dateLabel = isToday ? 'Today' : formatDate(item.created_at);
+
+        return {
+          id: item.id,
+          type,
+          category,
+          title: item.title,
+          description: item.message,
+          time: formatDate(item.created_at),
+          date: dateLabel,
+          isRead: Boolean(item.is_read),
+          isStarred: false,
+          actionLabel: item.link ? 'Open Link' : null,
+          actionPath: item.link || null,
+        };
+      });
+      setNotifications(mapped);
+    }
+  }, [rawNotifs]);
 
   // ── Derived data ──────────────────────────────────────────────
   const unreadCount = notifications.filter(n => !n.isRead).length;
@@ -163,25 +107,58 @@ const Notifications = () => {
   }, {});
 
   // ── Actions ───────────────────────────────────────────────────
-  const markAsRead = (id) => {
+  const markAsRead = async (id) => {
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
+    try {
+      await api.patch(endpoints.announcements.notificationDetail(id), { is_read: true });
+    } catch {
+      // Keep optimistic update
+    }
   };
 
-  const markAllAsRead = () => {
+  const markAllAsRead = async () => {
+    const unread = notifications.filter(n => !n.isRead);
     setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    await Promise.allSettled(
+      unread.map(n => api.patch(endpoints.announcements.notificationDetail(n.id), { is_read: true }))
+    );
   };
 
   const toggleStar = (id) => {
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, isStarred: !n.isStarred } : n));
   };
 
-  const dismiss = (id) => {
+  const dismiss = async (id) => {
     setNotifications(prev => prev.filter(n => n.id !== id));
+    try {
+      await api.delete(endpoints.announcements.notificationDetail(id));
+    } catch {
+      // Ignored
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="notifications-page" style={{ padding: '24px' }}>
+        <Skeleton variant="card" height={70} style={{ marginBottom: '20px' }} />
+        <Skeleton variant="card" height={40} style={{ marginBottom: '20px' }} />
+        <Skeleton variant="card" height={100} style={{ marginBottom: '12px' }} />
+        <Skeleton variant="card" height={100} style={{ marginBottom: '12px' }} />
+        <Skeleton variant="card" height={100} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="notifications-page" style={{ padding: '24px' }}>
+        <ErrorState error={error} onRetry={refetch} />
+      </div>
+    );
+  }
 
   return (
     <div className="notifications-page">
-      
       {/* ── PAGE HEADER ── */}
       <div className="notif-page-header">
         <div className="notif-title-group">
@@ -252,11 +229,11 @@ const Notifications = () => {
       {/* ── NOTIFICATION GROUPS ── */}
       <div className="notif-feed">
         {Object.keys(grouped).length === 0 ? (
-          <div className="notif-empty">
-            <div className="notif-empty-icon"><FiBell size={36} /></div>
-            <h3>No notifications found</h3>
-            <p>Try adjusting your filters or search query</p>
-          </div>
+          <EmptyState
+            icon={FiBell}
+            title="No Notifications Found"
+            description="You have no notifications matching your search or active filter."
+          />
         ) : (
           Object.entries(grouped).map(([date, items]) => (
             <div key={date} className="notif-date-group">
@@ -276,7 +253,6 @@ const Notifications = () => {
           ))
         )}
       </div>
-
     </div>
   );
 };
@@ -321,10 +297,15 @@ const NotificationCard = ({ notif, onRead, onStar, onDismiss }) => {
           </p>
 
           {/* Action button */}
-          {expanded && notif.actionLabel && (
-            <button className="notif-action-btn" onClick={e => e.stopPropagation()}>
+          {expanded && notif.actionLabel && notif.actionPath && (
+            <a 
+              href={notif.actionPath}
+              className="notif-action-btn" 
+              onClick={e => e.stopPropagation()}
+              style={{ display: 'inline-block', textDecoration: 'none' }}
+            >
               {notif.actionLabel} →
-            </button>
+            </a>
           )}
         </div>
 
@@ -344,10 +325,10 @@ const NotificationCard = ({ notif, onRead, onStar, onDismiss }) => {
           >
             <FiX size={14} />
           </button>
-        </div>
       </div>
     </div>
   );
 };
 
 export default Notifications;
+

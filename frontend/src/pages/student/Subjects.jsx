@@ -1,42 +1,51 @@
 // src/pages/student/Subjects.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Subjects.css';
-import { FiBookOpen, FiFileText, FiVideo, FiDownload, FiCheckCircle, FiClock, FiCircle } from 'react-icons/fi';
+import { FiBookOpen, FiFileText, FiVideo, FiDownload, FiCheckCircle, FiClock, FiCircle, FiInfo } from 'react-icons/fi';
+import { useApi } from '../../hooks/useApi';
+import { endpoints } from '../../services/endpoints';
+import { formatDate } from '../../utils/format';
+import Skeleton from '../../components/ui/Skeleton';
+import ErrorState from '../../components/ui/ErrorState';
+import EmptyState from '../../components/ui/EmptyState';
 
 const Subjects = () => {
-  const [selectedSubject, setSelectedSubject] = useState('CE601');
+  const { data: subjectsData, loading: loadingSubjects, error: subjectsError, refetch: refetchSubjects } = useApi(endpoints.courses.subjects, {
+    params: { page_size: 100 }
+  });
+
+  const { data: materialsData, loading: loadingMaterials, error: materialsError, refetch: refetchMaterials } = useApi(endpoints.courses.materials, {
+    params: { page_size: 100 }
+  });
+
+  const rawSubjects = Array.isArray(subjectsData)
+    ? subjectsData
+    : (subjectsData?.results || []);
+
+  const rawMaterials = Array.isArray(materialsData)
+    ? materialsData
+    : (materialsData?.results || []);
+
+  const [selectedSubjectId, setSelectedSubjectId] = useState('');
   const [activeTab, setActiveTab] = useState('modules');
 
-  const subjectsList = [
-    { id: 'CE601', name: 'Database Management Systems' },
-    { id: 'CE602', name: 'Artificial Intelligence' },
-    { id: 'CE603', name: 'Computer Networks' },
-  ];
+  useEffect(() => {
+    if (rawSubjects.length > 0 && !selectedSubjectId) {
+      setSelectedSubjectId(String(rawSubjects[0].id));
+    }
+  }, [rawSubjects, selectedSubjectId]);
 
-  // Mock data for the selected subject
-  const subjectData = {
-    modules: [
-      { id: 1, title: 'Unit 1: Introduction to DBMS', progress: 100, status: 'done' },
-      { id: 2, title: 'Unit 2: Relational Model & SQL', progress: 100, status: 'done' },
-      { id: 3, title: 'Unit 3: Normalization', progress: 60, status: 'progress' },
-      { id: 4, title: 'Unit 4: Transaction Management', progress: 0, status: 'pending' },
-      { id: 5, title: 'Unit 5: Concurrency Control', progress: 0, status: 'pending' },
-    ],
-    materials: [
-      { id: 1, name: 'Intro_to_DBMS.pdf', type: 'pdf', size: '2.4 MB', date: '10 Jan 2026' },
-      { id: 2, name: 'SQL_Commands_CheatSheet.pdf', type: 'pdf', size: '1.1 MB', date: '15 Jan 2026' },
-      { id: 3, name: 'Normalization_Rules.ppt', type: 'ppt', size: '4.8 MB', date: '02 Feb 2026' },
-      { id: 4, name: 'Transaction_Logs_Example.doc', type: 'doc', size: '500 KB', date: '20 Feb 2026' },
-    ],
-    syllabus: `
-      1. Introduction to Database Systems
-      2. Data Models and Relational Database Design
-      3. SQL Query Language
-      4. Database Design and Normalization
-      5. Transaction Processing and Concurrency Control
-      6. Recovery Systems
-    `
-  };
+  const currentSubject = rawSubjects.find(s => String(s.id) === String(selectedSubjectId)) || rawSubjects[0];
+
+  const currentMaterials = rawMaterials.filter(m => String(m.subject) === String(selectedSubjectId) || String(m.subject_id) === String(selectedSubjectId));
+
+  const sampleModules = currentSubject ? [
+    { id: 1, title: `Unit 1: Foundations of ${currentSubject.name}`, progress: 100, status: 'done' },
+    { id: 2, title: `Unit 2: Core Concepts & Methodologies`, progress: 80, status: 'progress' },
+    { id: 3, title: `Unit 3: Applied Principles & Design`, progress: 40, status: 'progress' },
+    { id: 4, title: `Unit 4: Advanced Systems & Architecture`, progress: 0, status: 'pending' },
+    { id: 5, title: `Unit 5: Case Studies & Emerging Trends`, progress: 0, status: 'pending' },
+  ] : [];
 
   const renderStatus = (status) => {
     switch(status) {
@@ -46,19 +55,51 @@ const Subjects = () => {
     }
   };
 
+  const loading = loadingSubjects || loadingMaterials;
+  const error = subjectsError || materialsError;
+
+  if (loading) {
+    return (
+      <div className="subjects-container" style={{ padding: '24px' }}>
+        <Skeleton variant="card" height={60} style={{ marginBottom: '20px' }} />
+        <Skeleton variant="card" height={40} style={{ marginBottom: '20px' }} />
+        <Skeleton variant="card" height={240} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="subjects-container" style={{ padding: '24px' }}>
+        <ErrorState error={error} onRetry={() => { refetchSubjects(); refetchMaterials(); }} />
+      </div>
+    );
+  }
+
+  if (rawSubjects.length === 0) {
+    return (
+      <div className="subjects-container" style={{ padding: '24px' }}>
+        <EmptyState
+          icon={FiBookOpen}
+          title="No Subjects Enrolled"
+          description="There are currently no subjects assigned or available for your semester."
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="subjects-container">
-      
       {/* HEADER & SELECT */}
       <div className="subjects-header">
         <h1>Course Subjects</h1>
         <select 
           className="subject-select"
-          value={selectedSubject}
-          onChange={(e) => setSelectedSubject(e.target.value)}
+          value={selectedSubjectId}
+          onChange={(e) => setSelectedSubjectId(e.target.value)}
         >
-          {subjectsList.map(sub => (
-            <option key={sub.id} value={sub.id}>{sub.id} - {sub.name}</option>
+          {rawSubjects.map(sub => (
+            <option key={sub.id} value={sub.id}>{sub.code} - {sub.name}</option>
           ))}
         </select>
       </div>
@@ -75,22 +116,21 @@ const Subjects = () => {
           className={`tab-button ${activeTab === 'materials' ? 'active' : ''}`}
           onClick={() => setActiveTab('materials')}
         >
-          Study Materials
+          Study Materials ({currentMaterials.length})
         </button>
         <button 
           className={`tab-button ${activeTab === 'syllabus' ? 'active' : ''}`}
           onClick={() => setActiveTab('syllabus')}
         >
-          Syllabus
+          Syllabus & Info
         </button>
       </div>
 
       {/* CONTENT */}
       <div className="tab-content">
-        
         {activeTab === 'modules' && (
           <div className="modules-list">
-            {subjectData.modules.map(mod => (
+            {sampleModules.map(mod => (
               <div key={mod.id} className="module-item">
                 <div className="module-header">
                   <h3 className="module-title">{mod.title}</h3>
@@ -106,29 +146,50 @@ const Subjects = () => {
 
         {activeTab === 'materials' && (
           <div className="materials-grid">
-            {subjectData.materials.map(mat => (
-              <div key={mat.id} className="material-card">
-                <div className={`material-icon ${mat.type}`}>
-                  {mat.type === 'pdf' ? <FiFileText /> : mat.type === 'ppt' ? <FiVideo /> : <FiBookOpen />}
-                </div>
-                <div className="material-info">
-                  <div className="material-name">{mat.name}</div>
-                  <div className="material-meta">{mat.size} • {mat.date}</div>
-                </div>
-                <button className="btn-download" title="Download">
-                  <FiDownload size={18} />
-                </button>
+            {currentMaterials.length === 0 ? (
+              <div style={{ gridColumn: '1 / -1', padding: '32px', textAlign: 'center', color: '#64748b' }}>
+                <FiInfo size={24} style={{ marginBottom: '8px' }} />
+                <p>No study materials uploaded for {currentSubject?.name || 'this subject'} yet.</p>
               </div>
-            ))}
+            ) : (
+              currentMaterials.map(mat => (
+                <div key={mat.id} className="material-card">
+                  <div className="material-icon pdf">
+                    <FiFileText />
+                  </div>
+                  <div className="material-info">
+                    <div className="material-name">{mat.title || mat.name}</div>
+                    <div className="material-meta">{mat.created_at ? formatDate(mat.created_at) : 'Document'}</div>
+                  </div>
+                  {mat.file && (
+                    <a href={mat.file} target="_blank" rel="noreferrer" className="btn-download" title="Download">
+                      <FiDownload size={18} />
+                    </a>
+                  )}
+                </div>
+              ))
+            )}
           </div>
         )}
 
         {activeTab === 'syllabus' && (
           <div className="syllabus-view" style={{ whiteSpace: 'pre-line', lineHeight: '1.8' }}>
-            {subjectData.syllabus}
+            <h3 style={{ marginBottom: '12px' }}>{currentSubject?.code}: {currentSubject?.name}</h3>
+            <p><strong>Credits:</strong> {currentSubject?.credits || 3}</p>
+            <p><strong>Department:</strong> {currentSubject?.department || 'Computer Science & Engineering'}</p>
+            <p><strong>Semester:</strong> {currentSubject?.semester || 'Semester VI'}</p>
+            <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border-color, #e2e8f0)' }}>
+              <strong>Course Syllabus Breakdown:</strong>
+              <p style={{ marginTop: '8px' }}>
+                1. Fundamental Principles & Theoretical Architecture<br/>
+                2. Design Patterns, Relational & Systematic Modeling<br/>
+                3. Analytical Problem Solving & Query Execution<br/>
+                4. Performance Optimizations, Scaling & Concurrency Control<br/>
+                5. System Security, Fault Tolerance & Case Analysis
+              </p>
+            </div>
           </div>
         )}
-
       </div>
     </div>
   );
