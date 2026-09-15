@@ -4,12 +4,14 @@ import Sidebar from './Sidebar';
 import TopNavbar from './TopNavbar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import './Layout.css';
 
-const Layout = ({ children, userRole, setUserRole }) => {
+export const Layout = ({ children }) => {
+  const { role } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
-  
+
   // Persist collapsed state to localStorage
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
     return localStorage.getItem('sidebar-collapsed') === 'true';
@@ -25,7 +27,7 @@ const Layout = ({ children, userRole, setUserRole }) => {
 
   // Toggle Function for desktop sidebar collapse
   const toggleCollapse = () => {
-    setIsSidebarCollapsed(prev => {
+    setIsSidebarCollapsed((prev) => {
       const next = !prev;
       localStorage.setItem('sidebar-collapsed', String(next));
       return next;
@@ -34,7 +36,7 @@ const Layout = ({ children, userRole, setUserRole }) => {
 
   // Toggle Function for dark mode
   const toggleDarkMode = () => {
-    setIsDarkMode(prev => {
+    setIsDarkMode((prev) => {
       const next = !prev;
       localStorage.setItem('dark-theme', String(next));
       return next;
@@ -44,25 +46,21 @@ const Layout = ({ children, userRole, setUserRole }) => {
   return (
     <div className={`app-container ${isSidebarCollapsed ? 'sidebar-collapsed' : ''} ${isDarkMode ? 'dark-theme' : ''}`}>
       {/* Sidebar with Mobile and Collapse Logic */}
-      <Sidebar 
-        isOpen={isSidebarOpen} 
+      <Sidebar
+        isOpen={isSidebarOpen}
         isCollapsed={isSidebarCollapsed}
         toggleCollapse={toggleCollapse}
-        toggleSidebar={() => setIsSidebarOpen(false)} // Close when item clicked
-        userRole={userRole}
+        toggleSidebar={() => setIsSidebarOpen(false)}
+        userRole={role || 'student'}
       />
 
       {/* Overlay for Mobile (Click to close sidebar) */}
-      {isSidebarOpen && (
-        <div className="overlay" onClick={() => setIsSidebarOpen(false)} />
-      )}
+      {isSidebarOpen && <div className="overlay" onClick={() => setIsSidebarOpen(false)} />}
 
       {/* Main Area */}
       <div className="main-content">
-        <TopNavbar 
-          toggleSidebar={toggleSidebar} 
-          userRole={userRole}
-          setUserRole={setUserRole}
+        <TopNavbar
+          toggleSidebar={toggleSidebar}
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
         />
@@ -87,4 +85,4 @@ const Layout = ({ children, userRole, setUserRole }) => {
   );
 };
 
-export default Layout;
+export default Layout;

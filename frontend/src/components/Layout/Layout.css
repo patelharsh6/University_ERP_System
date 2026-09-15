@@ -539,6 +539,10 @@
   border: 2px solid var(--surface-color);
 }
 
+.profile-dropdown-container {
+  position: relative;
+}
+
 .profile-dropdown-btn {
   display: flex;
   align-items: center;
@@ -562,6 +566,19 @@
   object-fit: cover;
 }
 
+.profile-avatar-fallback {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: var(--text-inverse);
+  font-weight: 700;
+  font-size: var(--text-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .profile-info {
   display: flex;
   flex-direction: column;
@@ -580,6 +597,86 @@
   font-size: 11px;
   color: var(--text-secondary);
   text-transform: capitalize;
+}
+
+/* Profile Dropdown Menu */
+.profile-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 240px;
+  background-color: var(--surface-color);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.profile-menu-header {
+  padding: var(--space-3);
+  background-color: var(--hover-bg);
+}
+
+.profile-menu-name {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.profile-menu-email {
+  margin: 2px 0 var(--space-1) 0;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  word-break: break-all;
+}
+
+.profile-menu-role-tag {
+  margin-top: 4px;
+}
+
+.profile-menu-divider {
+  height: 1px;
+  background-color: var(--card-border);
+}
+
+.profile-menu-body {
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.profile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.profile-menu-item:hover {
+  background-color: var(--hover-bg);
+  color: var(--primary);
+}
+
+.profile-menu-item.logout-item {
+  color: var(--danger);
+}
+
+.profile-menu-item.logout-item:hover {
+  background-color: var(--danger-bg);
 }
 
 .content-wrapper {

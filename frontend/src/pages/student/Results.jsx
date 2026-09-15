@@ -1,67 +1,120 @@
 // src/pages/student/Results.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Results.css';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar, Cell
 } from 'recharts';
 import { FiFileText, FiPrinter, FiAward, FiTrendingUp, FiBookOpen } from 'react-icons/fi';
+import { useApi } from '../../hooks/useApi';
+import { endpoints } from '../../services/endpoints';
+import { getGradeBadgeClass } from '../../utils/grade';
+import Skeleton from '../../components/ui/Skeleton';
+import ErrorState from '../../components/ui/ErrorState';
+import EmptyState from '../../components/ui/EmptyState';
+
+const BAR_COLORS = ['#3b82f6', '#0d9488', '#059669', '#d97706', '#8b5cf6', '#ec4899', '#f59e0b'];
 
 const Results = () => {
-  const [selectedSem, setSelectedSem] = useState(6);
+  const { data: transcript, loading, error, refetch } = useApi(endpoints.results.transcript);
+  const [selectedSemName, setSelectedSemName] = useState('');
 
-  // --- MOCK DATA ---
-  const sgpaTrend = [
-    { semester: 'Sem 1', sgpa: 7.8 },
-    { semester: 'Sem 2', sgpa: 8.1 },
-    { semester: 'Sem 3', sgpa: 7.9 },
-    { semester: 'Sem 4', sgpa: 8.4 },
-    { semester: 'Sem 5', sgpa: 8.6 },
-    { semester: 'Sem 6', sgpa: 8.8 },
-  ];
+  const semesters = transcript?.semesters || [];
 
-  const resultsData = [
-    { code: "CE601", subject: "Database Management Systems", internal: 42, external: 43, total: 85, grade: "A", result: "PASS", color: "#3b82f6" },
-    { code: "CE602", subject: "Artificial Intelligence", internal: 38, external: 44, total: 82, grade: "A", result: "PASS", color: "#0d9488" },
-    { code: "CE603", subject: "Computer Networks", internal: 45, external: 45, total: 90, grade: "A+", result: "PASS", color: "#059669" },
-    { code: "CE604", subject: "Software Engineering", internal: 12, external: 20, total: 32, grade: "F", result: "FAIL", color: "#dc2626" },
-    { code: "CE605", subject: "Web Technologies Lab", internal: 48, external: 45, total: 93, grade: "A+", result: "PASS", color: "#d97706" },
-  ];
+  useEffect(() => {
+    if (semesters.length > 0 && !selectedSemName) {
+      setSelectedSemName(semesters[semesters.length - 1].semester);
+    }
+  }, [semesters, selectedSemName]);
 
+  const currentSemData = semesters.find(s => s.semester === selectedSemName) || semesters[semesters.length - 1] || {
+    semester: 'Current',
+    sgpa: 0,
+    credits_earned: 0,
+    results: []
+  };
+
+  const resultsData = (currentSemData.results || []).map((r, idx) => ({
+    code: r.subject_code || `SUB${idx + 1}`,
+    subject: r.subject_name || 'Subject',
+    internal: Math.round(r.marks_obtained * 0.4),
+    external: Math.round(r.marks_obtained * 0.6),
+    total: Math.round(r.marks_obtained),
+    grade: r.grade || 'A',
+    result: r.grade === 'F' ? 'FAIL' : 'PASS',
+    color: r.grade === 'F' ? '#dc2626' : BAR_COLORS[idx % BAR_COLORS.length]
+  }));
+
+  const sgpaTrend = semesters.map((s, idx) => ({
+    semester: s.semester ? `Sem ${s.semester.replace(/[^0-9]/g, '') || (idx + 1)}` : `Sem ${idx + 1}`,
+    sgpa: s.sgpa
+  }));
+
+  const hasFails = resultsData.some(r => r.result === 'FAIL');
   const currentSummary = {
-    sgpa: 8.72,
-    cgpa: 8.6,
-    totalCredits: 21,
-    status: "FAIL" // FAIL because CE604 has F
+    sgpa: currentSemData.sgpa || 0,
+    cgpa: transcript?.cgpa || 0,
+    totalCredits: currentSemData.credits_earned || transcript?.total_credits_earned || 0,
+    status: hasFails ? 'FAIL' : 'PASS'
   };
 
-  const getGradeClass = (grade) => {
-    if (grade === 'A' || grade === 'A+') return 'grade-A';
-    if (grade === 'B') return 'grade-B';
-    if (grade === 'C') return 'grade-C';
-    return 'grade-F';
-  };
+  if (loading) {
+    return (
+      <div className="results-container" style={{ padding: '24px' }}>
+        <Skeleton variant="card" height={60} style={{ marginBottom: '24px' }} />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+          <Skeleton variant="card" height={160} />
+          <Skeleton variant="card" height={160} />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+          <Skeleton variant="card" height={220} />
+          <Skeleton variant="card" height={220} />
+        </div>
+        <Skeleton variant="table" rows={5} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="results-container" style={{ padding: '24px' }}>
+        <ErrorState error={error} onRetry={refetch} />
+      </div>
+    );
+  }
+
+  if (semesters.length === 0) {
+    return (
+      <div className="results-container" style={{ padding: '24px' }}>
+        <EmptyState
+          icon={FiAward}
+          title="No Published Results Yet"
+          description="Examination marks and academic transcripts will appear here once officially published by the examination cell."
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="results-container">
-      
       {/* HEADER & SELECT */}
       <div className="results-header">
         <h1><FiAward style={{ color: 'var(--res-warning)' }} /> Examination Results</h1>
         <select 
           className="semester-select" 
-          value={selectedSem} 
-          onChange={(e) => setSelectedSem(e.target.value)}
+          value={selectedSemName} 
+          onChange={(e) => setSelectedSemName(e.target.value)}
         >
-          <option value={6}>Semester 6 (Winter 2026)</option>
-          <option value={5}>Semester 5 (Summer 2025)</option>
-          <option value={4}>Semester 4 (Winter 2025)</option>
+          {semesters.map((s, idx) => (
+            <option key={idx} value={s.semester}>
+              Semester {s.semester} (SGPA: {s.sgpa})
+            </option>
+          ))}
         </select>
       </div>
 
       {/* METRICS PANEL */}
       <div className="results-metrics-panel">
-        
         {/* CGPA CIRCULAR CARD */}
         <div className="res-dashboard-card cgpa-circular-score-card">
           <div className="circular-progress-wrapper">
@@ -73,8 +126,8 @@ const Results = () => {
             </div>
           </div>
           <div className="score-details-text">
-            <h4>Outstanding Standing</h4>
-            <p>Ranked in the top 8% of the computer engineering branch</p>
+            <h4>{currentSummary.cgpa >= 8.5 ? 'Outstanding Academic Standing' : currentSummary.cgpa >= 7.0 ? 'Good Academic Standing' : 'Satisfactory Standing'}</h4>
+            <p>{transcript?.student_name ? `${transcript.student_name} (${transcript.enrollment_id || 'Enrolled'})` : 'Cumulative Grade Point Average'}</p>
           </div>
         </div>
 
@@ -99,28 +152,31 @@ const Results = () => {
 
       {/* CHARTS */}
       <div className="results-charts-row">
-        
         <div className="res-dashboard-card chart-card-box">
           <div className="chart-info-header">
             <h3><FiBookOpen /> Subject Performance</h3>
             <p>Evaluation scores out of 100</p>
           </div>
           <div style={{ height: '220px', width: '100%', marginTop: '16px' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart layout="vertical" data={resultsData} margin={{ left: -20, right: 10, top: 0, bottom: 0 }}>
-                <XAxis type="number" domain={[0, 100]} hide />
-                <YAxis dataKey="code" type="category" axisLine={false} tickLine={false} tick={{ fill: 'var(--res-text-secondary)', fontWeight: '600', fontSize: 12 }} />
-                <Tooltip 
-                  formatter={(value, name, props) => [value + "/100", props.payload.subject]}
-                  contentStyle={{ background: 'var(--res-card-bg)', border: '1px solid var(--res-card-border)', borderRadius: '8px', color: 'var(--res-text-primary)' }}
-                />
-                <Bar dataKey="total" radius={[0, 4, 4, 0]} barSize={14}>
-                  {resultsData.map((entry, idx) => (
-                    <Cell key={`cell-${idx}`} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            {resultsData.length === 0 ? (
+              <p style={{ padding: '32px', textAlign: 'center', color: '#94a3b8' }}>No scores available for this semester</p>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart layout="vertical" data={resultsData} margin={{ left: -20, right: 10, top: 0, bottom: 0 }}>
+                  <XAxis type="number" domain={[0, 100]} hide />
+                  <YAxis dataKey="code" type="category" axisLine={false} tickLine={false} tick={{ fill: 'var(--res-text-secondary)', fontWeight: '600', fontSize: 12 }} />
+                  <Tooltip 
+                    formatter={(value, name, props) => [`${value}/100`, props.payload.subject]}
+                    contentStyle={{ background: 'var(--res-card-bg)', border: '1px solid var(--res-card-border)', borderRadius: '8px', color: 'var(--res-text-primary)' }}
+                  />
+                  <Bar dataKey="total" radius={[0, 4, 4, 0]} barSize={14}>
+                    {resultsData.map((entry, idx) => (
+                      <Cell key={`cell-${idx}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
 
@@ -130,18 +186,21 @@ const Results = () => {
             <p>Semester-wise SGPA trajectory</p>
           </div>
           <div style={{ height: '220px', width: '100%', marginTop: '16px' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={sgpaTrend}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--res-card-border)" />
-                <XAxis dataKey="semester" axisLine={false} tickLine={false} tick={{ fill: 'var(--res-text-muted)', fontSize: 11 }} dy={10} />
-                <YAxis domain={[0, 10]} axisLine={false} tickLine={false} tick={{ fill: 'var(--res-text-muted)', fontSize: 11 }} />
-                <Tooltip contentStyle={{ background: 'var(--res-card-bg)', border: '1px solid var(--res-card-border)', borderRadius: '8px', color: 'var(--res-text-primary)' }} />
-                <Line type="monotone" dataKey="sgpa" stroke="var(--res-accent)" strokeWidth={3} dot={{ r: 5, fill: 'var(--res-accent)' }} />
-              </LineChart>
-            </ResponsiveContainer>
+            {sgpaTrend.length === 0 ? (
+              <p style={{ padding: '32px', textAlign: 'center', color: '#94a3b8' }}>No historical trend data available</p>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={sgpaTrend}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--res-card-border)" />
+                  <XAxis dataKey="semester" axisLine={false} tickLine={false} tick={{ fill: 'var(--res-text-muted)', fontSize: 11 }} dy={10} />
+                  <YAxis domain={[0, 10]} axisLine={false} tickLine={false} tick={{ fill: 'var(--res-text-muted)', fontSize: 11 }} />
+                  <Tooltip contentStyle={{ background: 'var(--res-card-bg)', border: '1px solid var(--res-card-border)', borderRadius: '8px', color: 'var(--res-text-primary)' }} />
+                  <Line type="monotone" dataKey="sgpa" stroke="var(--res-accent)" strokeWidth={3} dot={{ r: 5, fill: 'var(--res-accent)' }} />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
-
       </div>
 
       {/* MARKS TABLE */}
@@ -153,8 +212,8 @@ const Results = () => {
               <tr>
                 <th>Subject Code</th>
                 <th>Subject Name</th>
-                <th className="num-col">Internal (50)</th>
-                <th className="num-col">External (50)</th>
+                <th className="num-col">Internal (40)</th>
+                <th className="num-col">External (60)</th>
                 <th className="num-col">Total (100)</th>
                 <th style={{ textAlign: 'center' }}>Grade</th>
                 <th style={{ textAlign: 'center' }}>Status</th>
@@ -169,7 +228,7 @@ const Results = () => {
                   <td className="num-col">{row.external}</td>
                   <td className="num-col" style={{ fontWeight: '700' }}>{row.total}</td>
                   <td style={{ textAlign: 'center' }}>
-                    <span className={`grade-badge ${getGradeClass(row.grade)}`}>{row.grade}</span>
+                    <span className={`grade-badge ${getGradeBadgeClass(row.grade)}`}>{row.grade}</span>
                   </td>
                   <td style={{ textAlign: 'center', fontWeight: '700', color: row.result === 'PASS' ? 'var(--res-success)' : 'var(--res-danger)' }}>
                     {row.result}
@@ -186,11 +245,10 @@ const Results = () => {
         <button className="btn-action btn-print" onClick={() => window.print()}>
           <FiPrinter /> Print Result
         </button>
-        <button className="btn-action btn-download-pdf">
+        <button className="btn-action btn-download-pdf" onClick={() => window.print()}>
           <FiFileText /> Download Marksheet
         </button>
       </div>
-
     </div>
   );
 };

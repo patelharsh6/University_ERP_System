@@ -1,70 +1,55 @@
-// src/pages/Announcements.jsx
+// src/pages/student/Announcements.jsx
 import React, { useState } from 'react';
 import './Announcements.css';
 import { 
-  FaBullhorn, FaPlus, FaThumbtack, FaPaperclip, FaCalendarAlt, 
+  FaBullhorn, FaThumbtack, FaPaperclip, FaCalendarAlt, 
   FaTimes, FaDownload 
 } from 'react-icons/fa';
+import { useApi } from '../../hooks/useApi';
+import { endpoints } from '../../services/endpoints';
+import { formatDate } from '../../utils/format';
+import Skeleton from '../../components/ui/Skeleton';
+import ErrorState from '../../components/ui/ErrorState';
+import EmptyState from '../../components/ui/EmptyState';
 
 const Announcements = () => {
   const [activeFilter, setActiveFilter] = useState('All');
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
 
-  // --- MOCK DATA ---
-  const announcementsData = [
-    {
-      id: 1,
-      title: "Mid-Semester Examination Schedule Declared",
-      preview: "The finalized timetable for the Winter 2026 Mid-Sem exams has been published. Exams start from...",
-      content: "The finalized timetable for the Winter 2026 Mid-Sem exams has been published. Exams start from March 15th. Please download the attached PDF for the detailed seating arrangement and subject-wise slots. Students are requested to carry their ID cards.",
-      author: "Examination Cell",
-      date: "12 Feb 2026",
-      category: "Exam",
-      isPinned: true,
-      isNew: true,
-      hasAttachment: true
-    },
-    {
-      id: 2,
-      title: "Campus Wi-Fi Maintenance",
-      preview: "Wi-Fi services in the library and Block A will be down for scheduled maintenance on Sunday...",
-      content: "Wi-Fi services in the library and Block A will be down for scheduled maintenance on Sunday from 10:00 AM to 2:00 PM. We apologize for the inconvenience.",
-      author: "IT Admin",
-      date: "11 Feb 2026",
-      category: "Urgent",
-      isPinned: true,
-      isNew: false,
-      hasAttachment: false
-    },
-    {
-      id: 3,
-      title: "Tech-Fest 2026 Registration Open",
-      preview: "Join the biggest tech event of the year! Hackathons, Robotics, and Coding challenges await.",
-      content: "Join the biggest tech event of the year! Hackathons, Robotics, and Coding challenges await. Early bird registration closes on 20th Feb. Visit the student portal to register your team.",
-      author: "Student Council",
-      date: "10 Feb 2026",
-      category: "Event",
-      isPinned: false,
-      isNew: false,
-      hasAttachment: true
-    },
-    {
-      id: 4,
-      title: "Submission of Assignment 3",
-      preview: "Deadline for Cloud Computing Assignment 3 has been extended by 2 days.",
-      content: "Due to server issues, the deadline for Cloud Computing Assignment 3 has been extended by 2 days. The new submission date is 18th Feb.",
-      author: "Prof. Aarti Dadheech",
-      date: "09 Feb 2026",
-      category: "Academic",
-      isPinned: false,
-      isNew: false,
-      hasAttachment: false
-    }
-  ];
+  const { data: announcementsData, loading, error, refetch } = useApi(endpoints.announcements.list, {
+    params: { page_size: 100 }
+  });
+
+  const rawList = Array.isArray(announcementsData)
+    ? announcementsData
+    : (announcementsData?.results || []);
+
+  const normalizedList = rawList.map(item => {
+    const cat = item.priority === 'urgent'
+      ? 'Urgent'
+      : item.priority === 'high'
+      ? 'Exam'
+      : item.priority === 'low'
+      ? 'Event'
+      : 'Academic';
+    return {
+      id: item.id,
+      title: item.title,
+      preview: item.content?.length > 120 ? item.content.slice(0, 120) + '...' : item.content,
+      content: item.content,
+      author: item.author_name || 'Administration',
+      date: item.created_at ? formatDate(item.created_at) : 'Recent',
+      category: cat,
+      isPinned: Boolean(item.is_pinned),
+      isNew: item.created_at ? (Date.now() - new Date(item.created_at).getTime() < 7 * 24 * 3600 * 1000) : false,
+      hasAttachment: Boolean(item.attachment),
+      attachmentUrl: item.attachment || null
+    };
+  });
 
   // --- FILTER LOGIC ---
   const getFilteredData = () => {
-    let data = announcementsData;
+    let data = normalizedList;
     if (activeFilter !== 'All') {
       data = data.filter(item => item.category === activeFilter);
     }
@@ -74,21 +59,35 @@ const Announcements = () => {
   const pinnedItems = getFilteredData().filter(item => item.isPinned);
   const normalItems = getFilteredData().filter(item => !item.isPinned);
 
+  if (loading) {
+    return (
+      <div className="announcement-container" style={{ padding: '24px' }}>
+        <Skeleton variant="card" height={60} style={{ marginBottom: '20px' }} />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
+          <Skeleton variant="card" height={160} />
+          <Skeleton variant="card" height={160} />
+          <Skeleton variant="card" height={160} />
+          <Skeleton variant="card" height={160} />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="announcement-container" style={{ padding: '24px' }}>
+        <ErrorState error={error} onRetry={refetch} />
+      </div>
+    );
+  }
+
   return (
     <div className="announcement-container">
-      
       {/* 1. HEADER */}
       <div className="page-header">
         <h2>
           <FaBullhorn style={{ color: 'var(--accent)' }} /> Announcements
         </h2>
-        
-        {/* Only Visible to Admin/Faculty (Simulated) */}
-        <div className="header-actions">
-          <button className="btn-create">
-            <FaPlus /> Post Announcement
-          </button>
-        </div>
       </div>
 
       {/* 2. FILTERS */}
@@ -104,40 +103,52 @@ const Announcements = () => {
         ))}
       </div>
 
-      {/* 3. PINNED ANNOUNCEMENTS */}
-      {pinnedItems.length > 0 && (
-        <div className="section-group">
-          <div className="section-label">
-            <FaThumbtack /> Pinned & Important
-          </div>
-          <div className="announcement-list">
-            {pinnedItems.map(item => (
-              <AnnouncementCard 
-                key={item.id} 
-                data={item} 
-                onClick={() => setSelectedAnnouncement(item)} 
-              />
-            ))}
-          </div>
-        </div>
-      )}
+      {normalizedList.length === 0 ? (
+        <EmptyState
+          icon={FaBullhorn}
+          title="No Announcements Yet"
+          description="There are currently no active announcements published for your department."
+        />
+      ) : (
+        <>
+          {/* 3. PINNED ANNOUNCEMENTS */}
+          {pinnedItems.length > 0 && (
+            <div className="section-group">
+              <div className="section-label">
+                <FaThumbtack /> Pinned & Important
+              </div>
+              <div className="announcement-list">
+                {pinnedItems.map(item => (
+                  <AnnouncementCard 
+                    key={item.id} 
+                    data={item} 
+                    onClick={() => setSelectedAnnouncement(item)} 
+                  />
+                ))}
+              </div>
+            </div>
+          )}
 
-      {/* 4. RECENT ANNOUNCEMENTS */}
-      <div className="section-group">
-        <div className="section-label">
-          <FaCalendarAlt /> Recent Updates
-        </div>
-        <div className="announcement-list">
-          {normalItems.map(item => (
-            <AnnouncementCard 
-              key={item.id} 
-              data={item} 
-              onClick={() => setSelectedAnnouncement(item)} 
-            />
-          ))}
-          {normalItems.length === 0 && <p style={{ color: '#94a3b8', fontSize: '0.88rem' }}>No announcements found.</p>}
-        </div>
-      </div>
+          {/* 4. RECENT ANNOUNCEMENTS */}
+          <div className="section-group">
+            <div className="section-label">
+              <FaCalendarAlt /> Recent Updates
+            </div>
+            <div className="announcement-list">
+              {normalItems.map(item => (
+                <AnnouncementCard 
+                  key={item.id} 
+                  data={item} 
+                  onClick={() => setSelectedAnnouncement(item)} 
+                />
+              ))}
+              {normalItems.length === 0 && (
+                <p style={{ color: '#94a3b8', fontSize: '0.88rem' }}>No announcements found for this filter.</p>
+              )}
+            </div>
+          </div>
+        </>
+      )}
 
       {/* 5. MODAL (View Details) */}
       {selectedAnnouncement && (
@@ -157,13 +168,19 @@ const Announcements = () => {
             </div>
 
             <div className="modal-body">
-              <p>{selectedAnnouncement.content}</p>
+              <p style={{ whiteSpace: 'pre-line', lineHeight: '1.7' }}>{selectedAnnouncement.content}</p>
             </div>
 
-            {selectedAnnouncement.hasAttachment && (
-              <button className="btn-create" style={{ marginTop: '18px', width: '100%', justifyContent: 'center' }}>
+            {selectedAnnouncement.hasAttachment && selectedAnnouncement.attachmentUrl && (
+              <a 
+                href={selectedAnnouncement.attachmentUrl} 
+                target="_blank" 
+                rel="noreferrer"
+                className="btn-create" 
+                style={{ marginTop: '18px', width: '100%', justifyContent: 'center', textDecoration: 'none' }}
+              >
                 <FaDownload /> Download Attachment
-              </button>
+              </a>
             )}
 
             <div className="modal-meta">
@@ -174,7 +191,6 @@ const Announcements = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };
@@ -183,7 +199,6 @@ const Announcements = () => {
 const AnnouncementCard = ({ data, onClick }) => {
   return (
     <div className={`announce-card cat-${data.category.toLowerCase()} ${data.isPinned ? 'pinned' : ''}`} onClick={onClick}>
-      
       <div className="card-header">
         <div className="card-title">
           {data.isPinned && <FaThumbtack size={11} />}
