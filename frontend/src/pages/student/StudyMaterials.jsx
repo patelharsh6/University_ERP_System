@@ -1,40 +1,112 @@
 // src/pages/student/StudyMaterials.jsx
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import './StudyMaterials.css';
-import { FiBookOpen, FiDownload, FiEye, FiSearch, FiFileText, FiVideo, FiArchive, FiFile } from 'react-icons/fi';
+import { 
+  FiBookOpen, FiDownload, FiEye, FiSearch, FiFileText, 
+  FiVideo, FiArchive, FiFile, FiExternalLink, FiInbox 
+} from 'react-icons/fi';
+import { useApi } from '../../hooks/useApi';
+import { endpoints } from '../../services/endpoints';
+import { formatDate } from '../../utils/format';
+import Skeleton from '../../components/ui/Skeleton';
+import ErrorState from '../../components/ui/ErrorState';
 
 const StudyMaterials = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('All Subjects');
 
-  const mockMaterials = [
-    { id: 1, title: 'Chapter 1: Intro to Databases', subject: 'CE601 - DBMS', type: 'pdf', size: '2.4 MB', date: '10 Jan 2026' },
-    { id: 2, title: 'Relational Algebra Examples', subject: 'CE601 - DBMS', type: 'doc', size: '1.2 MB', date: '15 Jan 2026' },
-    { id: 3, title: 'A* Algorithm Slides', subject: 'CE602 - Artificial Intelligence', type: 'ppt', size: '4.8 MB', date: '02 Feb 2026' },
-    { id: 4, title: 'Heuristic Search Exercises', subject: 'CE602 - Artificial Intelligence', type: 'pdf', size: '1.8 MB', date: '05 Feb 2026' },
-    { id: 5, title: 'OSI Model Deep Dive', subject: 'CE603 - Computer Networks', type: 'ppt', size: '5.2 MB', date: '20 Feb 2026' },
-    { id: 6, title: 'Network Packet Traces', subject: 'CE603 - Computer Networks', type: 'zip', size: '14.5 MB', date: '22 Feb 2026' },
-    { id: 7, title: 'Agile vs Waterfall Notes', subject: 'CE604 - Software Engineering', type: 'pdf', size: '3.1 MB', date: '01 Mar 2026' },
-  ];
+  const { 
+    data: materialsData, 
+    loading: loadingMaterials, 
+    error: errorMaterials, 
+    refetch: refetchMaterials 
+  } = useApi(endpoints.courses.materials, { params: { page_size: 100 } });
 
-  const subjects = ['All Subjects', 'CE601 - DBMS', 'CE602 - Artificial Intelligence', 'CE603 - Computer Networks', 'CE604 - Software Engineering'];
+  const { 
+    data: subjectsData, 
+    loading: loadingSubjects 
+  } = useApi(endpoints.courses.subjects, { params: { page_size: 100 } });
+
+  const rawMaterials = Array.isArray(materialsData) 
+    ? materialsData 
+    : (materialsData?.results || []);
+
+  const rawSubjects = Array.isArray(subjectsData) 
+    ? subjectsData 
+    : (subjectsData?.results || []);
+
+  const subjectOptions = useMemo(() => {
+    const list = ['All Subjects'];
+    rawSubjects.forEach(s => {
+      const label = s.code ? `${s.code} - ${s.name}` : s.name;
+      if (label && !list.includes(label)) {
+        list.push(label);
+      }
+    });
+    // Also include subjects present in materials if not already in list
+    rawMaterials.forEach(m => {
+      const label = m.course_code || (m.course?.code ? `${m.course.code} - ${m.course.title || ''}` : null);
+      if (label && !list.includes(label)) {
+        list.push(label);
+      }
+    });
+    return list;
+  }, [rawSubjects, rawMaterials]);
+
+  const normalizedMaterials = useMemo(() => {
+    return rawMaterials.map(mat => {
+      let matType = (mat.material_type || 'pdf').toLowerCase();
+      if (mat.file) {
+        const ext = mat.file.split('.').pop().toLowerCase();
+        if (['pdf'].includes(ext)) matType = 'pdf';
+        else if (['ppt', 'pptx'].includes(ext)) matType = 'ppt';
+        else if (['doc', 'docx', 'txt'].includes(ext)) matType = 'doc';
+        else if (['zip', 'rar', 'tar', 'gz'].includes(ext)) matType = 'zip';
+        else if (['mp4', 'mov', 'avi', 'mkv'].includes(ext)) matType = 'video';
+      }
+
+      const subjectLabel = mat.course_code || 
+        (mat.course?.code ? `${mat.course.code} - ${mat.course.title || ''}` : 'General Material');
+
+      return {
+        id: mat.id,
+        title: mat.title,
+        description: mat.description,
+        subject: subjectLabel,
+        type: matType,
+        date: mat.uploaded_at ? formatDate(mat.uploaded_at) : 'Recent',
+        url: mat.file || mat.link || '#',
+        isLink: Boolean(mat.link && !mat.file),
+      };
+    });
+  }, [rawMaterials]);
 
   const getIconForType = (type) => {
-    switch(type) {
+    switch (type) {
       case 'pdf': return <FiFileText />;
-      case 'ppt': return <FiVideo />;
+      case 'ppt':
+      case 'slides': return <FiVideo />;
       case 'doc': return <FiFile />;
       case 'zip': return <FiArchive />;
+      case 'video': return <FiVideo />;
+      case 'link': return <FiExternalLink />;
       default: return <FiFileText />;
     }
   };
 
-  const filteredMaterials = mockMaterials.filter(mat => {
-    const matchesSubject = selectedSubject === 'All Subjects' || mat.subject === selectedSubject;
-    const matchesSearch = mat.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          mat.subject.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSubject && matchesSearch;
-  });
+  const filteredMaterials = useMemo(() => {
+    return normalizedMaterials.filter(mat => {
+      const matchesSubject = selectedSubject === 'All Subjects' || mat.subject.includes(selectedSubject) || selectedSubject.includes(mat.subject);
+      const query = searchQuery.toLowerCase().trim();
+      const matchesSearch = !query || 
+        mat.title.toLowerCase().includes(query) || 
+        mat.subject.toLowerCase().includes(query) ||
+        (mat.description && mat.description.toLowerCase().includes(query));
+      return matchesSubject && matchesSearch;
+    });
+  }, [normalizedMaterials, selectedSubject, searchQuery]);
+
+  const loading = loadingMaterials || loadingSubjects;
 
   return (
     <div className="materials-container">
@@ -55,54 +127,91 @@ const StudyMaterials = () => {
             value={selectedSubject}
             onChange={(e) => setSelectedSubject(e.target.value)}
           >
-            {subjects.map(sub => (
+            {subjectOptions.map(sub => (
               <option key={sub} value={sub}>{sub}</option>
             ))}
           </select>
         </div>
       </div>
 
-      <div className="materials-grid">
-        {filteredMaterials.map(mat => (
-          <div key={mat.id} className="mat-card">
-            
-            <div className={`mat-icon-wrapper ${mat.type}`}>
-              {getIconForType(mat.type)}
-            </div>
-
-            <div className="mat-info">
-              <h3 className="mat-title">{mat.title}</h3>
-              <div className="mat-subject">{mat.subject}</div>
-              <div className="mat-meta">
-                <span>{mat.size}</span>
-                <span>•</span>
-                <span>{mat.date}</span>
-                <span>•</span>
-                <span style={{ textTransform: 'uppercase', fontWeight: 'bold' }}>{mat.type}</span>
+      {loading ? (
+        <div className="materials-grid">
+          <Skeleton height="110px" borderRadius="12px" />
+          <Skeleton height="110px" borderRadius="12px" />
+          <Skeleton height="110px" borderRadius="12px" />
+          <Skeleton height="110px" borderRadius="12px" />
+        </div>
+      ) : errorMaterials ? (
+        <ErrorState 
+          message="Failed to load study materials. Please try again." 
+          onRetry={refetchMaterials} 
+        />
+      ) : (
+        <div className="materials-grid">
+          {filteredMaterials.map(mat => (
+            <div key={mat.id} className="mat-card">
+              
+              <div className={`mat-icon-wrapper ${mat.type}`}>
+                {getIconForType(mat.type)}
               </div>
-            </div>
 
-            <div className="mat-actions">
-              <button className="btn-icon" title="View Document">
-                <FiEye />
-              </button>
-              <button className="btn-icon" title="Download">
-                <FiDownload />
-              </button>
-            </div>
+              <div className="mat-info">
+                <h3 className="mat-title">{mat.title}</h3>
+                <div className="mat-subject">{mat.subject}</div>
+                {mat.description && (
+                  <p style={{ margin: '0 0 6px 0', fontSize: '12.5px', color: 'var(--mat-text-muted)', lineHeight: 1.4 }}>
+                    {mat.description}
+                  </p>
+                )}
+                <div className="mat-meta">
+                  <span>{mat.date}</span>
+                  <span>•</span>
+                  <span style={{ textTransform: 'uppercase', fontWeight: 'bold' }}>{mat.type}</span>
+                </div>
+              </div>
 
-          </div>
-        ))}
-        
-        {filteredMaterials.length === 0 && (
-          <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--mat-text-muted)' }}>
-            No materials found matching your criteria.
-          </div>
-        )}
-      </div>
+              <div className="mat-actions">
+                {mat.url && mat.url !== '#' && (
+                  <>
+                    <a 
+                      href={mat.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="btn-icon" 
+                      title="View / Open"
+                    >
+                      <FiEye />
+                    </a>
+                    <a 
+                      href={mat.url} 
+                      download 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="btn-icon" 
+                      title="Download"
+                    >
+                      <FiDownload />
+                    </a>
+                  </>
+                )}
+              </div>
+
+            </div>
+          ))}
+          
+          {filteredMaterials.length === 0 && (
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '48px', color: 'var(--mat-text-muted)' }}>
+              <FiInbox style={{ fontSize: '3rem', opacity: 0.4, marginBottom: '12px' }} />
+              <h3 style={{ margin: '0 0 6px 0', color: 'var(--mat-text-primary)' }}>No study materials found</h3>
+              <p style={{ margin: 0, fontSize: '14px' }}>Try adjusting your search query or subject filter.</p>
+            </div>
+          )}
+        </div>
+      )}
 
     </div>
   );
 };
 
 export default StudyMaterials;
+

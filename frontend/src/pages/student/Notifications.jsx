@@ -325,6 +325,7 @@ const NotificationCard = ({ notif, onRead, onStar, onDismiss }) => {
           >
             <FiX size={14} />
           </button>
+        </div>
       </div>
     </div>
   );

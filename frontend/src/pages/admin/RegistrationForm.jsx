@@ -1,37 +1,54 @@
-// src/pages/student/RegistrationForm.jsx
+// src/pages/admin/RegistrationForm.jsx
 import React, { useState, useEffect } from 'react';
-import { FaUser, FaGraduationCap, FaFileAlt, FaClipboardCheck, FaArrowLeft, FaArrowRight, FaCheckCircle, FaTrashAlt, FaUpload } from 'react-icons/fa';
+import { 
+  FaUser, FaGraduationCap, FaFileAlt, FaClipboardCheck, 
+  FaArrowLeft, FaArrowRight, FaCheckCircle, FaTrashAlt, FaUpload 
+} from 'react-icons/fa';
+import { request } from '../../services/api';
+import { endpoints } from '../../services/endpoints';
+import { useToast } from '../../context/ToastContext';
 import './RegistrationForm.css';
 
 const initialFormState = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  phone: "",
-  dob: "",
-  gender: "",
-  course: "B.Tech (CSE)",
-  admissionYear: "2026",
-  previousQualification: "",
-  semester: "1st",
-  photoName: "",
-  idProofName: "",
-  declaration: false
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  dob: '',
+  gender: '',
+  course: 'B.Tech (CSE)',
+  admissionYear: '2026',
+  previousQualification: '',
+  semester: '1st',
+  photoName: '',
+  idProofName: '',
+  declaration: false,
 };
 
 const RegistrationForm = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(() => {
-    const savedDraft = localStorage.getItem('registration-draft');
-    return savedDraft ? JSON.parse(savedDraft) : initialFormState;
+    try {
+      const savedDraft = localStorage.getItem('registration-draft');
+      return savedDraft ? JSON.parse(savedDraft) : initialFormState;
+    } catch {
+      return initialFormState;
+    }
   });
   const [errors, setErrors] = useState({});
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [enrolledStudentInfo, setEnrolledStudentInfo] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const toast = useToast();
 
   // --- AUTO-SAVE DRAFT TO LOCALSTORAGE ---
   useEffect(() => {
-    localStorage.setItem('registration-draft', JSON.stringify(formData));
+    try {
+      localStorage.setItem('registration-draft', JSON.stringify(formData));
+    } catch {
+      // Ignore localStorage exceptions
+    }
   }, [formData]);
 
   // --- HANDLE INPUT CHANGE ---
@@ -44,20 +61,20 @@ const RegistrationForm = () => {
     
     // Clear validation error when user types
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: "" }));
+      setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
-  // --- FILE MOCK UPLOAD ---
-  const handleMockUpload = (e, fieldName) => {
-    const file = e.target.files[0];
+  // --- FILE UPLOAD HANDLER ---
+  const handleFileUpload = (e, fieldName) => {
+    const file = e.target.files?.[0];
     if (file) {
       setFormData(prev => ({
         ...prev,
         [fieldName]: file.name
       }));
       if (errors[fieldName]) {
-        setErrors(prev => ({ ...prev, [fieldName]: "" }));
+        setErrors(prev => ({ ...prev, [fieldName]: '' }));
       }
     }
   };
@@ -66,29 +83,29 @@ const RegistrationForm = () => {
   const validateStep = (currentStep) => {
     const newErrors = {};
     if (currentStep === 1) {
-      if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
-      if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
+      if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
+      if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
       if (!formData.email.trim()) {
-        newErrors.email = "Email is required";
+        newErrors.email = 'Email is required';
       } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-        newErrors.email = "Enter a valid email address";
+        newErrors.email = 'Enter a valid email address';
       }
-      if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
-      if (!formData.dob) newErrors.dob = "Date of birth is required";
-      if (!formData.gender) newErrors.gender = "Gender is required";
+      if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
+      if (!formData.dob) newErrors.dob = 'Date of birth is required';
+      if (!formData.gender) newErrors.gender = 'Gender is required';
     }
     
     if (currentStep === 2) {
-      if (!formData.previousQualification.trim()) newErrors.previousQualification = "Academic history is required";
+      if (!formData.previousQualification.trim()) newErrors.previousQualification = 'Academic history is required';
     }
 
     if (currentStep === 3) {
-      if (!formData.photoName) newErrors.photoName = "Profile photo is required";
-      if (!formData.idProofName) newErrors.idProofName = "Identity proof copy is required";
+      if (!formData.photoName) newErrors.photoName = 'Profile photo is required';
+      if (!formData.idProofName) newErrors.idProofName = 'Identity proof copy is required';
     }
 
     if (currentStep === 4) {
-      if (!formData.declaration) newErrors.declaration = "You must accept the terms to submit";
+      if (!formData.declaration) newErrors.declaration = 'You must accept the declaration terms to submit';
     }
 
     setErrors(newErrors);
@@ -108,26 +125,83 @@ const RegistrationForm = () => {
 
   // --- CLEAR DRAFT ---
   const handleClearDraft = () => {
-    if (window.confirm("Are you sure you want to clear this draft form? All changes will be lost.")) {
+    if (window.confirm('Are you sure you want to clear this draft form? All changes will be lost.')) {
       localStorage.removeItem('registration-draft');
       setFormData(initialFormState);
       setStep(1);
       setErrors({});
+      toast.info('Draft cleared.');
     }
   };
 
-  // --- SUBMIT ---
-  const handleSubmit = (e) => {
+  // --- SUBMIT REGISTRATION ---
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateStep(4)) {
-      setIsSubmitting(true);
-      setTimeout(() => {
-        setIsSubmitting(false);
-        setShowSuccessModal(true);
-        localStorage.removeItem('registration-draft');
-        setFormData(initialFormState);
-        setStep(1);
-      }, 1500); // Mock delay
+    if (!validateStep(4)) return;
+
+    setIsSubmitting(true);
+
+    const generatedUsername = (formData.firstName.toLowerCase().replace(/[^a-z0-9]/g, '') + 
+      formData.lastName.toLowerCase().replace(/[^a-z0-9]/g, '') + 
+      Math.floor(100 + Math.random() * 900)).slice(0, 30);
+    const defaultPassword = 'StudentPass@2026';
+    const enrollmentId = `AU26B${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const userPayload = {
+      username: generatedUsername,
+      email: formData.email,
+      password: defaultPassword,
+      password_confirm: defaultPassword,
+      first_name: formData.firstName,
+      last_name: formData.lastName,
+      role: 'student',
+      phone: formData.phone,
+      enrollment_id: enrollmentId,
+      date_of_birth: formData.dob || undefined,
+      gender: formData.gender.toLowerCase() || 'other',
+    };
+
+    try {
+      const createdUser = await request(endpoints.auth.register, {
+        method: 'POST',
+        body: userPayload,
+      });
+
+      // Also create student profile
+      try {
+        await request(endpoints.students.list, {
+          method: 'POST',
+          body: {
+            user: createdUser?.id,
+            admission_year: parseInt(formData.admissionYear, 10) || 2026,
+            semester: parseInt(formData.semester, 10) || 1,
+            department: formData.course,
+            course_name: formData.course,
+          }
+        });
+      } catch {
+        // Profile may auto-create via signals
+      }
+
+      setEnrolledStudentInfo({
+        name: `${formData.firstName} ${formData.lastName}`,
+        enrollmentId: enrollmentId,
+        username: generatedUsername,
+        course: formData.course,
+      });
+
+      toast.success('Student Enrolled Successfully!');
+      setShowSuccessModal(true);
+      localStorage.removeItem('registration-draft');
+      setFormData(initialFormState);
+      setStep(1);
+    } catch (err) {
+      toast.error(err.message || 'Enrollment registration failed. Please check form inputs.');
+      if (err.fieldErrors) {
+        setErrors(err.fieldErrors);
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -148,10 +222,10 @@ const RegistrationForm = () => {
       {/* PROGRESS INDICATOR */}
       <div className="progress-wizard-track">
         {[
-          { label: "Personal Details", icon: <FaUser /> },
-          { label: "Academic Info", icon: <FaGraduationCap /> },
-          { label: "Documents", icon: <FaFileAlt /> },
-          { label: "Review & Submit", icon: <FaClipboardCheck /> }
+          { label: 'Personal Details', icon: <FaUser /> },
+          { label: 'Academic Info', icon: <FaGraduationCap /> },
+          { label: 'Documents', icon: <FaFileAlt /> },
+          { label: 'Review & Submit', icon: <FaClipboardCheck /> }
         ].map((item, idx) => {
           const stepNum = idx + 1;
           const isCompleted = step > stepNum;
@@ -323,11 +397,11 @@ const RegistrationForm = () => {
                   <label>Profile Picture Photograph <span className="req">*</span></label>
                   <div className={`upload-dropzone ${errors.photoName ? 'error' : ''}`}>
                     <FaUpload className="upload-icon" />
-                    <span>{formData.photoName || "Click to upload candidate photograph"}</span>
+                    <span>{formData.photoName || 'Click to upload candidate photograph'}</span>
                     <input 
                       type="file" 
                       accept="image/*" 
-                      onChange={(e) => handleMockUpload(e, "photoName")}
+                      onChange={(e) => handleFileUpload(e, 'photoName')}
                     />
                   </div>
                   {errors.photoName && <span className="error-message">{errors.photoName}</span>}
@@ -337,11 +411,11 @@ const RegistrationForm = () => {
                   <label>Aadhar Card / Identity Proof <span className="req">*</span></label>
                   <div className={`upload-dropzone ${errors.idProofName ? 'error' : ''}`}>
                     <FaUpload className="upload-icon" />
-                    <span>{formData.idProofName || "Upload scanned Aadhaar / Identity proof PDF"}</span>
+                    <span>{formData.idProofName || 'Upload scanned Aadhaar / Identity proof PDF'}</span>
                     <input 
                       type="file" 
                       accept=".pdf,image/*" 
-                      onChange={(e) => handleMockUpload(e, "idProofName")}
+                      onChange={(e) => handleFileUpload(e, 'idProofName')}
                     />
                   </div>
                   {errors.idProofName && <span className="error-message">{errors.idProofName}</span>}
@@ -373,8 +447,8 @@ const RegistrationForm = () => {
 
                 <div className="review-section">
                   <h4>Attached Records</h4>
-                  <div className="review-item-row"><strong>Photo:</strong> {formData.photoName || "Missing"}</div>
-                  <div className="review-item-row"><strong>ID Proof:</strong> {formData.idProofName || "Missing"}</div>
+                  <div className="review-item-row"><strong>Photo:</strong> {formData.photoName || 'Missing'}</div>
+                  <div className="review-item-row"><strong>ID Proof:</strong> {formData.idProofName || 'Missing'}</div>
                 </div>
               </div>
 
@@ -410,7 +484,7 @@ const RegistrationForm = () => {
               </button>
             ) : (
               <button type="submit" className="wizard-nav-btn submit" disabled={isSubmitting}>
-                {isSubmitting ? "Submitting Admissions..." : "Enroll Student ✓"}
+                {isSubmitting ? 'Submitting Admissions...' : 'Enroll Student ✓'}
               </button>
             )}
           </div>
@@ -419,12 +493,18 @@ const RegistrationForm = () => {
       </div>
 
       {/* SUCCESS CONFIRMATION DIALOG */}
-      {showSuccessModal && (
-        <div className="success-modal-overlay">
-          <div className="success-modal-card animate-zoom">
+      {showSuccessModal && enrolledStudentInfo && (
+        <div className="success-modal-overlay" onClick={() => setShowSuccessModal(false)}>
+          <div className="success-modal-card animate-zoom" onClick={e => e.stopPropagation()}>
             <FaCheckCircle className="success-modal-icon" />
             <h3>Student Enrolled Successfully!</h3>
             <p>The enrollment application has been recorded in the central academic ERP database.</p>
+            <div style={{ background: 'var(--main-bg, #f8fafc)', padding: '16px', borderRadius: '8px', margin: '16px 0', textAlign: 'left', fontSize: '13px' }}>
+              <div><strong>Name:</strong> {enrolledStudentInfo.name}</div>
+              <div><strong>Enrollment ID:</strong> {enrolledStudentInfo.enrollmentId}</div>
+              <div><strong>Generated Username:</strong> {enrolledStudentInfo.username}</div>
+              <div><strong>Course:</strong> {enrolledStudentInfo.course}</div>
+            </div>
             <button className="success-modal-close" onClick={() => setShowSuccessModal(false)}>
               Okay, Go Back
             </button>
@@ -437,3 +517,4 @@ const RegistrationForm = () => {
 };
 
 export default RegistrationForm;
+

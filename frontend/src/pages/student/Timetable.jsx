@@ -1,15 +1,28 @@
 // src/pages/student/Timetable.jsx
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import './Timetable.css';
 import {
   FiChevronLeft, FiChevronRight, FiCheckCircle, FiClock,
   FiUser, FiMapPin, FiGrid, FiList, FiCalendar, FiBook
 } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useApi } from '../../hooks/useApi';
+import { endpoints } from '../../services/endpoints';
+import Skeleton from '../../components/ui/Skeleton';
+import ErrorState from '../../components/ui/ErrorState';
+import EmptyState from '../../components/ui/EmptyState';
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
 const WEEK_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const FULL_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+const DAY_MAP = {
+  'mon': 'Mon', 'monday': 'Mon',
+  'tue': 'Tue', 'tuesday': 'Tue',
+  'wed': 'Wed', 'wednesday': 'Wed',
+  'thu': 'Thu', 'thursday': 'Thu',
+  'fri': 'Fri', 'friday': 'Fri',
+  'sat': 'Sat', 'saturday': 'Sat',
+};
 
 const SUBJECT_COLORS = {
   'CE601': { bg: '#eff6ff', border: '#2563eb', text: '#1d4ed8', dot: '#2563eb' },
@@ -20,65 +33,92 @@ const SUBJECT_COLORS = {
   'BREAK': { bg: '#f9fafb', border: '#d1d5db', text: '#9ca3af', dot: '#d1d5db' },
 };
 
-const weekSchedule = {
-  Mon: [
-    { id: 1, code: 'CE601', subject: 'Database Management Systems', time: '09:10–10:00', room: 'Room 304', faculty: 'Dr. Rajesh Sharma', type: 'Lecture',   duration: '50 min' },
-    { id: 2, code: 'CE602', subject: 'Artificial Intelligence',       time: '10:00–10:50', room: 'Room 204', faculty: 'Prof. Anita Verma',  type: 'Lecture',   duration: '50 min' },
-    { id: 3, code: 'BREAK', subject: 'Lunch Break',                   time: '10:50–11:40', room: '',         faculty: '',                   type: 'Break',     duration: '50 min' },
-    { id: 4, code: 'CE603', subject: 'Computer Networks (Lab)',        time: '11:40–13:20', room: 'Network Lab 2', faculty: 'Dr. Sanjay Gupta', type: 'Practical', duration: '100 min' },
-    { id: 5, code: 'CE604', subject: 'Software Engineering',           time: '14:00–14:50', room: 'Room 101', faculty: 'Prof. Meera Desai',  type: 'Lecture',   duration: '50 min' },
-  ],
-  Tue: [
-    { id: 6, code: 'CE602', subject: 'Artificial Intelligence',        time: '09:10–10:00', room: 'Room 204', faculty: 'Prof. Anita Verma',  type: 'Lecture',   duration: '50 min' },
-    { id: 7, code: 'CE604', subject: 'Software Engineering',            time: '10:00–10:50', room: 'Room 101', faculty: 'Prof. Meera Desai',  type: 'Lecture',   duration: '50 min' },
-    { id: 8, code: 'CE605', subject: 'Web Technologies (Lab)',          time: '11:40–13:20', room: 'Web Lab 3', faculty: 'Dr. Priya Singh',   type: 'Practical', duration: '100 min' },
-  ],
-  Wed: [
-    { id: 9,  code: 'CE601', subject: 'Database Management Systems',    time: '09:10–10:00', room: 'Room 304', faculty: 'Dr. Rajesh Sharma',  type: 'Lecture',  duration: '50 min' },
-    { id: 10, code: 'CE603', subject: 'Computer Networks',              time: '10:00–10:50', room: 'Room 202', faculty: 'Dr. Sanjay Gupta',   type: 'Lecture',  duration: '50 min' },
-    { id: 11, code: 'CE605', subject: 'Web Technologies',               time: '14:00–14:50', room: 'Room 305', faculty: 'Dr. Priya Singh',    type: 'Lecture',  duration: '50 min' },
-  ],
-  Thu: [
-    { id: 12, code: 'CE604', subject: 'Software Engineering',           time: '09:10–10:00', room: 'Room 101', faculty: 'Prof. Meera Desai',  type: 'Lecture',   duration: '50 min' },
-    { id: 13, code: 'CE601', subject: 'DBMS Lab',                       time: '10:00–11:40', room: 'DB Lab 1', faculty: 'Dr. Rajesh Sharma',  type: 'Practical', duration: '100 min' },
-    { id: 14, code: 'CE602', subject: 'Artificial Intelligence',        time: '14:00–14:50', room: 'Room 204', faculty: 'Prof. Anita Verma',  type: 'Lecture',   duration: '50 min' },
-  ],
-  Fri: [
-    { id: 15, code: 'CE603', subject: 'Computer Networks',              time: '09:10–10:00', room: 'Room 202', faculty: 'Dr. Sanjay Gupta',   type: 'Lecture',   duration: '50 min' },
-    { id: 16, code: 'CE605', subject: 'Web Technologies',               time: '10:00–10:50', room: 'Room 305', faculty: 'Dr. Priya Singh',    type: 'Lecture',   duration: '50 min' },
-    { id: 17, code: 'CE601', subject: 'Database Management Systems',    time: '11:40–12:30', room: 'Room 304', faculty: 'Dr. Rajesh Sharma',  type: 'Lecture',   duration: '50 min' },
-  ],
-  Sat: [
-    { id: 18, code: 'CE602', subject: 'AI Lab',                         time: '09:10–11:40', room: 'AI Lab 4', faculty: 'Prof. Anita Verma',  type: 'Practical', duration: '150 min' },
-  ],
-};
-
-// Today: Monday (index 0)
-const TODAY_IDX = 0;
-
-// All week dates (starting from Mon 05 Jan 2026)
 const WEEK_DATES = ['05', '06', '07', '08', '09', '10'];
 
 const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.07 } } };
-const cardItem   = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 280, damping: 22 } } };
+const cardItem = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 280, damping: 22 } } };
 
-// ─── Component ────────────────────────────────────────────────────────────────
 const Timetable = () => {
-  const [activeDay, setActiveDay]     = useState(TODAY_IDX);
-  const [view, setView]               = useState('day');  // 'day' | 'week'
-  const [weekOffset, setWeekOffset]   = useState(0);
+  const { data: rawTimetable, loading, error, refetch } = useApi(endpoints.attendance.timetable, {
+    params: { page_size: 100 }
+  });
 
-  const currentDayKey  = WEEK_DAYS[activeDay];
+  const [activeDay, setActiveDay] = useState(0);
+  const [view, setView] = useState('day'); // 'day' | 'week'
+  const [weekOffset, setWeekOffset] = useState(0);
+
+  const timetableEntries = Array.isArray(rawTimetable) ? rawTimetable : (rawTimetable?.results || []);
+
+  const weekSchedule = useMemo(() => {
+    const map = { Mon: [], Tue: [], Wed: [], Thu: [], Fri: [], Sat: [] };
+    
+    timetableEntries.forEach((entry, idx) => {
+      const dayKey = DAY_MAP[entry.day?.toLowerCase()] || 'Mon';
+      const code = entry.subject_name ? entry.subject_name.split(' ')[0] : `SUB${idx + 1}`;
+      const isLab = entry.subject_name?.toLowerCase().includes('lab') || entry.room?.toLowerCase().includes('lab');
+      
+      const startTime = entry.start_time ? entry.start_time.slice(0, 5) : '09:00';
+      const endTime = entry.end_time ? entry.end_time.slice(0, 5) : '10:00';
+
+      if (map[dayKey]) {
+        map[dayKey].push({
+          id: entry.id || idx + 1,
+          code,
+          subject: entry.subject_name || 'Subject',
+          time: `${startTime}–${endTime}`,
+          room: entry.room || 'Room TBA',
+          faculty: entry.instructor_name || 'Assigned Faculty',
+          type: isLab ? 'Practical' : 'Lecture',
+          duration: isLab ? '100 min' : '50 min'
+        });
+      }
+    });
+
+    return map;
+  }, [timetableEntries]);
+
+  const currentDayKey = WEEK_DAYS[activeDay];
   const currentClasses = weekSchedule[currentDayKey] || [];
-  const nonBreak       = currentClasses.filter(c => c.code !== 'BREAK');
+  const nonBreak = currentClasses.filter(c => c.code !== 'BREAK');
 
-  const totalClasses   = nonBreak.length;
-  const lectureCount   = nonBreak.filter(c => c.type === 'Lecture').length;
+  const totalClasses = nonBreak.length;
+  const lectureCount = nonBreak.filter(c => c.type === 'Lecture').length;
   const practicalCount = nonBreak.filter(c => c.type === 'Practical').length;
+
+  if (loading) {
+    return (
+      <div className="tt-container" style={{ padding: '24px' }}>
+        <Skeleton variant="card" height={60} style={{ marginBottom: '20px' }} />
+        <Skeleton variant="card" height={50} style={{ marginBottom: '20px' }} />
+        <Skeleton variant="card" height={100} style={{ marginBottom: '12px' }} />
+        <Skeleton variant="card" height={100} style={{ marginBottom: '12px' }} />
+        <Skeleton variant="card" height={100} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="tt-container" style={{ padding: '24px' }}>
+        <ErrorState error={error} onRetry={refetch} />
+      </div>
+    );
+  }
+
+  if (timetableEntries.length === 0) {
+    return (
+      <div className="tt-container" style={{ padding: '24px' }}>
+        <EmptyState
+          icon={FiCalendar}
+          title="No Timetable Released"
+          description="Your weekly schedule has not been published yet. Check back once academic schedules are finalized."
+        />
+      </div>
+    );
+  }
 
   return (
     <motion.div className="tt-container" variants={container} initial="hidden" animate="show">
-
       {/* ── Page Header ── */}
       <motion.div className="tt-header" variants={cardItem}>
         <div className="tt-header-left">
@@ -110,7 +150,7 @@ const Timetable = () => {
           {WEEK_DAYS.map((day, idx) => (
             <button
               key={day}
-              className={`tt-day-pill ${activeDay === idx ? 'tt-day-active' : ''} ${idx === TODAY_IDX && weekOffset === 0 ? 'tt-day-today' : ''}`}
+              className={`tt-day-pill ${activeDay === idx ? 'tt-day-active' : ''} ${idx === 0 && weekOffset === 0 ? 'tt-day-today' : ''}`}
               onClick={() => setActiveDay(idx)}
             >
               <span className="tt-pill-day">{day}</span>
@@ -167,7 +207,7 @@ const Timetable = () => {
               <div className="tt-class-list">
                 {currentClasses.map((cls, idx) => {
                   const color = SUBJECT_COLORS[cls.code] || SUBJECT_COLORS['CE601'];
-                  const isLive = activeDay === TODAY_IDX && idx === 2 && weekOffset === 0;
+                  const isLive = activeDay === 0 && idx === 0 && weekOffset === 0;
 
                   if (cls.code === 'BREAK') {
                     return (
@@ -189,7 +229,7 @@ const Timetable = () => {
                         '--cls-dot': color.dot,
                       }}
                       variants={cardItem}
-                      whileHover={{ y: -2, boxShadow: `0 8px 24px rgba(0,0,0,0.1)` }}
+                      whileHover={{ y: -2, boxShadow: '0 8px 24px rgba(0,0,0,0.1)' }}
                     >
                       {/* Time stripe */}
                       <div className="tt-card-time-col">
@@ -229,27 +269,16 @@ const Timetable = () => {
 
                       {/* Right status */}
                       <div className="tt-card-status">
-                        {idx < 2 && activeDay === TODAY_IDX && weekOffset === 0 && (
+                        {idx < 1 && activeDay === 0 && weekOffset === 0 && (
                           <div className="tt-done-badge">
                             <FiCheckCircle size={14} />
                             <span>Done</span>
                           </div>
                         )}
-                        {isLive && (
-                          <div className="tt-progress-ring">
-                            <svg width="44" height="44" viewBox="0 0 44 44">
-                              <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(239,68,68,0.15)" strokeWidth="4"/>
-                              <circle cx="22" cy="22" r="18" fill="none" stroke="#ef4444" strokeWidth="4"
-                                strokeDasharray="113" strokeDashoffset="42"
-                                strokeLinecap="round" transform="rotate(-90 22 22)"/>
-                            </svg>
-                            <span className="tt-progress-label">63%</span>
-                          </div>
-                        )}
-                        {idx > 2 && activeDay === TODAY_IDX && weekOffset === 0 && (
+                        {idx >= 1 && activeDay === 0 && weekOffset === 0 && (
                           <div className="tt-upcoming-badge">
                             <FiClock size={14} />
-                            <span>Soon</span>
+                            <span>Upcoming</span>
                           </div>
                         )}
                       </div>
@@ -277,13 +306,13 @@ const Timetable = () => {
                 return (
                   <div
                     key={day}
-                    className={`tt-week-col ${dIdx === TODAY_IDX && weekOffset === 0 ? 'tt-week-col-today' : ''}`}
+                    className={`tt-week-col ${dIdx === 0 && weekOffset === 0 ? 'tt-week-col-today' : ''}`}
                     onClick={() => { setActiveDay(dIdx); setView('day'); }}
                   >
                     <div className="tt-week-col-head">
                       <span className="tt-week-col-day">{day}</span>
                       <span className="tt-week-col-date">{WEEK_DATES[dIdx]}</span>
-                      {dIdx === TODAY_IDX && weekOffset === 0 && (
+                      {dIdx === 0 && weekOffset === 0 && (
                         <span className="tt-week-today-pill">Today</span>
                       )}
                     </div>
